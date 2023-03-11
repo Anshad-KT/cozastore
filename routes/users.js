@@ -33,6 +33,7 @@ router.get('/cart',userGet.userGetCart);
 router.get('/orders',userGet.userGetOrders);
 // router.get('/cartupload/:id',userGet.userGetCartParams);
 router.get('/deleteorder/',userGet.userGetDeleteOne);
+router.post('/verify-payment',userGet.userVerifyPayment);
 
 
 

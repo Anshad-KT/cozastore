@@ -13,7 +13,9 @@ const address_details=require('../models/addressModel')
 const { default: mongoose } = require('mongoose')
 const {v4 : uuidv4} = require('uuid')
 const Razorpay = require('razorpay');
-
+const { log } = require('console')
+let payReciept
+let orders;
 var instance = new Razorpay({
   key_id: 'rzp_test_03pins9a8mVlgN',
   key_secret: 'EAY2f074OyETGQarM9TbZdtW',
@@ -153,8 +155,11 @@ let userGetCheckout =async function(req, res, next) {
             },
         ])
         // console.log(addressParams);
-        // console.log(selectedAddress);
+        console.log("checkout");
+         console.log(selectedAddress);
+         
         res.render('user-checkout',{name:userProfile.name,username:userProfile.username,phone:userProfile.phone,email:userProfile.email,selectedAddress,userdone,totalAmount})
+        
     }else{
         res.redirect('/login')
     }
@@ -203,7 +208,7 @@ let userGetCart = async function(req, res, next) {
 
             ])
 
-            console.log(userdone[0].product);
+            
     
     for(var i=0;i<userdone.length;i++){
        userdone[i].total =parseInt(userdone[i].quantity)*parseInt(userdone[i].product.price);
@@ -480,13 +485,14 @@ let userPostCartOperation = async function(req, res, next) {
 let userPostCheckoutBilling = async function(req, res, next) {
     
     // try {
+        console.log("test",req.body);
         
     if(userSession){
        
          let billingDetails = req.body
         
          // userCart.products=[{productId:details,quantity:quantity,colour:colour,size:size}]
-         let orders = {products:[]}
+          orders = {products:[]}
          orders.orderedUser=req.body.username
          orders.deliveryAddress={houseName:billingDetails.housename,postalName:billingDetails.postalname,pincode:billingDetails.pincode,district:billingDetails.district,state:billingDetails.state,country:billingDetails.country}
          //need to add total amount
@@ -509,32 +515,40 @@ let userPostCheckoutBilling = async function(req, res, next) {
 
          }
           
-   
-         console.log(orders);
+         
          orders.paymentType=req.body.checkout
+         console.log(req.body.checkout);
 
-         if(orders.paymentType=="Pay using razorpay")
-         function generateRazorpay(){
-            const Razorpay = require('razorpay');
-            var instance = new Razorpay({ key_id: 'YOUR_KEY_ID', key_secret: 'YOUR_SECRET' })
-
+         if(orders.paymentType=="Pay using razorpay"){
+           payReciept = uuidv4()
+            
+        
             var options = {
-            amount: 50000,  // amount in the smallest currency unit
-            currency: "INR",
-            receipt: "order_rcptid_11"
-            };
-instance.orders.create(options, function(err, order) {
-  console.log(order);
-});
-         }
 
-         await order_details.insertMany([orders])
+                amount: totalCash*100,  // amount in the smallest currency unit
+                currency: "INR",
+                receipt: payReciept
+              };
+              instance.orders.create(options, function(err, order) {
+                console.log(order);
+                
+                res.json(order)
+              })
+           
+    
+         }else{
+ 
+            await order_details.insertMany([orders])
       
          
-         await cart_details.deleteOne({userId:uss})
+            await cart_details.deleteOne({userId:uss})
+            
+         }
+
          
+        
          console.log("cart deleted");
-         res.redirect('/home')
+         
       
     }else{
         
@@ -549,6 +563,8 @@ instance.orders.create(options, function(err, order) {
 
 
 }
+
+
 
 let userPostEditPassword =async function(req, res, next) {
     if(userSession){
@@ -578,6 +594,45 @@ let userPostEditPassword =async function(req, res, next) {
     
   
 }
+
+
+let userVerifyPayment = async function(req, res, next) {
+    if(userSession){
+        
+      
+       console.log(req.body); 
+       const crypto = require('crypto')
+       let hmac =crypto.createHmac('sha256','EAY2f074OyETGQarM9TbZdtW')            
+       hmac.update(req.body['payment[razorpay_order_id]']+'|'+req.body['payment[razorpay_payment_id]'])    
+       hmac=hmac.digest('hex') 
+       if(hmac==req.body['payment[razorpay_signature]']){
+
+        await order_details.insertMany([orders]) 
+        await cart_details.deleteOne({userId:uss})
+
+        res.json({status:true})
+       }else{
+        console.log("failed transaction");
+       }
+           
+            
+          
+        
+        console.log("hi");
+
+    
+      
+
+    }else{
+
+    }
+
+
+   
+    
+  
+}
+
 
 let userPostEditProfile = async function(req, res, next) {
     // try {
@@ -1050,7 +1105,8 @@ module.exports = {
     userPostChangeQuantity,
     userPostAddAddress,
     userGetAddress,
-    userGetAddressParams
+    userGetAddressParams,
+    userVerifyPayment
 }
 
    

@@ -291,7 +291,9 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
     </div>
     <div class="col-md-8 order-md-1">
       <h4 class="mb-3">Billing address</h4>
-	  <form action="/checkoutbilling" name="sub" method="post" onsubmit="return checkoutValidate()">
+	   {{!-- <form  action="/checkoutbilling" name="sub" method="post" onsubmit="return checkoutValidate()"> --}}
+	   <form action="" method="" id="checkoutForm" name="sub" >
+
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="text-right">Profile Settings</h4>
                 </div>
@@ -328,7 +330,7 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
           </div>
          
         </div>
-		<div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Profile</button></div>
+		<div class="mt-5 text-center"><button class="btn btn-primary profile-button"   type="submit">Save Profile</button></div>
 				               {{#if editMsg}}
 								<div class="container">
                                 <div class="row">
@@ -340,16 +342,87 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
                                 </div>
                                 </div>
 								{{/if}}
-				       <div class="mt-5">
-									<a href="/address">saved addresses</a>
+				                <div class="mt-5">
+								 <a href="/address">saved addresses</a>
 								</div>
                        </div>
 					            
 		
        
   </div>
-     
+     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </form>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+	$('#checkoutForm').submit((e)=>{
+		e.preventDefault()
+		$.ajax({
+			url:'/checkoutbilling',
+			method:'POST',
+			data:$('#checkoutForm').serialize(),
+			success:(order)=>{
+				
+				razorpayPayment(order)
+			}
+			
+		})
+	})
+	function razorpayPayment(order){
+		var options = {
+    "key": "rzp_test_03pins9a8mVlgN", // Enter the Key ID generated from the Dashboard
+    "amount": "500", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "cozastore", //your business name
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+       
+    
+		verifyPayment(response,order)
+    },
+    "prefill": {
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+
+};
+    	var rzp1 = new Razorpay(options);
+	    rzp1.open();
+	}
+	function verifyPayment(payment,order){
+		$.ajax({
+			url:'/verify-payment',
+			data:{
+				payment,
+				order
+			},
+			method:"POST",
+			success:(response)=>{
+				
+				if(response.status){
+					location.href='/orders'
+				}else{
+                   alert('payment failed')
+				}
+				
+			}
+		})
+		
+	}
+</script>
+
+
+
+
   <footer class="my-5 pt-5 text-muted text-center text-small">
     <p class="mb-1">&copy; 2017-2019 Company Name</p>
     <ul class="list-inline">
@@ -678,6 +751,9 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			</div>
 		</div>
 	</div>
+	
+
+
 <script src="javascripts/checkoutValidation.js"></script>
 <!--===============================================================================================-->	
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
