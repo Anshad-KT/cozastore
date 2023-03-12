@@ -362,17 +362,23 @@
 									<td class="column-2">{{product.title}}</td>
 									<td class="column-3">{{product.price}}</td>
 									<td class="column-4">
+										{{#if product.st}}
+										<h6>removed</h6>
+										
+										{{else}}
+										
 										<div class="wrap-num-product flex-w m-l-auto m-r-0">
 											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-												<button onclick="changeQuantity('{{_id}}','{{product_id}}',1)"><i class="fs-16 zmdi zmdi-minus"></i></button>
+												<button onclick="changeQuantity('{{_id}}','{{productId}}',-1)"><i class="fs-16 zmdi zmdi-minus"></i></button>
 											</div>
 
 											<input class="mtext-104 cl3 txt-center num-product" type="number" name="quantity" value={{quantity}}>
 
 											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-												<button onclick="changeQuantity('{{_id}}','{{product_id}}',1)"><i class="fs-16 zmdi zmdi-plus"></i></button>
+												<button onclick="changeQuantity('{{_id}}','{{productId}}',1)"><i class="fs-16 zmdi zmdi-plus"></i></button>
 											</div>
 										</div>
+										{{/if}}
 									</td>
 									
 									<td class="column-5">{{total}}</td>
@@ -645,7 +651,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</div>
 
 <!--===============================================================================================-->	
-	
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script>
 		function changeQuantity(cartId,productId,count){
 			$.ajax({
@@ -655,7 +661,10 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 					product:productId,
 					count:count
 				},
-				method:'post',
+				method:'POST',
+				success:(responce)=>{
+					console.log(responce)
+				}
 		     
 
 			})

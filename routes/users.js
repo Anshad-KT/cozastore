@@ -40,6 +40,7 @@ router.post('/verify-payment',userGet.userVerifyPayment);
 //postRequests
 
 router.post('/logincheck',userPost.userPostLogin);
+router.post('/search',userPost.userPostSearch);
 router.post('/signupcheck',userPost.userPostSignup);
 router.post('/otplogincheck',userPost.userPostOtpLogin);
 router.post('/otpcheck',userPost.userPostOtp);

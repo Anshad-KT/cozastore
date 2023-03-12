@@ -33,6 +33,9 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	 <style>
+					
+				 </style>
 <!--===============================================================================================-->
 </head>
 <body class="animsition">
@@ -350,7 +353,7 @@
 					<div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
 						<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
 						<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						Search
+					 
 					</div>
 				</div>
 				
@@ -361,10 +364,44 @@
 							<i class="zmdi zmdi-search"></i>
 						</button>
 
-						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
+						<input onkeyup="sendData(this)" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
+						
 					</div>	
-				</div>
+					<div class="bor8 dis-flex p-l-15">
+                      <div id="searchResults" class="mt-3 mb-3" >
 
+						</div>
+					</div>
+				</div>
+				
+				<script>
+					function sendData(e){
+						const searchResults = document.getElementById('searchResults')
+						fetch('search',{
+							method:"POST",
+							headers:{'Content-Type':'application/json'},
+							body:JSON.stringify({payload:e.value})
+						}).then(res=> res.json()).then(data=>{
+							let payload=data.payload
+							console.log("hi")
+							console.log(payload)
+							searchResults.innerHTML='';
+							if(payload.length<1){
+								searchResults.innerHTML="<p class='mt-3 text-centre'>Sorry no results found</p>"
+								return;
+							}
+							payload.forEach((item,index)=>{
+								
+								if(index>0)searchResults.innerHTML+='<hr>';
+								searchResults.innerHTML+=`<div onclick="window.location.href='/product-details/${item.productIndex}'" class="d-flex"><img src='product-images/products/${item.imageReference[0]}.jpg' width='100px'><p>${item.title}<p></div>`
+							    console.log(searchResults)
+							})
+							return;
+						})
+					
+					}
+				</script>
+                 
 				<!-- Filter -->
 				<div class="dis-none panel-filter w-full p-t-10">
 					<div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">

@@ -14,6 +14,7 @@ const { default: mongoose } = require('mongoose')
 const {v4 : uuidv4} = require('uuid')
 const Razorpay = require('razorpay');
 const { log } = require('console')
+const { search } = require('../routes')
 let payReciept
 let orders;
 var instance = new Razorpay({
@@ -222,10 +223,19 @@ let userGetCart = async function(req, res, next) {
          amount =amount + userdone[i].total
         
     } 
-
+  
    
-    
-    
+            for(var i=0;i<userdone.length;i++){
+                if(userdone[i].quantity==0){
+                    userdone[i].product.st=true
+                }else{
+                    userdone[i].product.st=false
+                }
+                
+               
+            }
+            console.log(userdone);
+           
 
             res.render('user-cart',{userdone,amount})
         }else{
@@ -360,11 +370,14 @@ let userPostChangeQuantity =async function(req, res, next) {
      
     if(userSession){
         console.log(req.body);
-        // await cart_details.updateOne({userId:userSession,},
-        //     {
-        //         $set:{}
-        //     }
-        //     )
+        let k=req.body.count
+        let count=parseInt(k)
+        await cart_details.updateOne({_id:req.body.cart,"products.productId":req.body.product},
+        {
+            $inc:{'products.$.quantity':count}
+        })
+        
+        console.log("quantity changed");
 
         
         res.redirect('/cart')
@@ -435,7 +448,7 @@ let userPostCartOperation = async function(req, res, next) {
 
         if(userSession){
             console.log(req.body);
-             quantity = req.body.quantity
+             quantity = parseInt(req.body.quantity)
              size = req.body.size,
              colour = req.body.colour
              
@@ -518,7 +531,9 @@ let userPostCheckoutBilling = async function(req, res, next) {
          
          orders.paymentType=req.body.checkout
          console.log(req.body.checkout);
-
+         if(orders.paymentType=="cash on delivery"){
+            
+         }
          if(orders.paymentType=="Pay using razorpay"){
            payReciept = uuidv4()
             
@@ -528,6 +543,7 @@ let userPostCheckoutBilling = async function(req, res, next) {
                 amount: totalCash*100,  // amount in the smallest currency unit
                 currency: "INR",
                 receipt: payReciept
+
               };
               instance.orders.create(options, function(err, order) {
                 console.log(order);
@@ -542,6 +558,8 @@ let userPostCheckoutBilling = async function(req, res, next) {
       
          
             await cart_details.deleteOne({userId:uss})
+
+            res.json({COD:true})
             
          }
 
@@ -601,6 +619,8 @@ let userVerifyPayment = async function(req, res, next) {
         
       
        console.log(req.body); 
+
+
        const crypto = require('crypto')
        let hmac =crypto.createHmac('sha256','EAY2f074OyETGQarM9TbZdtW')            
        hmac.update(req.body['payment[razorpay_order_id]']+'|'+req.body['payment[razorpay_payment_id]'])    
@@ -633,6 +653,26 @@ let userVerifyPayment = async function(req, res, next) {
   
 }
 
+
+let userPostSearch = async function(req, res, next) {
+    if(userSession){
+        
+      
+     let payload = req.body.payload.trim()
+     
+     let searchResults = await product_details.find({title:{$regex:new RegExp('^'+payload+'.*','i')}}).exec()
+     searchResults = searchResults.slice(0,10)
+     res.send({payload:searchResults})
+
+    }else{
+
+    }
+
+
+   
+    
+  
+}
 
 let userPostEditProfile = async function(req, res, next) {
     // try {
@@ -1057,6 +1097,8 @@ let userPostOtpLogin = async function(req, res, next) {
     
 }
 
+
+
 let userGetLogout = function (req, res, next) {
   
     req.session.user=null;
@@ -1106,7 +1148,8 @@ module.exports = {
     userPostAddAddress,
     userGetAddress,
     userGetAddressParams,
-    userVerifyPayment
+    userVerifyPayment,
+    userPostSearch
 }
 
    
