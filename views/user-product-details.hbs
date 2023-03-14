@@ -81,16 +81,12 @@
 					<div class="menu-desktop">
 						<ul class="main-menu">
 							<li>
-								<a href="index.html">Home</a>
-								<ul class="sub-menu">
-									<li><a href="index.html">Homepage 1</a></li>
-									<li><a href="home-02.html">Homepage 2</a></li>
-									<li><a href="home-03.html">Homepage 3</a></li>
-								</ul>
-							</li>
+					<a href="/home">Home</a>
+				
+				</li>
 
 							<li>
-								<a href="product.html">Shop</a>
+								<a href="/products">Shop</a>
 							</li>
 
 							<li class="label1" data-label1="hot">
@@ -191,17 +187,12 @@
 			</ul>
 
 			<ul class="main-menu-m">
-				<li>
-					<a href="index.html">Home</a>
-					<ul class="sub-menu-m">
-						<li><a href="index.html">Homepage 1</a></li>
-						<li><a href="home-02.html">Homepage 2</a></li>
-						<li><a href="home-03.html">Homepage 3</a></li>
-					</ul>
-					<span class="arrow-main-menu-m">
-						<i class="fa fa-angle-right" aria-hidden="true"></i>
-					</span>
+			
+					<li>
+					<a href="/home">Home</a>
+				
 				</li>
+				
 
 				<li>
 					<a href="product.html">Shop</a>
@@ -458,12 +449,24 @@
 
 						<!--  -->
 						<div class="flex-w flex-m p-l-100 p-t-40 respon7">
+							{{#if checkWish}}
 							<div class="flex-m bor9 p-r-10 m-r-11">
 								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100" data-tooltip="Add to Wishlist">
-									<i class="zmdi zmdi-favorite"></i>
+									{{#each value}}
+									<button onclick="wishlist('{{productIndex}}')"><i class="zmdi zmdi-favorite"></i></button>
+								    {{/each}}
 								</a>
 							</div>
-
+							{{else}}
+							<div class="flex-m bor9 p-r-10 m-r-11">
+								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-removewish-detail tooltip100" data-tooltip="Remove from Wishlist">
+									{{#each value}}
+									<button onclick="wishlistremove('{{productIndex}}')"><i class="zmdi zmdi-favorite"></i></button>
+								    {{/each}}
+								</a>
+							</div>
+							{{/if}}
+ 
 							<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100" data-tooltip="Facebook">
 								<i class="fa fa-facebook"></i>
 							</a>
@@ -1248,7 +1251,40 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			</div>
 		</div>
 	</div>
-
+    <script>
+		function wishlist(productId){
+            $.ajax({
+				url:'/addtowishlist',
+				data:{
+					
+					productIndex:productId
+					
+				},
+				method:'POST',
+				success:(responce)=>{
+					console.log(responce)
+					
+				}
+			}
+			)
+		}
+		function wishlistremove(productId){
+            $.ajax({
+				url:'/deletewishlist',
+				data:{
+					
+					productIndex:productId
+					
+				},
+				method:'POST',
+				success:(responce)=>{
+					console.log(responce)
+					
+				}
+			}
+			)
+		}
+	</script>
 <!--===============================================================================================-->	
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->

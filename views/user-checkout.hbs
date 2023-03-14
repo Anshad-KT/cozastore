@@ -330,7 +330,7 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
           </div>
          
         </div>
-		<div class="mt-5 text-center"><button class="btn btn-primary profile-button"   type="submit">Save Profile</button></div>
+		<div class="mt-5 text-center"><button class="btn btn-primary profile-button" onclick="return checkoutValidate()" type="submit">Continue</button></div>
 				               {{#if editMsg}}
 								<div class="container">
                                 <div class="row">
@@ -363,7 +363,7 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 			data:$('#checkoutForm').serialize(),
 			success:(order)=>{
 				if(order.COD){
-					location.href='/order'
+					location.href='/orders'
 				}else{
 					razorpayPayment(order)
 				}

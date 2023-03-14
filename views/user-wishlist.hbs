@@ -89,6 +89,7 @@
 					</div>
 
 					<div class="right-top-bar flex-w h-full">
+						  <a href="/logout"><button class="btn btn-primary me-3 ">logout</button></a>
 						<a href="#" class="flex-c-m trans-04 p-lr-25">
 							Help & FAQs
 						</a>
@@ -120,16 +121,12 @@
 					<div class="menu-desktop">
 						<ul class="main-menu">
 							<li>
-								<a href="index.html">Home</a>
-								<ul class="sub-menu">
-									<li><a href="index.html">Homepage 1</a></li>
-									<li><a href="home-02.html">Homepage 2</a></li>
-									<li><a href="home-03.html">Homepage 3</a></li>
-								</ul>
+								<a href="/home">Home</a>
+								
 							</li>
 
 							<li>
-								<a href="product.html">Shop</a>
+								<a href="/products">Shop</a>
 							</li>
 
 							<li class="label1" data-label1="hot">
@@ -139,6 +136,7 @@
 							<li>
 								<a href="blog.html">Blog</a>
 							</li>
+							
 
 							<li>
 								<a href="about.html">About</a>
@@ -392,48 +390,28 @@
 							<table class="table-shopping-cart">
 								<tr class="table_head">
                                     <th class="column-1">Index</th>
+                                    <th class="column-1">Image</th>
 									<th class="column-2">Product</th>
-									<th class="column-3">Title</th>
-									<th class="column-4">Price</th>
-									<th class="column-5">Quantity</th>
 									
-                                    <th class="column-6">Delivery date</th>
-                                    <th class="column-7">order status</th>
+								
+									
                                     <th class="column-8">Action</th>
 								</tr>
-                                    {{#each resp}}
+                                    {{#each userwishlist}}
                                                     <tr>
                                                         <td class="column-1">{{@index}}</td>
-                                                        <td class="column-2"><img style="width: 100px;height: 130px;" src="product-images/products/{{products.imageReference.[0]}}.jpg" alt=""></td>
-                                                        <td class="column-3">{{products.title}}</td>
-                                                        <td class="column-4">{{products.price}}</td>
-                                                        <td class="column-5">{{products.quantity}}</td>
-                                                        <td class="column-6">{{deliveryDate}}</td>
-                                                        <td class="column-7">{{products.status}}</td>
-                                                         {{!-- {{#if status}}
-                                                        <td><span class="badge-dot badge-success mr-1"></span>Delivered</td>
-
-                                                         {{else}} --}}
-                                                         {{!-- <td>{{deliveryAddress.housename}},{{deliveryAddress.postalName}},{{deliveryAddress.pincode}},{{deliveryAddress.district}},{{deliveryAddress.state}},{{deliveryAddress.country}}</td> --}}
-                               
-          
-                                                         {{!-- {{/if}} --}}
-                                                         {{#if products.red}}
-
-                                                         <td>Order Deleted</td>
+                                                        <td class="column-2"><img style="width: 100px;height: 130px;" src="product-images/products/{{product.imageReference.[0]}}.jpg" alt=""></td>
+                                                        <td class="column-3">{{product.title}}</td>
                                                        
-                                                           {{/if}}
-                                                            {{#if products.green}}
+                                                       
 
-                                                            <td>Order Delivered</td>
-                                                             {{/if}}
-                                                             {{#if products.yellow}}
+                                                         
 
-                                                             <td><button class="btn btn-danger"><a href="/deleteorder/?productIndex={{products.productIndex}}&orderId={{products.userId}}">cancel</a></button>
+                                                             <td class="column-3"><button class="btn btn-danger"><a href="/product-details/{{product.productIndex}}">details</a></button>
 
                                                             
-                                                             {{/if}}
-                                                             
+                                                         
+                                                           
                                                        
                                                            
                                                             
@@ -445,19 +423,7 @@
 							</table>
 						</div>
 
-						<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
-							<div class="flex-w flex-m m-r-20 m-tb-5">
-								<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code">
-									
-								<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
-									Apply coupon
-								</div>
-							</div>
-
-							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-								{{total}}
-							</div>
-						</div>
+						
 					</div>
 				</div>
 

@@ -30,7 +30,11 @@ const LogInSchema=new mongoose.Schema({
     password:{
         type:String,
     required:true
-},
+    },
+
+    wishlist:{
+        type:Array,
+    },
 
 
    

@@ -1,55 +1,60 @@
 function checkoutValidate(){
-    const name = document.sub.name.value;
-    const email = document.sub.email.value;
-    const phone = document.sub.phone.value;
-    const username = document.sub.username.value;
+    // const name = document.sub.name.value;
+    // const email = document.sub.email.value;
+    // const phone = document.sub.phone.value;
+    // const username = document.sub.username.value;
     const housename = document.sub.housename.value;
     const postalname = document.sub.postalname.value;
     const pincode = document.sub.pincode.value;
     const district = document.sub.district.value;
     const state = document.sub.state.value;
     const country = document.sub.country.value;
+    const nameRegex =/^\s*([a-zA-Z]+\s*){1,3}$/
     const emailRegx = /^(\w){3,16}@([A-Za-z]){5,8}.([A-Za-z]){2,3}$/gm
     const passwordRegx = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/
     const err = document.getElementById("error-message");
 
-    if (username == "") {
-        err.innerHTML = 'username is Empty';
-        return false;
-    }
-    if (username.length < 5) {
-        err.innerHTML = 'username must be morethan 5';
-        return false
-    }
-    if (name == "") {
-        err.innerHTML = 'The Name is Empty'
+    // if (username == "") {
+    //     err.innerHTML = 'username is Empty';
+    //     return false;
+    // }
+    // if (username.length < 5) {
+    //     err.innerHTML = 'username must be morethan 5';
+    //     return false
+    // }
+    // if (name == "") {
+    //     err.innerHTML = 'The Name is Empty'
 
-        return false;
-    }
-    if (name.length < 3) {
-        err.innerHTML = 'Name must be Contain 3 Elements Please Include Fullname';
-        return false;
-    }
+    //     return false;
+    // }
+    // if(nameRegex.test(name)==false){
+    //     err.innerHTML = 'Invalid name'
+    //     return false
+    // }
+    // if (name.length < 3) {
+    //     err.innerHTML = 'Name must be Contain 3 Elements Please Include Fullname';
+    //     return false;
+    // }
 
-    if (email == "") {
-        err.innerHTML = 'Email is Empty';
-        return false;
-    }
+    // if (email == "") {
+    //     err.innerHTML = 'Email is Empty';
+    //     return false;
+    // }
 
-    if (emailRegx.test(email) == false) {
-        err.innerHTML = 'Invalid Email'
-        return false
-    }
+    // if (emailRegx.test(email) == false) {
+    //     err.innerHTML = 'Invalid Email'
+    //     return false
+    // }
 
-    if (phone == "") {
-        err.innerHTML = 'The phone is Empty'
+    // if (phone == "") {
+    //     err.innerHTML = 'The phone is Empty'
 
-        return false;
-    }
-    if (phone.length < 10 || phone.length > 13) {
-        err.innerHTML = 'invalid phone Number';
-        return false;
-    }
+    //     return false;
+    // }
+    // if (phone.length < 10 || phone.length > 13) {
+    //     err.innerHTML = 'invalid phone Number';
+    //     return false;
+    // }
     
     if (housename == "") {
         err.innerHTML = 'Housename is Empty'

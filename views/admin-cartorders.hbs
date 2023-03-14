@@ -278,14 +278,18 @@
                                                        
                                                          {{/if}}
                                                          
-                                                         {{#if green}}
-                                                         <td>{{products.paymentId}}</td>
+                                                         {{#if products.paymentId}}
+                                                           <td>{{products.paymentId}}</td>
+                                                           
+                                                        
                                                          {{else}}
                                                         <td>Payment not completed</td> 
                                                          {{/if}}
                                                          
-                                                         {{#if green}}
-                                                         <td>None</td>     
+                                                         {{#if red}}
+                                                         <td>None</td> 
+                                                         {{else if green}}    
+                                                          <td>None</td> 
                                                           {{else}}  
                                                         <td>
                                                        <div class="dropdown">
@@ -309,6 +313,11 @@
                                                     
                                                     </tr>
                                                 </tbody>
+                                                <script>
+                                                    Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+    return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
+                                                </script>
                                             </table>
                                         </div>
                                     </div>

@@ -239,9 +239,15 @@ let adminGetSetOrderStatus = async function (req, res, next) {
     let pId=uuidv4()
    
     if(statusName.status=="Delivered"){
-      await order_details.updateOne({_id:statusName.id,"products.productIndex":statusName.productIndex},{$set:{"products.$.paymentId":pId}})
+      
+      let statusChecking = await order_details.findOne({_id:statusName.id,"products.productIndex":statusName.productIndex})
+      console.log("kl10");
+      if(statusChecking.paymentType=="cash on delivery"){
+        await order_details.updateOne({_id:statusName.id,"products.productIndex":statusName.productIndex},{$set:{"products.$.paymentId":pId}})
+      }
+
       let stockChanges = await order_details.findOne({_id:statusName.id,"products.productIndex":statusName.productIndex})
-      console.log(stockChanges);
+      
       await product_details.updateOne({productIndex:statusName.productIndex},{$inc:{stock:"-"+stockChanges.products[0].quantity}})
     }
    

@@ -21,9 +21,12 @@ router.get('/products',nocache(),userGet.userGetProducts);
 router.get('/productsRequested/:id',userGet.userGetProductsRequested);
 router.get('/product-details/:id',userGet.userGetProductDetails);
 router.get('/product-details',nocache(),userGet.userGetDetails);
-router.get('/filter/:id',userGet.userGetFilter);
+router.get('/filter/',userGet.userGetFilter);
+router.get('/filterPrice/',userGet.userGetFilterPrice);
 router.get('/logout',userGet.userGetLogout);
-router.get('/deletecart/:id',userGet.userGetDeleteCart);
+router.get('/deletecart/',userGet.userGetDeleteCart);
+router.post('/addtowishlist',userGet.userPostAddWishlist);
+router.post('/deletewishlist',userGet.userPostDeleteWishlist);
 
 router.get('/profile',userGet.userGetProfile);
 router.get('/editprofile',userGet.userGetEditProfile);
@@ -34,6 +37,7 @@ router.get('/orders',userGet.userGetOrders);
 // router.get('/cartupload/:id',userGet.userGetCartParams);
 router.get('/deleteorder/',userGet.userGetDeleteOne);
 router.post('/verify-payment',userGet.userVerifyPayment);
+ router.get('/wishlist',userGet.userGetWishlist);
 
 
 

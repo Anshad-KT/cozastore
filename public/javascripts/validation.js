@@ -1,4 +1,6 @@
 function validateform(){
+    const nameRegex =/^\s*([a-zA-Z]+\s*){1,3}$/
+    const usernameRegex=/^[a-zA-Z0-9.\-_$@*!]{5,30}$/
     const name = document.sub.name.value;
     const email = document.sub.email.value;
     const phone = document.sub.phone.value;
@@ -13,6 +15,10 @@ function validateform(){
         err.innerHTML = 'username is Empty';
         return false;
     }
+    if(usernameRegex.test(username)==false){
+        err.innerHTML = 'Invalid username'
+        return false
+    }
     if (username.length < 5) {
         err.innerHTML = 'username must be morethan 5';
         return false
@@ -21,6 +27,10 @@ function validateform(){
         err.innerHTML = 'The Name is Empty'
 
         return false;
+    }
+    if(nameRegex.test(name)==false){
+        err.innerHTML = 'Invalid name'
+        return false
     }
     if (name.length < 5) {
         err.innerHTML = 'Name must be Contain five Elements Please Include Fullname';

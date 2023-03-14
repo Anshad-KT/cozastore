@@ -191,19 +191,12 @@
 
 			<ul class="main-menu-m">
 				<li>
-					<a href="index.html">Home</a>
-					<ul class="sub-menu-m">
-						<li><a href="index.html">Homepage 1</a></li>
-						<li><a href="home-02.html">Homepage 2</a></li>
-						<li><a href="home-03.html">Homepage 3</a></li>
-					</ul>
-					<span class="arrow-main-menu-m">
-						<i class="fa fa-angle-right" aria-hidden="true"></i>
-					</span>
+					<a href="/home">Home</a>
+				
 				</li>
 
 				<li>
-					<a href="product.html">Shop</a>
+					<a href="/products">Shop</a>
 				</li>
 
 				<li>
@@ -333,7 +326,13 @@
 			<div class="flex-w flex-sb-m p-b-52">
 				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
 					
-                    {{#each categories}}
+                   
+					<a href="/productsRequested/All Products"><button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" >
+						All Products
+					</button>
+                    </a>
+                   
+					 {{#each categories}}
 					<a href="/productsRequested/{{name}}"><button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" >
 						{{name}}
 					</button>
@@ -401,7 +400,7 @@
 					
 					}
 				</script>
-                 
+ 
 				<!-- Filter -->
 				<div class="dis-none panel-filter w-full p-t-10">
 					<div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
@@ -436,18 +435,55 @@
 								</li> --}}
 
 								<li class="p-b-6">
-									<a href="/filter/1" class="filter-link stext-106 trans-04">
+									<a href="/filter/?filtertype=price&filter=1" class="filter-link stext-106 trans-04">
 										Price: Low to High
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="/filter/-1" class="filter-link stext-106 trans-04">
+									<a href="/filter/?filtertype=price&filter=-1" class="filter-link stext-106 trans-04">
 										Price: High to Low
 									</a>
 								</li>
+								<li class="p-b-6">
+									<a href="/filter/?filtertype=_id&filter=-1" class="filter-link stext-106 trans-04">
+										Products: Newness
+									</a>
+								</li>
+								<li class="p-b-6">
+									<a href="/filter/?filtertype=_id&filter=1" class="filter-link stext-106 trans-04">
+										Products: Default
+									</a>
+								</li>
+                                
 							</ul>
+							
 						</div>
+							<div class="filter-col1 p-r-15 p-b-27">
+									<div class="mtext-102 cl2 p-b-15">
+								Filter By
+							</div>
+
+							      <ul>
+									<li class="p-b-6">
+									<a href="/filterPrice/?pricestarting=0&priceending=799" class="filter-link stext-106 trans-04">
+										Price: less than 800Rs
+									</a>
+									<br>
+									<a href="/filterPrice/?pricestarting=500&priceending=1500" class="filter-link stext-106 trans-04">
+										Price:  500Rs to 1500Rs
+									</a>
+									<br>
+									<a href="/filterPrice/?pricestarting=1500&priceending=100000000" class="filter-link stext-106 trans-04">
+										Price: more than 1500Rs
+									</a>
+									<br>
+									<a href="/filterPrice/?pricestarting=0&priceending=100000000" class="filter-link stext-106 trans-04">
+										None
+									</a>
+								</li>
+							</ul>
+							</div>
 
 						{{!-- <div class="filter-col2 p-r-15 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">
@@ -622,9 +658,14 @@
 							</div>
 
 							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+								
+								<a href="#"  class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+									<div class="flex-m bor9 p-r-10 m-r-11">
+										
+								{{!-- <img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
+									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON"> --}}
+								
+							</div>
 								</a>
 							</div>
 						</div>
@@ -952,7 +993,40 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			</div>
 		</div>
 	</div>
-
+                 <script>
+		function wishlist(productId){
+            $.ajax({
+				url:'/addtowishlist',
+				data:{
+					
+					productIndex:productId
+					
+				},
+				method:'POST',
+				success:(responce)=>{
+					console.log(responce)
+					
+				}
+			}
+			)
+		}
+		function wishlistremove(productId){
+            $.ajax({
+				url:'/deletewishlist',
+				data:{
+					
+					productIndex:productId
+					
+				},
+				method:'POST',
+				success:(responce)=>{
+					console.log(responce)
+					
+				}
+			}
+			)
+		}
+	</script>
 <!--===============================================================================================-->	
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->

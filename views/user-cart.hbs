@@ -340,9 +340,14 @@
 	<form class="bg0 p-t-75 p-b-85">
 		<div class="container">
 			<div class="row">
+				
 				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
 					<div class="m-l-25 m-r--38 m-lr-0-xl">
-						<div class="wrap-table-shopping-cart">
+						<button class="btn-secondary mb-5 flex-c-m stext-101 cl0 size-116 bg10 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+							<a href="/products"><h6 class="text-dark">continue shopping</h6></a>
+						</button>
+						<div class="wrap-table-shopping-cart mt-5">
+							
 							<table class="table-shopping-cart">
 								<tr class="table_head">
 									<th class="column-1">Product</th>
@@ -365,8 +370,11 @@
 										{{#if product.st}}
 										<h6>removed</h6>
 										
-										{{else}}
-										
+										{{/if}}
+										{{#if product.ot}}
+										<h6>out of stock</h6>
+										{{/if}}
+										{{#if product.dt}}
 										<div class="wrap-num-product flex-w m-l-auto m-r-0">
 											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
 												<button onclick="changeQuantity('{{_id}}','{{productId}}',-1)"><i class="fs-16 zmdi zmdi-minus"></i></button>
@@ -382,7 +390,7 @@
 									</td>
 									
 									<td class="column-5">{{total}}</td>
-									<td class="column-5"><button class="btn btn-danger"><a href="/deletecart/{{productId}}">delete</a></button></a></td>
+									<td class="column-5"><button class="btn btn-danger"><a href="/deletecart/?productId={{productId}}&quantity={{quantity}}&colour={{colour}}&size={{size}}">delete</a></button></a></td>
 									
 								</tr>
 
@@ -485,9 +493,17 @@
 							</div>
 						</div> --}}
 
+					
+					
+
+						{{#if userdone.bt}}
 						<button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
 							<a href="/checkout">Proceed to Checkout</a>
 						</button>
+						{{else}}
+						 <h6 class="text-danger">Please update the quantity</h6>
+						{{/if}}
+						
 					</div>
 				</div>
 			</div>

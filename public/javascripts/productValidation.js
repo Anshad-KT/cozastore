@@ -18,6 +18,8 @@ function productValidate() {
     // const subcategory = document.products.subcategory.value;
 
     const description = document.products.description.value;
+
+    const nameRegex =/^\s*([a-zA-Z]+\s*){1,3}$/
     
 
     const err = document.getElementById("error-message");
@@ -26,7 +28,11 @@ function productValidate() {
            
         return false;
     }
- 
+    if(nameRegex.test(title)==false){
+        err.innerHTML = 'Invalid title'
+        return false
+    }
+    
     if (title.length < 3) {
         err.innerHTML = 'title must be morethan 5';
         return false
