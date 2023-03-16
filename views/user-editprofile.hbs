@@ -305,10 +305,45 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
                                 </div>
 								{{/if}}
 								<div class="mt-5">
-									<a href="/address">saved addresses</a>
+									{{!-- <a href="/address">saved addresses</a> --}}
+									
 								</div>
+								
 				
             </div>
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Edit Saved Address</button>
+                                               
+												<div class="modal fade bd-example-modal-lg mt-5 " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  												<div class="modal-dialog modal-lg mt-5 p-5">
+   												<div class="modal-content mt-5 p-5">
+      											 {{!-- {{housename}},{{postalname}},{{pincode}},{{district}},{{state}} --}}
+												  <div class="row">
+												  {{#each allAddress.address}}
+												  
+												<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 ms-5 w-100 mb-5">
+           										  <div class="card">
+              
+             									  <div class="card-body">
+             									   <h5 class="card-title">{{@index}}</h5>
+             									   <p class="card-text">{{housename}},</p>
+             									   <p class="card-text">{{postalname}},</p> 
+												   <p class="card-text">{{pincode}}</p>  
+
+            									    <p class="card-text">{{district}},</p>
+													<p class="card-text">{{state}},</p>  
+													<p class="card-text">{{country}}</p>  
+               
+              										   <button class="btn btn-secondary mt-4"><a href="/addressparamsdelete/{{id}}">remove</a></button>
+             										  </div>
+           												 </div>
+       													 </div>
+		
+		{{/each}}
+		</div>
+    											</div>
+  												</div>
+												</div>
+												
         </div>
         {{!-- <div class="col-md-4">
             <div class="p-3 py-5">

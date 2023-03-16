@@ -32,6 +32,7 @@ router.get('/admin-cart/:id',admin.adminGetGetCartOrders)
 router.get('/admincart',admin.adminGetListOrderSpecific)
 router.get('/editproduct/:id',admin.adminGetEditProduct)
 router.get('/adminedit',admin.adminGetEdit)
+router.get('/admin-coupon',admin.adminGetAddCoupon)
 
 //Post home page
 
@@ -39,6 +40,9 @@ router.post('/adminlogin',admin.adminPostLogin)
 router.post('/upload',admin.adminPostUploadProduct)
 router.post('/brand',admin.adminPostAddBrand)
 router.post('/category',admin.adminPostAddCategory)
+router.post('/coupon',admin.adminPostAddCoupon)
+router.get('/deletecoupon/',admin.adminPostDisableCoupon)
+
 router.post('/subcategory',admin.adminPostAddSubCategory)
 router.post('/editProduct',admin.adminPostEditProduct)
 

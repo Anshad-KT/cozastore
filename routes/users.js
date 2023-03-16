@@ -37,7 +37,8 @@ router.get('/orders',userGet.userGetOrders);
 // router.get('/cartupload/:id',userGet.userGetCartParams);
 router.get('/deleteorder/',userGet.userGetDeleteOne);
 router.post('/verify-payment',userGet.userVerifyPayment);
- router.get('/wishlist',userGet.userGetWishlist);
+router.get('/wishlist',userGet.userGetWishlist);
+router.post('/applyhelo',userGet.userGetApplyCoupon);
 
 
 
@@ -56,7 +57,7 @@ router.post('/change-product-quantity',userGet.userPostChangeQuantity);
 router.post('/editaddress',userGet.userPostAddAddress);
 router.get('/address',userGet.userGetAddress);
 router.get('/addressparams/:id',userGet.userGetAddressParams);
-
+router.get('/addressparamsdelete/:id',userGet.userGetDeleteAddressParams);
 
 
 ///

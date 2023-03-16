@@ -7,8 +7,10 @@ const brand_details = require('../models/brandModel')
 const category_details = require('../models/categoryModel')
 const subcategory_details = require('../models/subcategoryModel')
 const order_details = require('../models/orderModel')
+const coupon_details = require('../models/couponModel')
 var mongoose = require('mongoose')
 const {v4 : uuidv4} = require('uuid')
+const sharp = require('sharp')
 
 let dbBrand;
 let dbSubcategory;
@@ -17,6 +19,7 @@ let adminSession
 let adminMsg
 let editId
 let temp
+let couponMsg
 // let adminGetLogin =
 
 let adminGetAllProducts =async function (req, res, next) {
@@ -241,9 +244,11 @@ let adminGetSetOrderStatus = async function (req, res, next) {
     if(statusName.status=="Delivered"){
       
       let statusChecking = await order_details.findOne({_id:statusName.id,"products.productIndex":statusName.productIndex})
-      console.log("kl10");
+    
       if(statusChecking.paymentType=="cash on delivery"){
+
         await order_details.updateOne({_id:statusName.id,"products.productIndex":statusName.productIndex},{$set:{"products.$.paymentId":pId}})
+      
       }
 
       let stockChanges = await order_details.findOne({_id:statusName.id,"products.productIndex":statusName.productIndex})
@@ -251,7 +256,7 @@ let adminGetSetOrderStatus = async function (req, res, next) {
       await product_details.updateOne({productIndex:statusName.productIndex},{$inc:{stock:"-"+stockChanges.products[0].quantity}})
     }
    
-    console.log("success");
+
  
     res.redirect('/orderstatus')
    }else{
@@ -369,6 +374,25 @@ let adminGetAddCategory = async function (req, res, next) {
   }
  
 }
+
+let adminGetAddCoupon = async function (req, res, next) {
+  try {
+    if(adminSession){
+       dbCoupon = await coupon_details.find()
+      // console.log("coupons$");
+  
+      res.render('admin-addcoupon',{dbCoupon,couponMsg});
+    }else{
+      res.redirect('/admin-login')
+    }
+    
+  } catch (error) {
+    console.log(error.message);
+  }
+ 
+}
+
+
 let adminGetAddBrand =async function (req, res, next) {
   
   try {
@@ -618,7 +642,9 @@ let adminPostUploadProduct = async function (req, res, next) {
   size1=req.body.size
   let colour1=[]
   colour1=req.body.colour
- 
+  
+
+
   let products = {
     title: req.body.title,
     price: req.body.price,
@@ -634,9 +660,10 @@ let adminPostUploadProduct = async function (req, res, next) {
   console.log("hii");
   console.log(req.body);
  
- 
+  
+  
 
- 
+
   
   function file(){
     let images=[];
@@ -696,6 +723,56 @@ let adminPostAddCategory =async function (req, res, next) {
        error.message
    }
 }
+
+let adminPostAddCoupon = async function (req, res, next) {
+  
+
+        if(adminSession){
+          let coupon = req.body
+          coupon.status=true
+          console.log(coupon);
+          let checkCoupon = await coupon_details.findOne({code:coupon.code})
+          console.log(checkCoupon);
+          if(checkCoupon==null){
+            await coupon_details.insertMany([coupon])
+          }else{
+            couponMsg="coupon already present"
+          }
+         
+          
+          res.json({status:true})
+        }else{
+          res.redirect('/admin')
+        }
+ 
+         
+  //  res.redirect('/admin-addcategory')
+
+  //  }else{
+  //    console.log("category already present");
+  //    res.redirect('/admin-addcategory')
+  //  }
+     
+      
+  
+}
+
+let adminPostDisableCoupon = async function (req, res, next) {
+  
+
+    if(adminSession){
+      let couponParam = req.query;
+      console.log(couponParam);
+      
+      await coupon_details.updateOne({code:couponParam.code},{$set:{status:couponParam.status}})
+
+    
+      res.redirect('/admin-coupon')
+    }else{
+      res.redirect('/admin')
+    }
+}
+
 let adminPostAddBrand =async function (req, res, next) {
   try {
 
@@ -771,6 +848,7 @@ let adminGetLogout = function (req, res, next) {
 
 
 module.exports = {
+
   adminGetDashboard,
   adminGetAddProducts,
   adminGetAllProducts,
@@ -798,7 +876,9 @@ module.exports = {
   adminGetListOrderSpecific,
   adminGetEditProduct,
   adminGetEdit,
-  adminPostEditProduct
-
+  adminPostEditProduct,
+  adminGetAddCoupon,
+  adminPostAddCoupon,
+  adminPostDisableCoupon
 }
 

@@ -15,6 +15,7 @@ const { v4: uuidv4 } = require('uuid')
 const Razorpay = require('razorpay');
 const { log } = require('console')
 const { search } = require('../routes')
+const coupon_details = require('../models/couponModel')
 let payReciept
 let orders;
 var instance = new Razorpay({
@@ -40,6 +41,8 @@ let size
 let uss
 let Id
 let editPassMsg
+let appliedCoupon
+
 //
 let didSIgnUp = false;
 let didLogin = false
@@ -112,8 +115,9 @@ let userGetEditProfile = async function (req, res, next) {
 
 
             ])
+            let allAddress = await address_details.findOne({ userId: userSession })
             console.log(selectedAddress);
-            res.render('user-editprofile', { name: userProfile.name, username: userProfile.username, phone: userProfile.phone, email: userProfile.email, editMsg, selectedAddress })
+            res.render('user-editprofile', { name: userProfile.name, username: userProfile.username, phone: userProfile.phone, email: userProfile.email, editMsg, selectedAddress,allAddress })
             editMsg = null
 
         } else {
@@ -247,7 +251,7 @@ let userGetCart = async function (req, res, next) {
                 userdone[i].product.dt = true
                 userdone.bt=true
             }else{
-                console.log(k+" "+u);
+               
                 userdone[i].product.dt = false
                 userdone.bt=false
                
@@ -257,10 +261,45 @@ let userGetCart = async function (req, res, next) {
 
 
         }
-     
+
+        if(appliedCoupon){
+           
+            if(appliedCoupon.discountType=="percentage"){
+                if(parseInt(amount)<parseInt(appliedCoupon.minPurchase)){
+                    console.log(`sorry you need to purchase for minimum ${appliedCoupon.minPurchase} for this product`);
+                    appliedCoupon.validity=false
+                }else{
+                    const deducted=(parseInt(amount)*parseInt(appliedCoupon.discountAmount))/100
+                    if(parseInt(deducted)>parseInt(appliedCoupon.maxDiscountAmount)){
+                        console.log(`sorry amount greater than ${appliedCoupon.maxDiscountAmount}`);
+                        appliedCoupon.validity=false
+                    }else{
+                        amount=parseInt(amount)-parseInt(deducted)
+                        console.log(amount);
+                        appliedCoupon.validity=true
+                    }
+                }
+              
+                
+            }else{
+                if(parseInt(amount)<parseInt(appliedCoupon.minPurchase)){
+                    console.log(`sorry you need to purchase for minimum ${appliedCoupon.minPurchase} for this product`);
+                    appliedCoupon.validity=false
+                }else{
+                    amount = parseInt(amount)-parseInt(appliedCoupon.discountAmount) 
+                    appliedCoupon.validity=true
+                } 
+            
+               
+            }
+
+        }
+        
+        let ghh = parseInt(amount)
+        
 
 
-        res.render('user-cart', { userdone, amount })
+        res.render('user-cart', { userdone, ghh, appliedCoupon })
      
        
 
@@ -394,6 +433,58 @@ let userGetAddressParams = async function (req, res, next) {
     }
 
 }
+let userGetDeleteAddressParams =  async function (req, res, next) {
+
+    if (userSession) {
+
+
+       let addressdltParams = req.params.id
+       await address_details.updateOne({ userId: userSession } , { $pull: { address: { id:addressdltParams } } })
+      
+        res.redirect('/editprofile')
+
+    } else {
+        res.redirect('/login')
+    }
+
+}
+
+let userGetApplyCoupon = async function (req, res, next) {
+
+console.log("hi");
+
+    if (userSession) {
+         
+        let appliCoupon = req.body
+        console.log(req.body);
+        const checkDate = await coupon_details.findOne({code:appliCoupon.coupon})
+        console.log(checkDate);
+        console.log("hii");
+        if(checkDate==null){
+            console.log("invalid coupon");
+            res.redirect('/cart')
+        }else{
+            let checkValidCoupon =()=>{
+                const date =new Date()
+                const formattedDate = date.toISOString().slice(0, 10);
+                if(formattedDate>checkDate.expiryDate){
+                    console.log("coupon expired");
+                }else{
+                    appliedCoupon=checkDate
+                    res.redirect('/cart')
+                }
+            }
+            checkValidCoupon()
+        }
+        
+       
+        
+
+    } else {
+        res.redirect('/login')
+    }
+
+}
 
 let userPostChangeQuantity = async function (req, res, next) {
 
@@ -409,7 +500,8 @@ let userPostChangeQuantity = async function (req, res, next) {
         console.log("quantity changed");
 
 
-        res.redirect('/cart')
+
+         res.redirect('/cart')
 
     } else {
         res.redirect('/login')
@@ -495,7 +587,6 @@ let userPostCartOperation = async function (req, res, next) {
 
             userCart.products = [{ productId: details, quantity: quantity, colour: colour, size: size }]
 
-
             cart_details.insertMany([userCart])
             console.log("cart inserted");
 
@@ -577,7 +668,17 @@ let userPostCheckoutBilling = async function (req, res, next) {
             totalCash = totalCash + userdone[i].total
         }
         //  console.log(totalCash);
+        if(appliedCoupon){
+            if(appliedCoupon.discountType=="percentage"){
+                const deducted=(parseInt(totalCash)*parseInt(appliedCoupon.dicountAmount))/100
+                totalCash=parseInt(totalCash)-parseInt(deducted)
+            }else{
+               totalCash = parseInt(totalCash)-parseInt(appliedCoupon.discountAmount) 
+            }
+
+        }
         orders.billAmount = totalCash;
+       
         orders.orderDate = new Date().toDateString()
 
         let h = new Date()
@@ -594,9 +695,9 @@ let userPostCheckoutBilling = async function (req, res, next) {
 
         orders.paymentType = req.body.checkout
         console.log(req.body.checkout);
-        if (orders.paymentType == "cash on delivery") {
+        // if (orders.paymentType == "cash on delivery") {
 
-        }
+        // }
         if (orders.paymentType == "Pay using razorpay") {
             payReciept = uuidv4()
 
@@ -629,6 +730,7 @@ let userPostCheckoutBilling = async function (req, res, next) {
 
 
         console.log("cart deleted");
+        appliedCoupon=null
 
 
     } else {
@@ -731,7 +833,7 @@ let userPostSearch = async function (req, res, next) {
         res.send({ payload: searchResults })
 
     } else {
-
+         
     }
 
 
@@ -1474,7 +1576,9 @@ module.exports = {
     userGetFilterPrice,
     userPostAddWishlist,
     userGetWishlist,
-    userPostDeleteWishlist
+    userPostDeleteWishlist,
+    userGetDeleteAddressParams,
+    userGetApplyCoupon
 }
 
 
