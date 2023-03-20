@@ -7,9 +7,16 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+var hbs= require('express-handlebars')
+const hb =hbs.create({})
+
 var app = express();
+app.engine('hbs',hbs.engine({extname:'hbs',defaultLayout:'layout',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}))
+
 var fileUpload = require('express-fileupload')
 var session = require('express-session')
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

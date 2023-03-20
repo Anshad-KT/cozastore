@@ -43,6 +43,9 @@ const couponSchema=new mongoose.Schema({
     status:{
         type: Boolean,
         required:true
+    },
+    usedUsers:{
+        type:Array,
     }
     
 })

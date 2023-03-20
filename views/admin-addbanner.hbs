@@ -40,41 +40,44 @@
                             <!-- ============================================================== -->
 
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
-                                <form action="/brand" method="post" role="form" enctype="multipart/form-data" onsubmit="return brandValidate()" name="brandform">
+                                <form action="/banner" method="post" role="form" enctype="multipart/form-data" onsubmit="return brandValidate()" name="brandform">
                                    
                                   
                                     {{!-- <div class="mb-3"> --}}
                                         <div class="row">
                                             <div class="col-12 col-md-6 col-lg-6 mt-3">
-                                                <label for="exampleFormControlSelect1">new brand</label>
-                                                <input id="price" type="text" class="form-control mb-4" name="brand"
-                                                    >
+                                                <label for="exampleFormControlSelect1">Title 1</label>
+                                                 <input id="price" type="text" class="form-control mb-4" name="category">
                                                     </div>
-                                                <div class="col-12 col-md-6 col-lg-6">
+                                                     <div class="col-12 col-md-6 col-lg-6 mt-3">
+                                                <label for="exampleFormControlSelect1">Title 2</label>
+                                                 <input id="price" type="text" class="form-control mb-4" name="product">
+                                                    </div>
+                                        </div>
+
+                                               
+                                           
+                                             <div class="row">
+                                           <div class="col-12 col-md-6 col-lg-6">
                                                 <label for="exampleFormControlSelect1">upload images</label>
                                                
-                                                        <input class="mt-5" type="file" name="image" id="image" multiple>
+                                                        <input class="mt-2" type="file" name="image" id="image" multiple>
                                                     </div>
-                                            
-                                            
+                                              
+                                            </div> 
 
 
-                                        {{!-- <div class="container">
-                                            <div class="row"> --}}
-                                                <div id="error" class="d-flex justify-content-center">
-                                                    <a href="" id="error"></a>
-                                                </div>
-                                            {{!-- </div>
-                                        </div> --}}
-                                        {{!-- <div class="container mt-5">
-                                            <div class="row"> --}}
-                                                <div class="d-flex">
+                                                
+                                           
+                                                <div class="d-flex mt-5">
                                                     <button type="submit" class="btn btn-dark text-right">
                                                         Upload details
                                                     </button>
                                                 </div>
-                                            {{!-- </div>
-                                        </div> --}}
+                                           <div id="error" class="d-flex justify-content-center">
+                                                    <a href="" id="error"></a>
+                                                </div>
+                                        
                                 </form>
                             </div>
                         </div>
@@ -95,28 +98,31 @@
                                                 <thead class="bg-light">
                                                     <tr class="border-0">
                                                         <th class="border-0">#</th>
-                                                        <th class="border-0">title</th>
+                                                        
                                                         <th class="border-0">image</th>
-                                                        <th class="border-0">date</th>
+                                                        
                                                         <th class="border-0">status</th>
                                                         <th class="border-0">Action</th>
                                                        
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {{#each dbBrand}}
+                                                    {{#each dbBanner}}
                                                     <tr>
-                                                        <td>1</td>
-                                                        
-                                                        <td>{{name}}</td>
-                                                        <td><img style="height: 50px;width: 50px;" src="product-images/brand/{{imageReference}}" alt=""></td>
-                                                        <td>{{date}}</td>
+  
+                                                        <td>{{@index}}</td>
+                                                        <td><img style="height: 50px;width: 50px;" src="product-images/banner/{{imageReference.[0]}}" alt=""></td>
+                                                      
                                                         <td>{{status}}</td>
 
                                                         {{#if status}}
-                                                        <td><a href="/deletebrand/?name={{name}}&status=false"><button class="btn btn-danger">disable</button></a></td>
+                                                        <td><a href="/disablebanner/?_id={{_id}}&status=false"><button class="btn btn-danger">disable</button></a></td>
+                                                        <br>
+                                                         <td><a href="/editbannerparam/?_id={{_id}}"><button class="btn btn-danger">Edit</button></a></td>
                                                         {{else}}
-                                                        <td><a href="/deletebrand/?name={{name}}&status=true"><button class="btn btn-success">enable</button></a></td>
+                                                        <td><a href="/disablebanner/?_id={{_id}}&status=true"><button class="btn btn-success">enable</button></a></td>
+                                                        <br>
+                                                         <td><a href="/editbannerparam/?_id={{_id}}"><button class="btn btn-danger">Edit</button></a></td>
                                                         {{/if}}
                                                         
                                                     </tr>

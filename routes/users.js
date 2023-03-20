@@ -25,25 +25,27 @@ router.get('/filter/',userGet.userGetFilter);
 router.get('/filterPrice/',userGet.userGetFilterPrice);
 router.get('/logout',userGet.userGetLogout);
 router.get('/deletecart/',userGet.userGetDeleteCart);
-router.post('/addtowishlist',userGet.userPostAddWishlist);
-router.post('/deletewishlist',userGet.userPostDeleteWishlist);
-
 router.get('/profile',userGet.userGetProfile);
 router.get('/editprofile',userGet.userGetEditProfile);
 router.get('/editpassword',userGet.userGetEditProfilePassword);
 router.get('/checkout',userGet.userGetCheckout);
 router.get('/cart',userGet.userGetCart);
 router.get('/orders',userGet.userGetOrders);
-// router.get('/cartupload/:id',userGet.userGetCartParams);
+router.get('/address',userGet.userGetAddress);
+router.get('/addressparams/:id',userGet.userGetAddressParams);
+router.get('/addressparamsdelete/:id',userGet.userGetDeleteAddressParams);
 router.get('/deleteorder/',userGet.userGetDeleteOne);
-router.post('/verify-payment',userGet.userVerifyPayment);
 router.get('/wishlist',userGet.userGetWishlist);
-router.post('/applyhelo',userGet.userGetApplyCoupon);
+router.get('/orders-list',userGet.userGetOrdersList);
+router.get('/user-orderparam/:id',userGet.userGetOrderParam);
+
+
 
 
 
 //postRequests
-
+router.post('/applyhelo',userGet.userGetApplyCoupon);
+router.post('/verify-payment',userGet.userVerifyPayment);
 router.post('/logincheck',userPost.userPostLogin);
 router.post('/search',userPost.userPostSearch);
 router.post('/signupcheck',userPost.userPostSignup);
@@ -55,12 +57,12 @@ router.post('/cartProducts',userPost.userPostCartOperation);
 router.post('/checkoutbilling',userGet.userPostCheckoutBilling);
 router.post('/change-product-quantity',userGet.userPostChangeQuantity);
 router.post('/editaddress',userGet.userPostAddAddress);
-router.get('/address',userGet.userGetAddress);
-router.get('/addressparams/:id',userGet.userGetAddressParams);
-router.get('/addressparamsdelete/:id',userGet.userGetDeleteAddressParams);
+router.post('/addtowishlist',userGet.userPostAddWishlist);
+router.post('/deletewishlist',userGet.userPostDeleteWishlist);
 
 
-///
+
+
 
 
 module.exports = router;

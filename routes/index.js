@@ -32,7 +32,13 @@ router.get('/admin-cart/:id',admin.adminGetGetCartOrders)
 router.get('/admincart',admin.adminGetListOrderSpecific)
 router.get('/editproduct/:id',admin.adminGetEditProduct)
 router.get('/adminedit',admin.adminGetEdit)
+router.get('/admin-banner',admin.adminGetBanner)
 router.get('/admin-coupon',admin.adminGetAddCoupon)
+router.get('/editbannerparam/',admin.adminGetParam)
+router.get('/editbanner',admin.adminGetEditBanner)
+router.get('/deletecoupon/',admin.adminPostDisableCoupon)
+router.get('/admin-sales',admin.adminGetSalesReport)
+router.get('/sales/:id',admin.adminGetSalesReportParams)
 
 //Post home page
 
@@ -41,10 +47,14 @@ router.post('/upload',admin.adminPostUploadProduct)
 router.post('/brand',admin.adminPostAddBrand)
 router.post('/category',admin.adminPostAddCategory)
 router.post('/coupon',admin.adminPostAddCoupon)
-router.get('/deletecoupon/',admin.adminPostDisableCoupon)
+
 
 router.post('/subcategory',admin.adminPostAddSubCategory)
 router.post('/editProduct',admin.adminPostEditProduct)
+router.post('/banner',admin.adminPostAddBanner)
+
+router.post('/editbannerpost',admin.adminPostEditBanner)
+
 
 
 module.exports = router;

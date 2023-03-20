@@ -1,0 +1,103 @@
+{{>admin-header}}
+<div class="dashboard-wrapper">
+  
+        <div class="container-fluid dashboard-content ">
+            <!-- ============================================================== -->
+            <!-- pageheader  -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="page-header">
+                        <h2 class="pageheader-title">E-commerce Dashboard Template </h2>
+                        <p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus
+                            vel mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
+                        <div class="page-breadcrumb">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">E-Commerce Dashboard
+                                        Template</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- end pageheader  -->
+            <!-- ============================================================== -->
+
+            <div class="ecommerce-widget">
+
+
+                <div class="row">
+                    <!-- ============================================================== -->
+
+                    <!-- ============================================================== -->
+
+                    <!-- recent orders  -->
+                    <!-- ============================================================== -->
+
+                    <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
+                        <form action="/editbannerpost" method="post" role="form" enctype="multipart/form-data"
+                            onsubmit="return brandValidate()" name="brandform">
+
+
+                              {{#each bannerEdit}}
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-6 mt-3">
+                                        <label for="exampleFormControlSelect1">Title 1</label>
+                                        <input id="price" value="{{product}}" type="text" class="form-control mb-4" name="category">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mt-3">
+                                        <label for="exampleFormControlSelect1">Title 2</label>
+                                        <input id="price" value="{{category}}" type="text" class="form-control mb-4" name="product">
+                                    </div>
+                                </div>
+                                <input type = "hidden" name = "hid" value = "{{_id}}">
+                                {{/each}}
+
+
+
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">upload images</label>
+
+                                        <input class="mt-2" type="file" name="image" id="image">
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <div class="d-flex mt-5">
+                                    <button type="submit" class="btn btn-dark text-right">
+                                        Upload details
+                                    </button>
+                                </div>
+                                <div id="error" class="d-flex justify-content-center">
+                                    <a href="" id="error"></a>
+                                </div>
+
+                        </form>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+
+
+        </div>
+
+</div>    
+    <!-- jquery 3.3.1 -->
+
+
+
+    </body>
+
+    </html>

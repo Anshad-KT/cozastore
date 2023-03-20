@@ -143,8 +143,8 @@
 
 
 	<!-- breadcrumb -->
-	<div class="container">
-		<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+	<div class="container mt-5">
+		<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg ">
 			<a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
 				Home
 				<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
@@ -167,47 +167,30 @@
 							<table class="table-shopping-cart">
 								<tr class="table_head">
                                     <th class="column-1">Index</th>
-									<th class="column-2">Product</th>
-									<th class="column-3">Title</th>
-									<th class="column-4">Price</th>
-									<th class="column-5">Quantity</th>
+									<th class="column-2">Ordered Date</th>
+									<th class="column-3">Total</th>
+									<th class="column-3">Payment Method</th>
 									
+									<th class="column-6">Delivery Address</th>
                                     <th class="column-6">Delivery date</th>
-                                    <th class="column-7">order status</th>
+                                
                                     <th class="column-8">Action</th>
 								</tr>
-                                    {{#each resp}}
+                                    {{#each checkOrder}}
                                                     <tr>
                                                         <td class="column-1">{{@index}}</td>
-                                                        <td class="column-2"><img style="width: 100px;height: 130px;" src="product-images/products/{{products.imageReference.[0]}}.jpg" alt=""></td>
-                                                        <td class="column-3">{{products.title}}</td>
-                                                        <td class="column-4">{{products.price}}</td>
-                                                        <td class="column-5">{{products.quantity}}</td>
-                                                        <td class="column-6">{{deliveryDate}}</td>
-                                                        <td class="column-7">{{products.status}}</td>
-                                                         {{!-- {{#if status}}
-                                                        <td><span class="badge-dot badge-success mr-1"></span>Delivered</td>
-
-                                                         {{else}} --}}
-                                                         {{!-- <td>{{deliveryAddress.housename}},{{deliveryAddress.postalName}},{{deliveryAddress.pincode}},{{deliveryAddress.district}},{{deliveryAddress.state}},{{deliveryAddress.country}}</td> --}}
-                               
-          
-                                                         {{!-- {{/if}} --}}
-                                                         {{#if products.red}}
-
-                                                         <td>Order Deleted</td>
-                                                       
-                                                           {{/if}}
-                                                            {{#if products.green}}
-
-                                                            <td>Order Delivered</td>
-                                                             {{/if}}
-                                                             {{#if products.yellow}}
-
-                                                             <td><button class="btn btn-danger"><a href="/deleteorder/?productIndex={{products.productIndex}}&orderId={{products.userId}}">cancel</a></button>
-
-                                                            
-                                                             {{/if}}
+                                                        <td class="column-3">{{orderDate}}</td>
+                                                        <td class="column-3">{{billAmount}}</td>
+                                                        <td class="column-5">{{paymentType}}</td>
+                                                        
+                                                        <td class="column-6">{{deliveryAddress.houseName}},<br>{{deliveryAddress.postalName}},<br>{{deliveryAddress.pincode}},<br>{{deliveryAddress.district}},<br>{{deliveryAddress.state}},<br>{{deliveryAddress.country}},<br></td>
+                                                        <td class="column-7">{{deliveryDate}}</td>
+                                                        <td class="column-8">
+                                                        <button class="btn btn-dark" type="button">
+                                                         <a href="/user-orderparam/{{_id}}">Details</a>
+                                                        </button>
+                                                        </td>
+                                                         
                                                              
                                                        
                                                            
@@ -222,13 +205,13 @@
 
 						<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
 							<div class="flex-w flex-m m-r-20 m-tb-5">
-								
+						
 									
 								
 							</div>
 
 							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-								{{total}}
+									<h6>Total payable price</h6>	{{total}}
 							</div>
 						</div>
 					</div>

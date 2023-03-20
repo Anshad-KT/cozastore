@@ -22,10 +22,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="text-right mb-5 me-5">
+                    <div class="dropdown show">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown link
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="/sales/day">Current day</a>
+                            <a class="dropdown-item" href="/sales/month">Current month</a>
+                            <a class="dropdown-item" href="/sales/lifetime">Lifetime</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- ============================================================== -->
             <!-- end pageheader  -->
             <!-- ============================================================== -->
+
+
             <div class="ecommerce-widget">
 
 
@@ -36,9 +52,10 @@
 
                     <!-- recent orders  -->
                     <!-- ============================================================== -->
+
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card">
-                            <h5 class="card-header">Recent Orders</h5>
+                            <h5 class="card-header">Sales Report</h5>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <div class="table-responsive">
@@ -47,20 +64,24 @@
                                                 <tr class="border-0">
                                                     <th class="border-0">#</th>
                                                     <th class="border-0">Image</th>
-                                                    <th class="border-0">title</th>
-                                                    <th class="border-0">productIndex</th>
+                                                    <th class="border-0">Title</th>
+                                                    <th class="border-0">ProductIndex</th>
+
+                                                    <th class="border-0">Quantity</th>
 
                                                     <th class="border-0">ordered user</th>
 
-                                                    <th class="border-0">Order status</th>
+                                                    <th class="border-0">Coupon</th>
+
+                                                    <th class="border-0">Coupon Discount</th>
 
                                                     <th class="border-0">Payment Id</th>
 
-                                                    <th class="border-0">Action</th>
+                                                    <th class="border-0">Total</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {{#each resp}}
+                                                {{#each salesReport}}
                                                 <tr>
                                                     <td>{{@index}}</td>
                                                     <td><img src="product-images/products/{{products.imageReference.[0]}}.jpg"
@@ -68,60 +89,14 @@
                                                     <td>{{products.title}}</td>
                                                     <td>{{products.productIndex}}</td>
                                                     <td>{{orderedUser}}</td>
-                                                    {{!-- {{#if status}}
-                                                    <td><span class="badge-dot badge-success mr-1"></span>Delivered</td>
-
-                                                    {{else}} --}}
-
-                                                    {{#if yellow}}
-                                                    <td><span class="badge-dot badge-warning mr-1"></span>Pending</td>
 
 
-                                                    {{/if}}
-                                                    {{#if green}}
-                                                    <td><span class="badge-dot badge-success mr-1"></span>Delivered
-                                                    </td>
 
 
-                                                    {{/if}}
-                                                    {{#if red}}
-                                                    <td><span class="badge-dot badge-danger mr-1"></span>Cancelled </td>
-
-                                                    {{/if}}
-
-                                                    {{#if products.paymentId}}
                                                     <td>{{products.paymentId}}</td>
+                                                    <th class="border-0">{{billAmount}}</th>
 
 
-                                                    {{else}}
-                                                    <td>Payment not completed</td>
-                                                    {{/if}}
-
-                                                    {{#if red}}
-                                                    <td>None</td>
-                                                    {{else if green}}
-                                                    <td>None</td>
-                                                    {{else}}
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-dark dropdown-toggle" type="button"
-                                                                id="dropdownMenuButton" data-toggle="dropdown"
-                                                                aria-haspopup="true" aria-expanded="false">
-                                                                status
-                                                            </button>
-                                                            <div class="dropdown-menu"
-                                                                aria-labelledby="dropdownMenuButton">
-
-                                                                <a class="dropdown-item" onclick="swtfn()"
-                                                                    href="/status/?id={{_id}}&status=Pending&productIndex={{products.productIndex}}">Pending</a>
-                                                                <a class="dropdown-item"
-                                                                    href="/status/?id={{_id}}&status=Delivered&productIndex={{products.productIndex}}">Delivered</a>
-                                                                <a class="dropdown-item"
-                                                                    href="/status/?id={{_id}}&status=Cancelled&productIndex={{products.productIndex}}">Cancelled</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    {{/if}}
 
                                                 </tr>
                                                 {{/each}}

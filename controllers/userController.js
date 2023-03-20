@@ -1,6 +1,9 @@
 let otp = require('../helpers/otp')
 const Promise = require('promise')
-
+let ghh
+let couponErrorMsg
+var mongoose = require('mongoose')
+let userOrderParam
 const bcrypt = require('bcrypt')
 let user_details = require('../models/userModel')
 let product_details = require('../models/productModel')
@@ -10,12 +13,14 @@ const order_details = require('../models/orderModel')
 const { ExecutionContextContextImpl } = require('twilio/lib/rest/studio/v1/flow/execution/executionContext')
 const { reject } = require('promise')
 const address_details = require('../models/addressModel')
-const { default: mongoose } = require('mongoose')
+const banner_details = require('../models/bannerModel')
+
 const { v4: uuidv4 } = require('uuid')
 const Razorpay = require('razorpay');
 const { log } = require('console')
 const { search } = require('../routes')
 const coupon_details = require('../models/couponModel')
+
 let payReciept
 let orders;
 var instance = new Razorpay({
@@ -24,8 +29,7 @@ var instance = new Razorpay({
 });
 /////
 
-//msgs to display to hbs
-
+// let req.session.appliedCoupon
 let loginMsg
 let SignupMsg;
 let otpMsg
@@ -41,12 +45,12 @@ let size
 let uss
 let Id
 let editPassMsg
-let appliedCoupon
+// let req.session.appliedCoupon
 
-//
+
 let didSIgnUp = false;
 let didLogin = false
-//
+
 let userOtpname
 
 
@@ -60,16 +64,13 @@ let details;
 let userdone
 let addressParams
 
-// const MessagingResponce = require('../helpers/otp')
 
-
-////
 
 let userGetProfile = async function (req, res, next) {
     try {
 
         if (userSession) {
-            let userProfile = await user_details.findOne({ username: userSession })
+            let userProfile = await user_details.findOne({ username: userSession }).lean()
 
             let prode = await order_details.aggregate([
                 {
@@ -96,7 +97,7 @@ let userGetEditProfile = async function (req, res, next) {
     try {
         if (userSession) {
 
-            let userProfile = await user_details.findOne({ username: userSession })
+            let userProfile = await user_details.findOne({ username: userSession }).lean()
             let selectedAddress = await address_details.aggregate([
 
                 {
@@ -115,7 +116,7 @@ let userGetEditProfile = async function (req, res, next) {
 
 
             ])
-            let allAddress = await address_details.findOne({ userId: userSession })
+            let allAddress = await address_details.findOne({ userId: userSession }).lean()
             console.log(selectedAddress);
             res.render('user-editprofile', { name: userProfile.name, username: userProfile.username, phone: userProfile.phone, email: userProfile.email, editMsg, selectedAddress,allAddress })
             editMsg = null
@@ -141,13 +142,10 @@ let userGetEditProfilePassword = function (req, res, next) {
 
 let userGetCheckout = async function (req, res, next) {
     if (userSession) {
-        let userProfile = await user_details.findOne({ username: userSession })
+        let userProfile = await user_details.findOne({ username: userSession }).lean()
         console.log(userdone);
         let totalAmount = 0
-        for (var i = 0; i < userdone.length; i++) {
-            totalAmount = userdone[i].total + totalAmount
-        }
-        console.log(totalAmount);
+       
         let length = userdone.length
         let selectedAddress = await address_details.aggregate([
             {
@@ -164,7 +162,7 @@ let userGetCheckout = async function (req, res, next) {
         console.log("checkout");
         console.log(selectedAddress);
 
-        res.render('user-checkout', { name: userProfile.name, username: userProfile.username, phone: userProfile.phone, email: userProfile.email, selectedAddress, userdone, totalAmount })
+        res.render('user-checkout', { name: userProfile.name, username: userProfile.username, phone: userProfile.phone, email: userProfile.email, selectedAddress, userdone, ghh })
 
     } else {
         res.redirect('/login')
@@ -218,10 +216,6 @@ let userGetCart = async function (req, res, next) {
 
         for (var i = 0; i < userdone.length; i++) {
             userdone[i].total = parseInt(userdone[i].quantity) * parseInt(userdone[i].product.price);
-
-            // console.log(userdone[0].product);
-
-
         }
         let amount = 0;
         for (var i = 0; i < userdone.length; i++) {
@@ -262,45 +256,58 @@ let userGetCart = async function (req, res, next) {
 
         }
 
-        if(appliedCoupon){
-           
-            if(appliedCoupon.discountType=="percentage"){
-                if(parseInt(amount)<parseInt(appliedCoupon.minPurchase)){
-                    console.log(`sorry you need to purchase for minimum ${appliedCoupon.minPurchase} for this product`);
-                    appliedCoupon.validity=false
+        if(req.session.appliedCoupon){
+            
+           let repeatCheck = await coupon_details.findOne({code:req.session.appliedCoupon.code,usedUsers:{$eq:userSession}})
+           if(repeatCheck==null){
+            if(req.session.appliedCoupon.discountType=="percentage"){
+                if(parseInt(amount)<parseInt(req.session.appliedCoupon.minPurchase)){
+                    console.log(`sorry you need to purchase for minimum ${req.session.appliedCoupon.minPurchase} for this product`);
+                    couponErrorMsg=`sorry you need to purchase for minimum ${req.session.appliedCoupon.minPurchase} for this product`
+                    req.session.appliedCoupon.validity=false
                 }else{
-                    const deducted=(parseInt(amount)*parseInt(appliedCoupon.discountAmount))/100
-                    if(parseInt(deducted)>parseInt(appliedCoupon.maxDiscountAmount)){
-                        console.log(`sorry amount greater than ${appliedCoupon.maxDiscountAmount}`);
-                        appliedCoupon.validity=false
+                    const deducted=(parseInt(amount)*parseInt(req.session.appliedCoupon.discountAmount))/100
+                    if(parseInt(deducted)>parseInt(req.session.appliedCoupon.maxDiscountAmount)){
+                        console.log(`sorry amount greater than ${req.session.appliedCoupon.maxDiscountAmount}`);
+                        couponErrorMsg=`sorry amount greater than ${req.session.appliedCoupon.maxDiscountAmount}`
+                        req.session.appliedCoupon.validity=false
                     }else{
                         amount=parseInt(amount)-parseInt(deducted)
-                        console.log(amount);
-                        appliedCoupon.validity=true
+                       
+                        req.session.appliedCoupon.validity=true
                     }
                 }
               
                 
             }else{
-                if(parseInt(amount)<parseInt(appliedCoupon.minPurchase)){
-                    console.log(`sorry you need to purchase for minimum ${appliedCoupon.minPurchase} for this product`);
-                    appliedCoupon.validity=false
+                if(parseInt(amount)<parseInt(req.session.appliedCoupon.minPurchase)){
+                    console.log(`sorry you need to purchase for minimum ${req.session.appliedCoupon.minPurchase} for this product`);
+                    couponErrorMsg=`sorry you need to purchase for minimum ${req.session.appliedCoupon.minPurchase} for this product`
+                    req.session.appliedCoupon.validity=false
                 }else{
-                    amount = parseInt(amount)-parseInt(appliedCoupon.discountAmount) 
-                    appliedCoupon.validity=true
+                    amount = parseInt(amount)-parseInt(req.session.appliedCoupon.discountAmount) 
+                    req.session.appliedCoupon.validity=true
                 } 
             
                
             }
+           }else{
 
+            couponErrorMsg=`this coupon is already used`
+           
+        }
+
+            
         }
         
-        let ghh = parseInt(amount)
+         ghh = parseInt(amount)
+        
+        let appliedCoupon = req.session.appliedCoupon
         
 
-
-        res.render('user-cart', { userdone, ghh, appliedCoupon })
-     
+        res.render('user-cart', { userdone, ghh, appliedCoupon ,couponErrorMsg})
+        
+         appliedCoupon = null
        
 
     } else {
@@ -311,19 +318,180 @@ let userGetCart = async function (req, res, next) {
 
 
 }
-let userGetOrders = async function (req, res, next) {
-    if (userSession) {
-        let orders = await order_details.findOne({ orderedUser: userSession })
 
-        // console.log(orders);
+let userPostCheckoutBilling = async function (req, res, next) {
+
+    // try {
+    console.log("test", req.body);
+
+    if (userSession) {
+
+        let billingDetails = req.body
+
+       let userdone1 = await cart_details.aggregate(
+
+
+            [
+                {
+                    $match: { userId: uss }
+                },
+                {
+                    $unwind: '$products'
+                },
+                {
+                    $project: {
+
+                        productId: "$products.productId",
+                        quantity: "$products.quantity",
+                        size: "$products.size",
+                        colour: "$products.colour"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'product_details',
+                        localField: 'productId',
+                        foreignField: 'productIndex',
+                        as: 'product'
+                    }
+                },
+                {
+                    $project: {
+                        productId: 1, quantity: 1, size: 1, colour: 1, product: { $arrayElemAt: ['$product', 0] }
+                    }
+                }
+
+            ])
+            console.log(userdone1);
+
+        // userCart.products=[{productId:details,quantity:quantity,colour:colour,size:size}]
+        orders = { products: [] }
+        orders.orderedUser = req.body.username
+        orders.deliveryAddress = { houseName: billingDetails.housename, postalName: billingDetails.postalname, pincode: billingDetails.pincode, district: billingDetails.district, state: billingDetails.state, country: billingDetails.country }
+        //need to add total amount
+        let totalCash = 0;
+        for (var i = 0; i < userdone1.length; i++) {
+            userdone1[i].total = parseInt(userdone1[i].quantity) * parseInt(userdone1[i].product.price);
+        }
+        for (var i = 0; i < userdone1.length; i++) {
+            totalCash = parseInt(totalCash) + parseInt(userdone1[i].total)
+            console.log(userdone1[i].total);
+        }
+          
+        if(req.session.appliedCoupon){
+            if(req.session.appliedCoupon.discountType=="percentage"){
+                const deducted=(parseInt(totalCash)*parseInt(req.session.appliedCoupon.discountAmount))/100
+                totalCash=parseInt(totalCash)
+                orders.couponDiscount = parseInt(deducted)
+                totalCash=parseInt(totalCash)-parseInt(deducted)
+            }else{
+               parseInt(totalCash) = parseInt(totalCash)-parseInt(req.session.appliedCoupon.discountAmount) 
+            }
+
+        }
+        console.log(totalCash);
+        orders.billAmount=0
+        orders.billAmount= parseInt(totalCash);
+        console.log(orders.billAmount);
+        
+       
+        orders.orderDate = new Date().toDateString().slice(4);
+
+        let h = new Date()
+        orders.deliveryDate = new Date(h.setDate(h.getDate() + 7)).toDateString().slice(4);
+
+        for (var i = 0; i < userdone1.length; i++) {
+            orders.products[i] = userdone1[i].product
+            orders.products[i].quantity = userdone1[i].quantity
+            orders.products[i].price = userdone1[i].total
+            orders.products[i].status = "Pending"
+
+        }
+        
+
+
+        orders.paymentType = req.body.checkout
+        if(req.session.appliedCoupon){
+            orders.couponId = req.session.appliedCoupon.code 
+            
+             
+            req.session.appliedCoupon=null;
+        }
+
+        console.log(req.body.checkout);
+
+        if (orders.paymentType == "Pay using razorpay") {
+            payReciept = uuidv4()
+
+
+            var options = {
+
+                amount: totalCash * 100,  
+                currency: "INR",
+                receipt: payReciept
+
+            };
+            instance.orders.create(options, function (err, order) {
+                console.log(order);
+
+                res.json(order)
+            })
+
+
+        } else {
+
+            await order_details.insertMany([orders])
+
+
+            await cart_details.deleteOne({ userId: uss })
+
+            await coupon_details.updateOne({code:orders.couponId},{$push:{usedUsers:userSession}}) 
+            console.log("hi");
+            res.json({ COD: true })
+
+           
+
+        }
+
+
+
+        console.log("cart deleted");
+    
+
+
+    } else {
+
+
+
+    }
+
+    // } catch (error) {
+    //     console.log(error.message);
+    // }
+
+
+
+}
+
+
+let userGetOrders = async function (req, res, next) {
+   
+    if (userSession) {
+        let orders = await order_details.findOne({ orderedUser: userSession }).lean()
+
+        console.log(userOrderParam);
         let resp = await order_details.aggregate([
+            
             {
-                $match: { orderedUser: userSession }
+                $match: { _id: userOrderParam }
             },
+            
             {
                 $unwind: '$products'
             }
         ])
+
+        console.log(resp);
 
         for (var i = 0; i < resp.length; i++) {
             if (resp[i].products.status == "Cancelled") {
@@ -457,9 +625,9 @@ console.log("hi");
          
         let appliCoupon = req.body
         console.log(req.body);
-        const checkDate = await coupon_details.findOne({code:appliCoupon.coupon})
+        const checkDate = await coupon_details.findOne({code:appliCoupon.coupon}).lean()
         console.log(checkDate);
-        console.log("hii");
+      
         if(checkDate==null){
             console.log("invalid coupon");
             res.redirect('/cart')
@@ -470,7 +638,8 @@ console.log("hi");
                 if(formattedDate>checkDate.expiryDate){
                     console.log("coupon expired");
                 }else{
-                    appliedCoupon=checkDate
+                    req.session.appliedCoupon=checkDate
+                    
                     res.redirect('/cart')
                 }
             }
@@ -486,10 +655,52 @@ console.log("hi");
 
 }
 
+let userGetOrdersList = async function (req, res, next) {
+
+    console.log("hi");
+    
+        if (userSession) {
+             
+            
+            const checkOrder = await order_details.find({orderedUser:userSession}).lean()
+           
+            
+            res.render('user-orderlist',{checkOrder})
+            
+           
+            
+    
+        } else {
+            res.redirect('/login')
+        }
+    
+    }
+
+let userGetOrderParam = async function (req, res, next) {
+
+   
+    
+        if (userSession) {
+             
+            
+            userOrderParam=mongoose.Types.ObjectId(req.params.id)
+            console.log(userOrderParam);
+            res.redirect('/orders')
+            
+           
+            
+    
+        } else {
+            res.redirect('/login')
+        }
+    
+    }
+
 let userPostChangeQuantity = async function (req, res, next) {
 
     if (userSession) {
-        console.log(req.body);
+        const cart =req.body.cart
+        const productId=req.body.product
         let k = req.body.count
         let count = parseInt(k)
         await cart_details.updateOne({ _id: req.body.cart, "products.productId": req.body.product },
@@ -497,11 +708,14 @@ let userPostChangeQuantity = async function (req, res, next) {
                 $inc: { 'products.$.quantity': count }
             })
 
-        console.log("quantity changed");
-
-
-
-         res.redirect('/cart')
+         console.log("quantity changed");
+        
+         let cartQuantity = await cart_details.findOne({ _id: req.body.cart, "products.productId": req.body.product })
+        //  console.log(cartQuantity.products[0].quantity);
+       
+         const frontQuantity =cartQuantity.products[0].quantity
+                  
+         res.json({quantity:frontQuantity,cart:cart,productId:productId})
 
     } else {
         res.redirect('/login')
@@ -526,7 +740,7 @@ let userPostAddAddress = async function (req, res, next) {
 
         console.log(newAddress.address.id);
 
-        let checkAddress = await address_details.findOne({ userId: userSession })
+        let checkAddress = await address_details.findOne({ userId: userSession }).lean()
         if (checkAddress == null) {
             await address_details.insertMany([newAddress])
             console.log("address inserted");
@@ -575,11 +789,11 @@ let userPostCartOperation = async function (req, res, next) {
 
         //store the user id to cart database
         let userCart = {}
-        Id = await user_details.findOne({ username: userSession })
+        Id = await user_details.findOne({ username: userSession }).lean()
         console.log(Id);
         uss = Id._id.toString()
 
-        let checkDb = await cart_details.findOne({ userId: Id._id })
+        let checkDb = await cart_details.findOne({ userId: Id._id }).lean()
 
         if (checkDb == null) {
 
@@ -596,7 +810,7 @@ let userPostCartOperation = async function (req, res, next) {
 
 
             userCart.productId = [{ productId: details }]
-            let eval = await cart_details.findOne({ userId: Id._id })
+            let eval = await cart_details.findOne({ userId: Id._id }).lean()
             console.log("hi");
             let cj=0;
             if(eval.products.length==0){
@@ -649,103 +863,6 @@ let userPostCartOperation = async function (req, res, next) {
 
 }
 
-let userPostCheckoutBilling = async function (req, res, next) {
-
-    // try {
-    console.log("test", req.body);
-
-    if (userSession) {
-
-        let billingDetails = req.body
-
-        // userCart.products=[{productId:details,quantity:quantity,colour:colour,size:size}]
-        orders = { products: [] }
-        orders.orderedUser = req.body.username
-        orders.deliveryAddress = { houseName: billingDetails.housename, postalName: billingDetails.postalname, pincode: billingDetails.pincode, district: billingDetails.district, state: billingDetails.state, country: billingDetails.country }
-        //need to add total amount
-        let totalCash = 0;
-        for (var i = 0; i < userdone.length; i++) {
-            totalCash = totalCash + userdone[i].total
-        }
-        //  console.log(totalCash);
-        if(appliedCoupon){
-            if(appliedCoupon.discountType=="percentage"){
-                const deducted=(parseInt(totalCash)*parseInt(appliedCoupon.dicountAmount))/100
-                totalCash=parseInt(totalCash)-parseInt(deducted)
-            }else{
-               totalCash = parseInt(totalCash)-parseInt(appliedCoupon.discountAmount) 
-            }
-
-        }
-        orders.billAmount = totalCash;
-       
-        orders.orderDate = new Date().toDateString()
-
-        let h = new Date()
-        orders.deliveryDate = new Date(h.setDate(h.getDate() + 7)).toDateString()
-
-        for (var i = 0; i < userdone.length; i++) {
-            orders.products[i] = userdone[i].product
-            orders.products[i].quantity = userdone[i].quantity
-            orders.products[i].price = userdone[i].total
-            orders.products[i].status = "Pending"
-
-        }
-
-
-        orders.paymentType = req.body.checkout
-        console.log(req.body.checkout);
-        // if (orders.paymentType == "cash on delivery") {
-
-        // }
-        if (orders.paymentType == "Pay using razorpay") {
-            payReciept = uuidv4()
-
-
-            var options = {
-
-                amount: totalCash * 100,  // amount in the smallest currency unit
-                currency: "INR",
-                receipt: payReciept
-
-            };
-            instance.orders.create(options, function (err, order) {
-                console.log(order);
-
-                res.json(order)
-            })
-
-
-        } else {
-
-            await order_details.insertMany([orders])
-
-
-            await cart_details.deleteOne({ userId: uss })
-
-            res.json({ COD: true })
-
-        }
-
-
-
-        console.log("cart deleted");
-        appliedCoupon=null
-
-
-    } else {
-
-
-
-    }
-
-    // } catch (error) {
-    //     console.log(error.message);
-    // }
-
-
-
-}
 
 
 
@@ -753,7 +870,7 @@ let userPostEditPassword = async function (req, res, next) {
     if (userSession) {
 
         let passwordUpdation = req.body
-        let pass = await user_details.findOne({ username: userSession })
+        let pass = await user_details.findOne({ username: userSession }).lean()
         let result = await bcrypt.compare(passwordUpdation.previouspassword, pass.password)
         if (result) {
             passwordUpdation.newpassword = await bcrypt.hash(passwordUpdation.newpassword, 10)
@@ -795,6 +912,7 @@ let userVerifyPayment = async function (req, res, next) {
                 orders.products[i].paymentId = req.body['payment[razorpay_payment_id]']
             }
             console.log("done");
+            console.log(orders);
             await order_details.insertMany([orders])
             await cart_details.deleteOne({ userId: uss })
             
@@ -848,10 +966,10 @@ let userPostEditProfile = async function (req, res, next) {
         let userUpdates = req.body
 
 
-        let check = await user_details.findOne({ username: userUpdates.username })
+        let check = await user_details.findOne({ username: userUpdates.username }).lean()
 
         if (check == null) {
-            let checkPhone = await user_details.findOne({ phone: userUpdates.phone })
+            let checkPhone = await user_details.findOne({ phone: userUpdates.phone }).lean()
             if (checkPhone == null) {
                 console.log(userSession);
 
@@ -956,7 +1074,7 @@ let userGetDetails = async function (req, res, next) {
     try {
         if (userSession) {
             console.log(details + "this is the detailsssssssss");
-            let value = await product_details.find({ productIndex: details })
+            let value = await product_details.find({ productIndex: details }).lean()
 
             let j = value[0].imageReference
             console.log(j);
@@ -965,7 +1083,7 @@ let userGetDetails = async function (req, res, next) {
             console.log(details);
 
             
-            let checkW = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+            let checkW = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
             let checkWish;
             if(checkW==null){
                 checkWish=true
@@ -1006,9 +1124,10 @@ let userGetOtp = function (req, res, next) {
 
 let userGetHome = async function (req, res, next) {
     if (userSession) {
-        let products = await product_details.find()
+        let products = await product_details.find().lean()
+        let banners = await banner_details.find().lean()
 
-        res.render('user-home', { products });
+        res.render('user-home', { products , banners});
     } else {
         res.redirect('/login')
     }
@@ -1025,12 +1144,12 @@ let userGetProducts = async function (req, res, next) {
 
     if (userSession) {
 
-        let categories = await category_details.find({ status: true })
+        let categories = await category_details.find({ status: true }).lean()
 
         if (categoryRequested == "All Products" || categoryRequested == null) {
 
             if (captured == null && capturedFilter == null) {
-                let products = await product_details.find({ status: true })
+                let products = await product_details.find({ status: true }).lean()
                 res.render('user-products', { products, categories });
 
                 console.log("gate1");
@@ -1041,10 +1160,10 @@ let userGetProducts = async function (req, res, next) {
                 let value = parseInt(captured.filter)
                 console.log(value);
                 if (field == "price") {
-                    let products = await product_details.find({ status: true }).sort({ price: value })
+                    let products = await product_details.find({ status: true }).sort({ price: value }).lean()
                     res.render('user-products', { products, categories });
                 } else if (field == "_id") {
-                    let products = await product_details.find({ status: true }).sort({ _id: value })
+                    let products = await product_details.find({ status: true }).sort({ _id: value }).lean()
                     res.render('user-products', { products, categories });
                 }
                 field = null
@@ -1057,9 +1176,9 @@ let userGetProducts = async function (req, res, next) {
                 let startingprice = parseInt(capturedFilter.pricestarting);
                 let endingprice = parseInt(capturedFilter.priceending);
                 log(startingprice + " " + endingprice)
-                let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } })
+                let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).lean()
                 console.log(products);
-                let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                 let wish;
                 if(checkW1==null){
                     wish=true
@@ -1074,8 +1193,8 @@ let userGetProducts = async function (req, res, next) {
                 let field1 = captured.filtertype
                 let value1 = parseInt(captured.filter)
                 if (field1 == "price") {
-                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ price: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ price: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1084,8 +1203,8 @@ let userGetProducts = async function (req, res, next) {
                     }  
                     res.render('user-products', { products, categories,wish });
                 } else if (field1 == "_id") {
-                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ _id: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ _id: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1104,8 +1223,8 @@ let userGetProducts = async function (req, res, next) {
                 let field1 = captured.filtertype
                 let value1 = parseInt(captured.filter)
                 if (field1 == "price") {
-                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ price: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ price: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1114,8 +1233,8 @@ let userGetProducts = async function (req, res, next) {
                     }  
                     res.render('user-products', { products, categories,wish });
                 } else if (field1 == "_id") {
-                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ _id: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ _id: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1132,8 +1251,8 @@ let userGetProducts = async function (req, res, next) {
 
             if (captured == null && capturedFilter == null) {
                 console.log("gate 5");
-                let products = await product_details.find({ category: categoryRequested, status: true })
-                let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                let products = await product_details.find({ category: categoryRequested, status: true }).lean()
+                let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                 let wish;
                 if(checkW1==null){
                     wish=true
@@ -1148,8 +1267,8 @@ let userGetProducts = async function (req, res, next) {
                 let field1 = captured.filtertype
                 let value1 = parseInt(captured.filter)
                 if (field1 == "price") {
-                    let products = await product_details.find({ category: categoryRequested, status: true }).sort({ price: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ category: categoryRequested, status: true }).sort({ price: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                 let wish;
                 if(checkW1==null){
                     wish=true
@@ -1158,8 +1277,8 @@ let userGetProducts = async function (req, res, next) {
                 }  
                     res.render('user-products', { products, categories,wish });
                 } else if (field1 == "_id") {
-                    let products = await product_details.find({ category: categoryRequested, status: true }).sort({ _id: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ category: categoryRequested, status: true }).sort({ _id: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1176,9 +1295,9 @@ let userGetProducts = async function (req, res, next) {
                 console.log("gate 7");
                 let startingprice = capturedFilter.pricestarting;
                 let endingprice = capturedFilter.priceending;
-                let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } })
+                let products = await product_details.find({ status: true, price: { $gt: startingprice, $lt: endingprice } }).lean()
                 console.log(products);
-                let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                 let wish;
                 if(checkW1==null){
                     wish=true
@@ -1194,8 +1313,8 @@ let userGetProducts = async function (req, res, next) {
                 let field1 = captured.filtertype
                 let value1 = parseInt(captured.filter)
                 if (field1 == "price") {
-                    let products = await product_details.find({ category: categoryRequested, status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ price: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ category: categoryRequested, status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ price: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1204,8 +1323,8 @@ let userGetProducts = async function (req, res, next) {
                     }  
                     res.render('user-products', { products, categories,wish });
                 } else if (field1 == "_id") {
-                    let products = await product_details.find({ category: categoryRequested, status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ _id: value1 })
-                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}})
+                    let products = await product_details.find({ category: categoryRequested, status: true, price: { $gt: startingprice, $lt: endingprice } }).sort({ _id: value1 }).lean()
+                    let checkW1 = await user_details.findOne({username:userSession,wishlist:{$in:details}}).lean()
                     let wish;
                     if(checkW1==null){
                         wish=true
@@ -1265,7 +1384,7 @@ let userGetFilterPrice = function (req, res, next) {
 
 let userPostAddWishlist = async function (req, res, next) {
     if (userSession) {
-       let wishlistCheck = await user_details.findOne({username:userSession,wishlist: { $exists: true} } )
+       let wishlistCheck = await user_details.findOne({username:userSession,wishlist: { $exists: true} } ).lean()
 
        console.log(wishlistCheck);
        await user_details.updateOne({username:userSession},{$push:{wishlist:req.body.productIndex} } )
@@ -1322,7 +1441,7 @@ let userGetWishlist = async function (req, res, next) {
 
 let userPostDeleteWishlist =  async function (req, res, next) {
     if (userSession) {
-       let wishlistCheck = await user_details.findOne({username:userSession,wishlist: { $exists: true} } )
+       let wishlistCheck = await user_details.findOne({username:userSession,wishlist: { $exists: true} } ).lean()
 
        console.log(wishlistCheck);
         await user_details.updateOne({username:userSession},{$pull:{wishlist:req.body.productIndex} } )
@@ -1352,8 +1471,8 @@ let userPostSignup = async function (req, res, next) {
             password: req.body.password,
         }
 
-        const phoneValidator = await user_details.findOne({ phone: signupData.phone })
-        const usernameValidator = await user_details.findOne({ username: signupData.username })
+        const phoneValidator = await user_details.findOne({ phone: signupData.phone }).lean()
+        const usernameValidator = await user_details.findOne({ username: signupData.username }).lean()
 
         if (phoneValidator == null) {
 
@@ -1403,12 +1522,12 @@ let userPostSignup = async function (req, res, next) {
 
 
 let userPostLogin = async function (req, res, next) {
-    try {
+    // try {
         loginData = {
             email: req.body.email,
             password: req.body.password
         }
-        const documentValidator = await user_details.findOne({ email: loginData.email })
+        const documentValidator = await user_details.findOne({ email: loginData.email }).lean()
 
 
         if (documentValidator == null) {
@@ -1427,6 +1546,8 @@ let userPostLogin = async function (req, res, next) {
             if (passwordValidator) {
                 console.log("login success");
                 req.session.user = documentValidator.username;
+                req.session.variable="33";
+                console.log(req.session);
                 userSession = req.session.user;
                 console.log(req.session.user);
                 res.redirect('/home')
@@ -1437,9 +1558,9 @@ let userPostLogin = async function (req, res, next) {
         }
 
 
-    } catch (error) {
-        console.log(error.message);
-    }
+    // } catch (error) {
+    //     console.log(error.message);
+    // }
 }
 
 
@@ -1508,7 +1629,7 @@ let userPostOtpLogin = async function (req, res, next) {
 
     console.log(otpValue);
 
-    checkPhone = await user_details.findOne({ phone: number })
+    checkPhone = await user_details.findOne({ phone: number }).lean()
     if (checkPhone == null) {
 
         console.log("invalid telephone");
@@ -1525,6 +1646,36 @@ let userPostOtpLogin = async function (req, res, next) {
 let userGetLogout = function (req, res, next) {
 
     req.session.user = null;
+    req.session.appliedCoupon = null
+        //   payReciept
+        //   orders;
+        //   loginMsg
+        //   SignupMsg;
+        //   otpMsg
+        //   captured
+        //   capturedFilter
+        //   checkPhone;
+        
+        //   editMsg
+        //   productParams
+        //   colour
+        //   quantity
+        //   size
+        //   uss
+        //   Id
+        //   editPassMsg
+        //   req.session.appliedCoupon
+        //   otpNumber;
+        //   signupData;
+        //   loginData;
+        //   loginOtpData
+        //   otpValue
+        //   categoryRequested
+        //   details;
+        //   userdone
+        //   addressParams
+
+    
     userSession = null;
     res.redirect('/login')
 
@@ -1539,6 +1690,7 @@ let userGetLogout = function (req, res, next) {
 
 
 module.exports = {
+
     userGetSignup,
     userGetLogin,
     userGetOtpLogin,
@@ -1560,7 +1712,6 @@ module.exports = {
     userGetCheckout,
     userGetCart,
     userPostEditProfile,
-    // userGetCartParams,
     userPostCartOperation,
     userPostCheckoutBilling,
     userGetOrders,
@@ -1578,7 +1729,9 @@ module.exports = {
     userGetWishlist,
     userPostDeleteWishlist,
     userGetDeleteAddressParams,
-    userGetApplyCoupon
+    userGetApplyCoupon,
+    userGetOrdersList,
+    userGetOrderParam
 }
 
 
