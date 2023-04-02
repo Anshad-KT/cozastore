@@ -22,11 +22,13 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="text-right mb-5 me-5">
+
                     <div class="dropdown show">
                         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Dropdown link
+                            Details
                         </a>
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -34,6 +36,8 @@
                             <a class="dropdown-item" href="/sales/month">Current month</a>
                             <a class="dropdown-item" href="/sales/lifetime">Lifetime</a>
                         </div>
+                        <a href="/download-excel"><button class="btn btn-secondary">Download pdf</button></a>
+                        <button onclick="printTable()" class="btn btn-secondary">Print</button>
                     </div>
                 </div>
             </div>
@@ -50,7 +54,7 @@
 
                     <!-- ============================================================== -->
 
-                    <!-- recent orders  -->
+                    <!-- recent req.session.orders  -->
                     <!-- ============================================================== -->
 
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -59,45 +63,33 @@
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <div class="table-responsive">
-                                        <table class="table">
+                                        <table class="table" id="my-table">
                                             <thead class="bg-light">
                                                 <tr class="border-0">
                                                     <th class="border-0">#</th>
-                                                    <th class="border-0">Image</th>
+                                                    <th class="border-0">Date</th>
                                                     <th class="border-0">Title</th>
                                                     <th class="border-0">ProductIndex</th>
-
-                                                    <th class="border-0">Quantity</th>
-
                                                     <th class="border-0">ordered user</th>
+                                                    <th class="border-0">quantity</th>
+                                                    <th class="border-0">price</th>
 
-                                                    <th class="border-0">Coupon</th>
 
-                                                    <th class="border-0">Coupon Discount</th>
 
-                                                    <th class="border-0">Payment Id</th>
 
-                                                    <th class="border-0">Total</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {{#each salesReport}}
                                                 <tr>
                                                     <td>{{@index}}</td>
-                                                    <td><img src="product-images/products/{{products.imageReference.[0]}}.jpg"
-                                                            alt=""></td>
+                                                    <td>{{deliveryDate}}</td>
                                                     <td>{{products.title}}</td>
                                                     <td>{{products.productIndex}}</td>
                                                     <td>{{orderedUser}}</td>
-
-
-
-
-                                                    <td>{{products.paymentId}}</td>
-                                                    <th class="border-0">{{billAmount}}</th>
-
-
-
+                                                    <td>{{products.quantity}}</td>
+                                                    <td>{{products.price}}</td>
                                                 </tr>
                                                 {{/each}}
                                                 <tr>
@@ -127,6 +119,30 @@
                                                 Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
                                                     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
                                                 });
+                                            </script>
+                                            {{!--
+                                            <script>
+                                                function down() {
+                                                    $.ajax({
+                                                        url: '/download-excel',
+                                                        method: 'GET',
+                                                        success: (responce) => {
+                                                            console.log("hi")
+                                                        }
+                                                    })
+                                                }
+
+                                            </script> --}}
+                                            <script>
+                                                function printTable() {
+                                                    var table = document.getElementById("my-table");
+                                                    var newWin = window.open('', 'Print-Window');
+                                                    newWin.document.open();
+                                                    newWin.document.write('<html><body onload="window.print()">' + table.outerHTML + '</html>');
+                                                    newWin.document.close();
+                                                    setTimeout(function () { newWin.close(); }, 10);
+                                                }
+
                                             </script>
                                         </table>
                                     </div>

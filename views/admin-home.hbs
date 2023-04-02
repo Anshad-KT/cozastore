@@ -1,173 +1,217 @@
+{{>admin-header}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    {{>admin-header}}                             
-        <div class="dashboard-wrapper">
-            <div class="dashboard-ecommerce">
-                <div class="container-fluid dashboard-content ">
-                    <!-- ============================================================== -->
-                    <!-- pageheader  -->
-                    <!-- ============================================================== -->
-                     <div class="row">
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <h5 class="card-header">Total Income</h5>
-                                <div class="card-body">
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1">{{profit}} Rs</h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                                        <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i class="fa fa-fw fa-arrow-up"></i></span><span class="ml-1">25%</span>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-light p-t-40 p-b-40">
-                                    <div id="sparkline-revenue"></div>
-                                </div>
-                                {{!-- <div class="card-footer text-center bg-white">
-                                    <a href="#" class="card-link">View Details</a>
-                                </div> --}}
+
+// Define initial chart data
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-ecommerce">
+        <div class="container-fluid dashboard-content ">
+            <!-- ============================================================== -->
+            <!-- pageheader  -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="card">
+                        <h5 class="card-header">Total Income</h5>
+                        <div class="card-body">
+                            <div class="metric-value d-inline-block">
+                                <h1 class="mb-1">{{profit}} Rs</h1>
+                            </div>
+                            <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                                <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                        class="fa fa-fw fa-arrow-up"></i></span><span class="ml-1">25%</span>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <h5 class="card-header">Total Orders</h5>
-                                <div class="card-body">
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1">{{totalOrders}}</h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-secondary font-weight-bold">
-                                        <span class="icon-circle-small icon-box-xs text-danger bg-danger-light"><i class="fa fa-fw fa-arrow-down"></i></span><span class="ml-1">15%</span>
-                                    </div>
-                                </div>
-                                <div class="card-body text-center bg-light p-t-40 p-b-40">
-                                    <div id="sparkline-revenue2"></div>
-                                </div>
-                                {{!-- <div class="card-footer text-center bg-white">
-                                    <a href="#" class="card-link">View Details</a>
-                                </div> --}}
-                            </div>
+                        <div class="card-body bg-light p-t-40 p-b-40">
+                            <div id="sparkline-revenue"></div>
                         </div>
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <h5 class="card-header">Orders Cancelled</h5>
-                                <div class="card-body">
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1">{{totalCancelled}}</h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                                        <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i class="fa fa-fw fa-arrow-up"></i></span><span class="ml-1">25%</span>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-light p-t-40 p-b-40">
-                                    <div id="sparkline-revenue3"></div>
-                                </div>
-                            
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <h5 class="card-header">Orders Pending</h5>
-                                <div class="card-body">
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1">{{totalPending}}</h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                                        <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i class="fa fa-fw fa-arrow-up"></i></span> <span class="ml-1">25%</span>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-light p-b-40 p-t-40">
-                                    <div id="sparkline-revenue4"></div>
-                                </div>
-                                {{!-- <div class="card-footer text-center bg-white">
-                                    <a href="#" class="card-link">View Details</a>
-                                </div> --}}
-                            </div>
-                        </div>
+                       
                     </div>
-                    <div class="row">
-                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="page-header">
-                                <h2 class="pageheader-title">E-commerce Dashboard Template </h2>
-                                <p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus vel mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
-                                <div class="page-breadcrumb">
-                                    <nav aria-label="breadcrumb">
-                                        <ol class="breadcrumb">
-                                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">E-Commerce Dashboard Template</li>
-                                        </ol>
-                                    </nav>
-                                </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="card">
+                        <h5 class="card-header">Total orders</h5>
+                        <div class="card-body">
+                            <div class="metric-value d-inline-block">
+                                <h1 class="mb-1">{{totalOrders}}</h1>
+                            </div>
+                            <div class="metric-label d-inline-block float-right text-secondary font-weight-bold">
+                                <span class="icon-circle-small icon-box-xs text-danger bg-danger-light"><i
+                                        class="fa fa-fw fa-arrow-down"></i></span><span class="ml-1">15%</span>
                             </div>
                         </div>
+                        <div class="card-body text-center bg-light p-t-40 p-b-40">
+                            <div id="sparkline-revenue2"></div>
+                        </div>
+                        {{!-- <div class="card-footer text-center bg-white">
+                            <a href="#" class="card-link">View Details</a>
+                        </div> --}}
                     </div>
-                  
-                    <div class="ecommerce-widget">
+                </div>
+                
+            </div>
+            <style>
+                .chart-container {
+                    width: 300px;
+                    height: 300px;
+                    position: relative;
+                }
+            </style>
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 mt-4 mb-4">
+                    <div class="chart-container">
+                        <canvas id="myChart1"></canvas>
+                    </div>
 
-                        
-                        <div class="row"> 
-                          
-                         
-                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="card">
-                                    <h5 class="card-header"> Total Revenue</h5>
-                                    
-                                    <canvas id="myChart"></canvas>
 
-                                </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 mt-4 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">orders Cancelled</h5>
+                        <div class="card-body">
+                            <div class="metric-value d-inline-block">
+                                <h1 class="mb-1">{{totalCancelled}}</h1>
                             </div>
-                            
-                         </div>
-                         
-                         </div>
-                    
+                            <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                                <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                        class="fa fa-fw fa-arrow-up"></i></span><span class="ml-1">25%</span>
+                            </div>
+                        </div>
+                        <div class="card-body bg-light p-t-40 p-b-40">
+                            <div id="sparkline-revenue3"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 mt-4 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">orders Pending</h5>
+                        <div class="card-body">
+                            <div class="metric-value d-inline-block">
+                                <h1 class="mb-1">{{totalPending}}</h1>
+                            </div>
+                            <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                                <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                        class="fa fa-fw fa-arrow-up"></i></span> <span class="ml-1">25%</span>
+                            </div>
+                        </div>
+                        <div class="card-body bg-light p-b-40 p-t-40">
+                            <div id="sparkline-revenue4"></div>
+                        </div>
+                     
+                    </div>
                 </div>
             </div>
-          
-          
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="page-header">
+                        <h2 class="pageheader-title">E-commerce Dashboard Template </h2>
+                        <p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus vel
+                            mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
+                        <div class="page-breadcrumb">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">E-Commerce Dashboard Template
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ecommerce-widget">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header"> Total Revenue</h5>
+
+                            <canvas id="myChart"></canvas>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
         </div>
- 
     </div>
 
-    <script>
+
+</div>
+
+</div>
+
+<script>
+    var ctx = document.getElementById("myChart1").getContext("2d");
+var chartData = {
+  labels: ["Red", "Green", "Yellow"],
+  datasets: [{
+    data: [{{totalOrders}}, {{totalCancelled}}, {{totalPending}}],
+    backgroundColor: [
+      '#e74c3c',
+      '#2ecc71',
+      '#f1c40f'
+    ]
+  }]
+};
+
+// Create chart with initial data
+var myChart = new Chart(ctx, {
+  type: 'doughnut',
+  data: chartData
+});
+
+
+
+</script>
+
+<script>
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            
-            labels: ['January', 'February', 'March', 'April', 'May', 'June','July'],
+
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
             datasets: [{
                 label: 'Sales',
-              
-                data: [0, 0, {{profit}}, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
+
+                data: [0, 0, {{ profit }}, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
         options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
         }
+    }
     });
 </script>
 
 </body>
- 
+
 </html>

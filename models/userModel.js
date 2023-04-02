@@ -36,16 +36,13 @@ const LogInSchema=new mongoose.Schema({
         type:Array,
     },
 
-
-   
-
-
-
-      
-    
     status:{
         type:Boolean,
         required:true
+    },
+
+    wallet:{
+        type:Number,
     }
 })
 

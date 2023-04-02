@@ -34,11 +34,11 @@
 
                     <!-- ============================================================== -->
 
-                    <!-- recent orders  -->
+                    <!-- recent req.session.orders  -->
                     <!-- ============================================================== -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card">
-                            <h5 class="card-header">Recent Orders</h5>
+                            <h5 class="card-header">Recent req.session.orders</h5>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <div class="table-responsive">
@@ -49,11 +49,13 @@
                                                     <th class="border-0">Image</th>
                                                     <th class="border-0">title</th>
                                                     <th class="border-0">productIndex</th>
-
+                                                    <th class="border-0">price</th>
+                                                    <th class="border-0">quantity</th>
+                                                     
                                                     <th class="border-0">ordered user</th>
 
                                                     <th class="border-0">Order status</th>
-
+                                                   
                                                     <th class="border-0">Payment Id</th>
 
                                                     <th class="border-0">Action</th>
@@ -63,29 +65,33 @@
                                                 {{#each resp}}
                                                 <tr>
                                                     <td>{{@index}}</td>
-                                                    <td><img src="product-images/products/{{products.imageReference.[0]}}.jpg"
-                                                            alt=""></td>
+                                                    <td><img src="product-images/products/{{products.imageReference.[0]}}.jpg" alt=""></td>
                                                     <td>{{products.title}}</td>
                                                     <td>{{products.productIndex}}</td>
+                                                     <td>{{products.price}} per 1 unit</td>
+                                                      <td>{{products.quantity}}</td>
                                                     <td>{{orderedUser}}</td>
                                                     {{!-- {{#if status}}
                                                     <td><span class="badge-dot badge-success mr-1"></span>Delivered</td>
 
                                                     {{else}} --}}
 
-                                                    {{#if yellow}}
-                                                    <td><span class="badge-dot badge-warning mr-1"></span>Pending</td>
+                                                    {{#if (eq products.status "Return Pending")}}
+                                                    <td><span class="badge-dot badge-warning mr-1"></span>Return Pending</td>
 
 
                                                     {{/if}}
-                                                    {{#if green}}
-                                                    <td><span class="badge-dot badge-success mr-1"></span>Delivered
+                                                    {{#if (eq products.status "Cancelled")}}
+                                                    <td><span class="badge-dot badge-success mr-1"></span>Cancelled
                                                     </td>
 
+                                                    {{/if}}
+                                                    {{#if (eq products.status "Pending")}}
+                                                    <td><span class="badge-dot badge-danger mr-1"></span>Pending </td>
 
                                                     {{/if}}
-                                                    {{#if red}}
-                                                    <td><span class="badge-dot badge-danger mr-1"></span>Cancelled </td>
+                                                    {{#if (eq products.status "Delivered")}}
+                                                    <td><span class="badge-dot badge-danger mr-1"></span>Delivered </td>
 
                                                     {{/if}}
 
@@ -97,11 +103,46 @@
                                                     <td>Payment not completed</td>
                                                     {{/if}}
 
-                                                    {{#if red}}
-                                                    <td>None</td>
-                                                    {{else if green}}
-                                                    <td>None</td>
-                                                    {{else}}
+                                                  
+                                                    {{#if (eq products.status "Return Pending")}}
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-dark dropdown-toggle" type="button"
+                                                                id="dropdownMenuButton" data-toggle="dropdown"
+                                                                aria-haspopup="true" aria-expanded="false">
+                                                                Return Status
+                                                            </button>
+                                                            <div class="dropdown-menu"
+                                                                aria-labelledby="dropdownMenuButton">
+
+                                                                <a class="dropdown-item" onclick="swtfn()"
+                                                                    href="/status/?id={{_id}}&status=Return Accepted&productIndex={{products.productIndex}}&paymentId={{products.paymentId}}">Accept</a>
+                                                                <a class="dropdown-item"
+                                                                    href="/status/?id={{_id}}&status=Delivered&productIndex={{products.productIndex}}">Decline</a>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    {{/if}}
+                                                     {{#if (eq products.status "Pending")}}
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-dark dropdown-toggle" type="button"
+                                                                id="dropdownMenuButton" data-toggle="dropdown"
+                                                                aria-haspopup="true" aria-expanded="false">
+                                                                status
+                                                            </button>
+                                                            <div class="dropdown-menu"
+                                                                aria-labelledby="dropdownMenuButton">
+
+                                                                <a class="dropdown-item" onclick="swtfn()"
+                                                                    href="/status/?id={{_id}}&status=Order Confirmed&productIndex={{products.productIndex}}">Confirm Order</a>
+                                                               
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    {{/if}}
+                                                     {{#if (eq products.status "Order Confirmed")}}
                                                     <td>
                                                         <div class="dropdown">
                                                             <button class="btn btn-dark dropdown-toggle" type="button"

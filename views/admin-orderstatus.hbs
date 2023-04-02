@@ -32,14 +32,14 @@
                       
                             <!-- ============================================================== -->
 
-                                          <!-- recent orders  -->
+                                          <!-- recent req.session.orders  -->
                             <!-- ============================================================== -->
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="card">
-                                    <h5 class="card-header">Recent Orders</h5>
+                                    <h5 class="card-header">Recent orders</h5>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table">
+                                            <table id="myTable" class="table">
                                                 <thead class="bg-light">
                                                     <tr class="border-0">
                                                         <th class="border-0">#</th> 
@@ -51,7 +51,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {{#each orders}}
+                                                    {{#each ord}}
                                                     <tr>
                                                         <td>{{@index}}</td>
                                                        <td>{{_id}}</td>
@@ -87,6 +87,13 @@
                             </div>
                     
                 </div>
+                
+                       <script>
+      $(document).ready(function() {
+    $('#myTable').DataTable();
+});
+    </script>
+                </script>
             </div>
            
         </div>

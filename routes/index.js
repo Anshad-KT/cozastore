@@ -1,13 +1,12 @@
 var express = require('express');
 const nocache = require('nocache');
 var router = express.Router();
-
-///////
-
+const { v4: uuidv4 } = require('uuid')
+const multer  = require('multer')
+const storage = multer.memoryStorage()
+const upload = multer({storage})
 
 let admin= require('../controllers/adminController')
-
-
 
 /* GET home page. */
 router.get('/admin',nocache(),admin.adminGetDashboard);
@@ -21,7 +20,6 @@ router.get('/admin-addcategory',nocache(),admin.adminGetAddCategory);
 router.get('/admin-addbrand',nocache(),admin.adminGetAddBrand);
 router.get('/admin-addsubcategory',nocache(),admin.adminGetAddSubCategory);
 router.get('/deletecategory/',admin.adminGetDeleteCategory)
-// router.get('/deletecategory/:id',admin.adminGetDeleteCategory)
 router.get('/deletesubcategory/',admin.adminGetDeleteSubCategory)
 router.get('/deletebrand/',admin.adminGetDeleteBrand)
 router.get('/logout-admin',admin.adminGetLogout)
@@ -39,20 +37,20 @@ router.get('/editbanner',admin.adminGetEditBanner)
 router.get('/deletecoupon/',admin.adminPostDisableCoupon)
 router.get('/admin-sales',admin.adminGetSalesReport)
 router.get('/sales/:id',admin.adminGetSalesReportParams)
+router.get('/disablebanner/',admin.adminGetDisableBanner)
+router.get('/download-excel',admin.adminDownloadSales);
+  
 
 //Post home page
 
 router.post('/adminlogin',admin.adminPostLogin)
 router.post('/upload',admin.adminPostUploadProduct)
-router.post('/brand',admin.adminPostAddBrand)
+router.post('/brand',upload.array('image', 12),admin.adminPostAddBrand)
 router.post('/category',admin.adminPostAddCategory)
 router.post('/coupon',admin.adminPostAddCoupon)
-
-
 router.post('/subcategory',admin.adminPostAddSubCategory)
 router.post('/editProduct',admin.adminPostEditProduct)
 router.post('/banner',admin.adminPostAddBanner)
-
 router.post('/editbannerpost',admin.adminPostEditBanner)
 
 

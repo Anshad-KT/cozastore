@@ -35,7 +35,7 @@
 
                             <!-- ============================================================== -->
 
-                            <!-- recent orders  -->
+                            <!-- recent req.session.orders  -->
                             <!-- ============================================================== -->
 
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
@@ -77,7 +77,7 @@
                       
                             <!-- ============================================================== -->
 
-                                          <!-- recent orders  -->
+                                          <!-- recent req.session.orders  -->
                             <!-- ============================================================== -->
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="card">
@@ -103,7 +103,18 @@
                                                     
                                                         
                                                          {{#if status}}
-                                                      <td><a href="/deletecategory/?name={{name}}&status=false"><button class="btn btn-danger">disable</button></a></td>
+                                                      <td><a href="/deletecategory/?name={{name}}&status=false" onclick="event.preventDefault(); 
+                                                        new swal({
+                                                       title: 'Are you sure?',
+                                                        text: 'Once disabled, you will not be able to use this categoryagain.',
+                                                         icon: 'warning',
+                                                        buttons: ['Cancel', 'Disable'],
+                                                                   dangerMode: true,
+                                                              }).then((willDisable) => {
+                                                        if (willDisable) {
+                                                    window.location.href = '/deletecategory/?name={{name}}&status=false';
+                                                        }
+                                                       });"><button class="btn btn-danger">disable</button></a></td>
                                                    
                                                         {{else}}
                                                            <td><a href="/deletecategory/?name={{name}}&status=true"><button class="btn btn-success">enable</button></a></td>

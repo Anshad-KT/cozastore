@@ -16,7 +16,11 @@ const addressSchema=new mongoose.Schema({
     address:{
         type:Array,
         required:true
+    },
+    defaultAddress:{
+        type:String,
     }
+
 
     
 })

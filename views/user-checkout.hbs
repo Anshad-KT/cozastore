@@ -94,7 +94,8 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
             
             <select class="form-control" name="checkout" id="exampleFormControlSelect1">
 				 <option>cash on delivery</option> 
-				 <option>Pay using razorpay</option>                                   
+				 <option>Pay using razorpay</option>    
+				 <option>wallet</option>                                
             </select>
           </div>
          
@@ -132,7 +133,9 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 			data:$('#checkoutForm').serialize(),
 			success:(order)=>{
 				if(order.COD){
-					location.href='/orders-list'
+					location.href='/confirm'
+				}else if(order.WALLET){
+location.href='/confirm'
 				}else{
 					razorpayPayment(order)
 				}
@@ -182,7 +185,7 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 			success:(response)=>{
 				
 				if(response.status){
-					location.href='/orders-list'
+					location.href='/confirm'
 				}else{
                    alert('payment failed')
 				}

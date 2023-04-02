@@ -1,142 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    {{>user-header}}
-    <style>
-        .gradient-custom-2 {
-/* fallback for old browsers */
-background: #fbc2eb;
+	{{>user-header}}
+	<style>
+		.gradient-custom-2 {
+			/* fallback for old browsers */
+			background: #fbc2eb;
 
-/* Chrome 10-25, Safari 5.1-6 */
-background: -webkit-linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1));
+			/* Chrome 10-25, Safari 5.1-6 */
+			background: -webkit-linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1));
 
-/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1))
-}
-    </style>
-<!--===============================================================================================-->
+			/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1))
+		}
+	</style>
+	<!--===============================================================================================-->
 </head>
+
 <body class="animsition">
-	
+
 	<!-- Header -->
-	
+
 
 	<div class="container rounded bg-white mt-5 mb-5">
-    <div class="row">
-        <div class="col-md-3 border-right">
-            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">Edogaru</span><span class="text-black-50">edogaru@mail.com.my</span><span> </span></div>
-        </div>
-        <div class="col-md-5 border-right">
-            <div class="p-3 py-5">
-				<form action="/editprofiles" method="post" name="sub">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="text-right">Profile Settings</h4>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-6"><label class="labels">Name</label><input name="name" type="text" class="form-control" value={{name}}></div>
-                    <div class="col-md-6"><label class="labels">username</label><input type="text" name="username" class="form-control" value={{username}}  value=""></div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" class="form-control" name="phone" value={{phone}}></div>
-                     
-                    <div class="col-md-12"><label class="labels">Email ID</label><input type="text" name="email" class="form-control" placeholder="enter email id" value={{email}}></div>
-                 </div>
+		<div class="row">
+			<div class="col-md-3 border-right">
+				<div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5"
+						width="150px"
+						src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span
+						class="font-weight-bold">Edogaru</span><span
+						class="text-black-50">edogaru@mail.com.my</span><span> </span></div>
+			</div>
+			<div class="col-md-5 border-right">
+				<div class="p-3 py-5">
+					<form action="/editprofiles" method="post" name="sub">
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<h4 class="text-right">Profile Settings</h4>
+						</div>
+						<div class="row mt-2">
+							<div class="col-md-6"><label class="labels">Name</label><input name="name" type="text"
+									class="form-control" value={{name}}></div>
+							<div class="col-md-6"><label class="labels">username</label><input type="text"
+									name="username" class="form-control" value={{username}} value=""></div>
+						</div>
+						<div class="row mt-3">
+							<div class="col-md-12"><label class="labels">Mobile Number</label><input type="text"
+									class="form-control" name="phone" value={{phone}}></div>
 
-				  <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Update profile</button></div>
-				  </form> 
+							<div class="col-md-12"><label class="labels">Email ID</label><input type="text" name="email"
+									class="form-control" placeholder="enter email id" value={{email}}></div>
+						</div>
 
-                  <form action="/editaddress" method="post">
+						<div class="mt-5 text-center"><button class="btn btn-primary profile-button"
+								type="submit">Update profile</button></div>
+					</form>
+
+					<form action="/editaddress" method="post">
 
 
-				   <div class="row mt-5">
-                    <div class="col-md-6 mb-2"><label class="labels">Add new <address></address></label></div>
-                    <div class="col-md-12 mb-2"><input type="text" name="housename" placeholder="Enter your housename" class="form-control"></div>
-					 <div class="col-md-6 mb-2"><input name="postalname" type="text" class="form-control" placeholder="Enter your postalName"></div>
-                    <div class="col-md-6 mb-2"><input type="number" name="pincode" class="form-control" placeholder="Enter your pincode"></div>
-					 <div class="col-md-6 mb-2"><input name="district" type="text" class="form-control" placeholder="Enter your district"></div>
-                    <div class="col-md-6 mb-2"><input type="text" name="state" class="form-control" placeholder="Enter your state"></div>
-					 <div class="col-md-6 mb-2"><input name="country" type="text" class="form-control" placeholder="Enter your country"></div>
-                   
-                       </div>
-                         <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Add Address</button></div>
-                    </form>
-                  
-                
+						<div class="row mt-5">
+							<div class="col-md-6 mb-2"><label class="labels">Add new <address></address></label></div>
+							<div class="col-md-12 mb-2"><input type="text" name="housename"
+									placeholder="Enter your housename" class="form-control"></div>
+							<div class="col-md-6 mb-2"><input name="postalname" type="text" class="form-control"
+									placeholder="Enter your postalName"></div>
+							<div class="col-md-6 mb-2"><input type="number" name="pincode" class="form-control"
+									placeholder="Enter your pincode"></div>
+							<div class="col-md-6 mb-2"><input name="district" type="text" class="form-control"
+									placeholder="Enter your district"></div>
+							<div class="col-md-6 mb-2"><input type="text" name="state" class="form-control"
+									placeholder="Enter your state"></div>
+							<div class="col-md-6 mb-2"><input name="country" type="text" class="form-control"
+									placeholder="Enter your country"></div>
 
-               
-				               {{#if editMsg}}
-								<div class="container">
-                                <div class="row">
-                                <div class="d-flex justify-content-center text-danger">
-                                    
-									<p class="text-danger">{{editMsg}}</p>	
-									
-                                </div>
-                                </div>
-                                </div>
-								{{/if}}
-								<div class="mt-5">
-									{{!-- <a href="/address">saved addresses</a> --}}
-									
+						</div>
+						<div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Add
+								Address</button></div>
+					</form>
+
+
+
+
+					{{#if editMsg}}
+					<div class="container">
+						<div class="row">
+							<div class="d-flex justify-content-center text-danger">
+
+								<p class="text-danger">{{editMsg}}</p>
+
+							</div>
+						</div>
+					</div>
+					{{/if}}
+					<div class="mt-5">
+						{{!-- <a href="/address">saved addresses</a> --}}
+
+					</div>
+
+
+				</div>
+				<button type="button" class="btn btn-primary" data-toggle="modal"
+					data-target=".bd-example-modal-lg">Edit Saved Address</button>
+
+				<div class="modal fade bd-example-modal-lg mt-5 w-100" tabindex="-1" role="dialog"
+					aria-labelledby="myLargeModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-lg mt-5 p-5">
+						<div class="modal-content mt-5 p-5">
+							<div class="row">
+								{{#each allAddress.address}}
+								
+								<div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-5">
+									<div class="card" style="width: 15em">
+										<div class="card-body">
+											 
+											<h5 class="card-title">{{@index}}</h5>
+											
+											<p class="card-text">{{housename}},</p>
+											<p class="card-text">{{postalname}},</p>
+											<p class="card-text">{{pincode}}</p>
+										
+											<p class="card-text">{{district}},</p>
+											<p class="card-text">{{state}},</p>
+											<p class="card-text">{{country}}</p>
+											
+											<button class="btn btn-secondary mt-4"><a
+													href="/addressparamsdelete/{{id}}">remove</a></button>
+
+											<button class="btn btn-secondary mt-4"><a
+													href="/defaultaddress/{{id}}">set as default</a></button>		
+										</div>
+										
+									</div>
+									<br>
 								</div>
 								
-				
-            </div>
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Edit Saved Address</button>
-                                               
-												<div class="modal fade bd-example-modal-lg mt-5 " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  												<div class="modal-dialog modal-lg mt-5 p-5">
-   												<div class="modal-content mt-5 p-5">
-      											 {{!-- {{housename}},{{postalname}},{{pincode}},{{district}},{{state}} --}}
-												  <div class="row">
-												  {{#each allAddress.address}}
-												  
-												<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 ms-5 w-100 mb-5">
-           										  <div class="card">
-              
-             									  <div class="card-body">
-             									   <h5 class="card-title">{{@index}}</h5>
-             									   <p class="card-text">{{housename}},</p>
-             									   <p class="card-text">{{postalname}},</p> 
-												   <p class="card-text">{{pincode}}</p>  
+								{{/each}}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            									    <p class="card-text">{{district}},</p>
-													<p class="card-text">{{state}},</p>  
-													<p class="card-text">{{country}}</p>  
-               
-              										   <button class="btn btn-secondary mt-4"><a href="/addressparamsdelete/{{id}}">remove</a></button>
-             										  </div>
-           												 </div>
-       													 </div>
-		
-		{{/each}}
+
+			</div>
+			{{!-- <div class="col-md-4">
+				<div class="p-3 py-5">
+					<div class="d-flex justify-content-between align-items-center experience"><span>Edit
+							Experience</span><span class="border px-3 p-1 add-experience"><i
+								class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
+					<div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text"
+							class="form-control" placeholder="experience" value=""></div> <br>
+					<div class="col-md-12"><label class="labels">Additional Details</label><input type="text"
+							class="form-control" placeholder="additional details" value=""></div>
+				</div>
+			</div> --}}
 		</div>
-    											</div>
-  												</div>
-												</div>
-												
-        </div>
-        {{!-- <div class="col-md-4">
-            <div class="p-3 py-5">
-                <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
-                <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience" value=""></div> <br>
-                <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details" value=""></div>
-            </div>
-        </div> --}}
-    </div>
-</div>
-</div>
-</div>
+	</div>
+	</div>
+	</div>
 
-                
-   
-  
+
+
+
 
 
 	<!-- Footer -->
-   
-{{>user-footer}}
-    
+
+	{{>user-footer}}
+
 
 
 	<!-- Back to top -->
@@ -168,7 +200,8 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 										<div class="wrap-pic-w pos-relative">
 											<img src="images/product-detail-01.jpg" alt="IMG-PRODUCT">
 
-											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="images/product-detail-01.jpg">
+											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
+												href="images/product-detail-01.jpg">
 												<i class="fa fa-expand"></i>
 											</a>
 										</div>
@@ -178,7 +211,8 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 										<div class="wrap-pic-w pos-relative">
 											<img src="images/product-detail-02.jpg" alt="IMG-PRODUCT">
 
-											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="images/product-detail-02.jpg">
+											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
+												href="images/product-detail-02.jpg">
 												<i class="fa fa-expand"></i>
 											</a>
 										</div>
@@ -188,7 +222,8 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 										<div class="wrap-pic-w pos-relative">
 											<img src="images/product-detail-03.jpg" alt="IMG-PRODUCT">
 
-											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="images/product-detail-03.jpg">
+											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
+												href="images/product-detail-03.jpg">
 												<i class="fa fa-expand"></i>
 											</a>
 										</div>
@@ -197,7 +232,7 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="col-md-6 col-lg-5 p-b-30">
 						<div class="p-r-50 p-t-5 p-lr-0-lg">
 							<h4 class="mtext-105 cl2 js-name-detail p-b-14">
@@ -209,9 +244,10 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 							</span>
 
 							<p class="stext-102 cl3 p-t-23">
-								Nulla eget sem vitae eros pharetra viverra. Nam vitae luctus ligula. Mauris consequat ornare feugiat.
+								Nulla eget sem vitae eros pharetra viverra. Nam vitae luctus ligula. Mauris consequat
+								ornare feugiat.
 							</p>
-							
+
 							<!--  -->
 							<div class="p-t-33">
 								<div class="flex-w flex-r-m p-b-10">
@@ -259,37 +295,44 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 												<i class="fs-16 zmdi zmdi-minus"></i>
 											</div>
 
-											<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="1">
+											<input class="mtext-104 cl3 txt-center num-product" type="number"
+												name="num-product" value="1">
 
 											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 												<i class="fs-16 zmdi zmdi-plus"></i>
 											</div>
 										</div>
 
-										<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
+										<button
+											class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
 											Add to cart
 										</button>
 									</div>
-								</div>	
+								</div>
 							</div>
 
 							<!--  -->
 							<div class="flex-w flex-m p-l-100 p-t-40 respon7">
 								<div class="flex-m bor9 p-r-10 m-r-11">
-									<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100" data-tooltip="Add to Wishlist">
+									<a href="#"
+										class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
+										data-tooltip="Add to Wishlist">
 										<i class="zmdi zmdi-favorite"></i>
 									</a>
 								</div>
 
-								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100" data-tooltip="Facebook">
+								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
+									data-tooltip="Facebook">
 									<i class="fa fa-facebook"></i>
 								</a>
 
-								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100" data-tooltip="Twitter">
+								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
+									data-tooltip="Twitter">
 									<i class="fa fa-twitter"></i>
 								</a>
 
-								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100" data-tooltip="Google Plus">
+								<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
+									data-tooltip="Google Plus">
 									<i class="fa fa-google-plus"></i>
 								</a>
 							</div>
@@ -300,45 +343,45 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 		</div>
 	</div>
 
-<!--===============================================================================================-->	
+	<!--===============================================================================================-->
 
 	<script>
-		$(".js-select2").each(function(){
+		$(".js-select2").each(function () {
 			$(this).select2({
 				minimumResultsForSearch: 20,
 				dropdownParent: $(this).next('.dropDownSelect2')
 			});
 		})
 	</script>
-<!--===============================================================================================-->
+	<!--===============================================================================================-->
 
 	<script>
-        $('.parallax100').parallax100();
+		$('.parallax100').parallax100();
 	</script>
-<!--===============================================================================================-->
+	<!--===============================================================================================-->
 
 	<script>
-		$('.gallery-lb').each(function() { // the containers for all your galleries
+		$('.gallery-lb').each(function () { // the containers for all your galleries
 			$(this).magnificPopup({
-		        delegate: 'a', // the selector for gallery item
-		        type: 'image',
-		        gallery: {
-		        	enabled:true
-		        },
-		        mainClass: 'mfp-fade'
-		    });
+				delegate: 'a', // the selector for gallery item
+				type: 'image',
+				gallery: {
+					enabled: true
+				},
+				mainClass: 'mfp-fade'
+			});
 		});
 	</script>
-<!--===============================================================================================-->
+	<!--===============================================================================================-->
 
 	<script>
-		$('.js-addwish-b2, .js-addwish-detail').on('click', function(e){
+		$('.js-addwish-b2, .js-addwish-detail').on('click', function (e) {
 			e.preventDefault();
 		});
 
-		$('.js-addwish-b2').each(function(){
+		$('.js-addwish-b2').each(function () {
 			var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
-			$(this).on('click', function(){
+			$(this).on('click', function () {
 				swal(nameProduct, "is added to wishlist !", "success");
 
 				$(this).addClass('js-addedwish-b2');
@@ -346,10 +389,10 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 			});
 		});
 
-		$('.js-addwish-detail').each(function(){
+		$('.js-addwish-detail').each(function () {
 			var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
 
-			$(this).on('click', function(){
+			$(this).on('click', function () {
 				swal(nameProduct, "is added to wishlist !", "success");
 
 				$(this).addClass('js-addedwish-detail');
@@ -359,33 +402,34 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 
 		/*---------------------------------------------*/
 
-		$('.js-addcart-detail').each(function(){
+		$('.js-addcart-detail').each(function () {
 			var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
-			$(this).on('click', function(){
+			$(this).on('click', function () {
 				swal(nameProduct, "is added to cart !", "success");
 			});
 		});
-	
+
 	</script>
-<!--===============================================================================================-->
-	
+	<!--===============================================================================================-->
+
 	<script>
-		$('.js-pscroll').each(function(){
-			$(this).css('position','relative');
-			$(this).css('overflow','hidden');
+		$('.js-pscroll').each(function () {
+			$(this).css('position', 'relative');
+			$(this).css('overflow', 'hidden');
 			var ps = new PerfectScrollbar(this, {
 				wheelSpeed: 1,
 				scrollingThreshold: 1000,
 				wheelPropagation: false,
 			});
 
-			$(window).on('resize', function(){
+			$(window).on('resize', function () {
 				ps.update();
 			})
 		});
 	</script>
-<!--===============================================================================================-->
+	<!--===============================================================================================-->
 
 
 </body>
+
 </html>

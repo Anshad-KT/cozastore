@@ -1,196 +1,202 @@
 {{>admin-header}}
-        <div class="dashboard-wrapper">
-            {{!-- <div class="dashboard-ecommerce"> --}}
-                <div class="container-fluid dashboard-content ">
-                    <!-- ============================================================== -->
-                    <!-- pageheader  -->
-                    <!-- ============================================================== -->
-                    <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="page-header">
-                                <h2 class="pageheader-title">E-commerce Dashboard Template </h2>
-                                <p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus
-                                    vel mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
-                                <div class="page-breadcrumb">
-                                    <nav aria-label="breadcrumb">
-                                        <ol class="breadcrumb">
-                                            <li class="breadcrumb-item"><a href="#"
-                                                    class="breadcrumb-link">Dashboard</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">E-Commerce Dashboard
-                                                Template</li>
-                                        </ol>
-                                    </nav>
-                                </div>
-                            </div>
+<div class="dashboard-wrapper">
+    {{!-- <div class="dashboard-ecommerce"> --}}
+        <div class="container-fluid dashboard-content ">
+            <!-- ============================================================== -->
+            <!-- pageheader  -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="page-header">
+                        <h2 class="pageheader-title">E-commerce Dashboard Template </h2>
+                        <p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus
+                            vel mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
+                        <div class="page-breadcrumb">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">E-Commerce Dashboard
+                                        Template</li>
+                                </ol>
+                            </nav>
                         </div>
                     </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- end pageheader  -->
+            <!-- ============================================================== -->
+            <div class="ecommerce-widget">
+
+
+                <div class="row">
                     <!-- ============================================================== -->
-                    <!-- end pageheader  -->
+
                     <!-- ============================================================== -->
-                    <div class="ecommerce-widget">
+
+                    <!-- recent req.session.orders  -->
+                    <!-- ============================================================== -->
+
+                    <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
+                        <form action="/coupon" method="post" role="form" enctype="multipart/form-data"
+                            onsubmit="return subcategoryValidate()" name="subcategoryform">
 
 
-                        <div class="row">
-                            <!-- ============================================================== -->
-
-                            <!-- ============================================================== -->
-
-                            <!-- recent orders  -->
-                            <!-- ============================================================== -->
-
-                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
-                                <form action="/coupon" method="post" role="form" enctype="multipart/form-data"
-                                    onsubmit="return subcategoryValidate()" name="subcategoryform">
+                            {{!-- <div class="mb-3"> --}}
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">code</label>
+                                        <input id="price" type="text" class="form-control mb-4" name="code">
 
 
-                                    {{!-- <div class="mb-3"> --}}
-                                        <div class="row">
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">code</label>
-                                                <input id="price" type="text" class="form-control mb-4" name="code">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">discount Type</label>
+                                        <select id="price" type="select" class="form-control mb-4" name="discountType">
+                                            <option>flat</option>
+                                            <option>percentage</option>
+                                        </select>
+                                    </div>
 
-
-                                            </div>
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">discount Type</label>
-                                                <select id="price" type="select" class="form-control mb-4"
-                                                    name="discountType">
-                                                    <option>flat</option>
-                                                    <option>percentage</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">discount value</label>
-                                                <input id="price" type="text" class="form-control mb-4"
-                                                    name="discountAmount">
-                                            </div>
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">max amount</label>
-                                                <input id="price" type="text" class="form-control mb-4"
-                                                    name="maxDiscountAmount">
-                                            </div>
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">mini purchase</label>
-                                                <input id="price" type="text" class="form-control mb-4"
-                                                    name="minPurchase">
-                                            </div>
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">created date</label>
-                                                <input id="price" type="date" class="form-control mb-4"
-                                                    name="createDate">
-                                            </div>
-                                            <div class="col-12 col-md-6 col-lg-6">
-                                                <label for="exampleFormControlSelect1">expiry date</label>
-                                                <input id="price" type="date" class="form-control mb-4"
-                                                    name="expiryDate">
-                                            </div>
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">discount value</label>
+                                        <input id="price" type="text" class="form-control mb-4" name="discountAmount">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">max amount</label>
+                                        <input id="price" type="text" class="form-control mb-4"
+                                            name="maxDiscountAmount">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">mini purchase</label>
+                                        <input id="price" type="text" class="form-control mb-4" name="minPurchase">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">created date</label>
+                                        <input id="price" type="date" class="form-control mb-4" name="createDate">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6">
+                                        <label for="exampleFormControlSelect1">expiry date</label>
+                                        <input id="price" type="date" class="form-control mb-4" name="expiryDate">
+                                    </div>
 
 
 
 
 
-                                            <div id="error" class="d-flex">
-                                                <p id="error">{{couponMsg}}</p>
-                                            </div>
+                                    <div id="error" class="d-flex">
+                                        <p id="error">{{couponMsg}}</p>
+                                    </div>
 
 
-                                            <div class="d-flex">
-                                                <button type="submit" class="btn btn-dark text-right">
-                                                    Upload details
-                                                </button>
-                                            </div>
-                                        </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="row mt-5">
-                            <!-- ============================================================== -->
-
-                            <!-- ============================================================== -->
-
-                            <!-- recent orders  -->
-                            <!-- ============================================================== -->
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="card">
-                                    <h5 class="card-header">Recent Orders</h5>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead class="bg-light">
-                                                    <tr class="border-0">
-                                                        <th class="border-0">#</th>
-                                                        <th class="border-0">Code</th>
-                                                        <th class="border-0">Type</th>
-                                                        <th class="border-0">DiscountAmount</th>
-                                                        <th class="border-0">maxDiscountAmount</th>
-                                                        <th class="border-0">minimum amount</th>
-                                                        <th class="border-0">Created Date</th>
-                                                        <th class="border-0">Expiry Date</th>
-                                                        <th class="border-0">status</th>
-                                                        <th class="border-0">Action</th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {{#each dbCoupon}}
-                                                    <tr>
-                                                        <td>{{@index}}</td>
-                                                        <td>{{code}}</td>
-
-                                                        <td>{{discountType}}</td>
-                                                        <td>{{discountAmount}}</td>
-                                                        <td>{{maxDiscountAmount}}</td>
-                                                        <td>{{minPurchase}}</td>
-                                                        <td>{{createDate}}</td>
-                                                        <td>{{expiryDate}}</td>
-                                                        <td>{{status}}</td>
-
-
-                                                        {{#if status}}
-                                                        <td><a href="/editproduct/{{productIndex}}"><button
-                                                                    type="button"
-                                                                    class="btn btn-primary mb-3">Edit</button></a>
-                                                                    <br>
-                                                                   
-                                                                <a href="/deletecoupon/?code={{code}}&status=false"><button
-                                                                    type="button"
-                                                                    class="btn btn-danger">Disable</button></a></td>
-                                                        {{else}}
-                                                        <td><a href="/editproduct/{{productIndex}}"><button
-                                                                    type="button"
-                                                                    class="btn btn-primary mb-3">Edit</button></a><br><a
-                                                                href="/deletecoupon/?code={{code}}&status=true"><button
-                                                                    type="button"
-                                                                    class="btn btn-success m">Enable</button></a></td>
-                                                        {{/if}}
-
-
-
-
-                                                    </tr>
-                                                    {{/each}}
-
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                    <div class="d-flex">
+                                        <button type="submit" class="btn btn-dark text-right">
+                                            Upload details
+                                        </button>
                                     </div>
                                 </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <!-- ============================================================== -->
+
+                    <!-- ============================================================== -->
+
+                    <!-- recent req.session.orders  -->
+                    <!-- ============================================================== -->
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">Add Coupon</h5>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead class="bg-light">
+                                            <tr class="border-0">
+                                                <th class="border-0">#</th>
+                                                <th class="border-0">Code</th>
+                                                <th class="border-0">Type</th>
+                                                <th class="border-0">DiscountAmount</th>
+                                                <th class="border-0">maxDiscountAmount</th>
+                                                <th class="border-0">minimum amount</th>
+                                                <th class="border-0">Created Date</th>
+                                                <th class="border-0">Expiry Date</th>
+                                                <th class="border-0">status</th>
+                                                <th class="border-0">Action</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{#each dbCoupon}}
+                                            <tr>
+                                                <td>{{@index}}</td>
+                                                <td>{{code}}</td>
+
+                                                <td>{{discountType}}</td>
+                                                <td>{{discountAmount}}</td>
+                                                <td>{{maxDiscountAmount}}</td>
+                                                <td>{{minPurchase}}</td>
+                                                <td>{{createDate}}</td>
+                                                <td>{{expiryDate}}</td>
+                                                <td>{{status}}</td>
+
+
+                                                {{#if status}}
+                                                <td><a href="/editproduct/{{productIndex}}"><button type="button"
+                                                            class="btn btn-primary mb-3">Edit</button></a>
+                                                    <br>
+
+                                                    <a href="/deletecoupon/?code={{code}}&status=false" onclick="event.preventDefault(); 
+                                                        new swal({
+                                                       title: 'Are you sure?',
+                                                        text: 'Once disabled, you will not be able to use this coupon again.',
+                                                         icon: 'warning',
+                                                        buttons: ['Cancel', 'Disable'],
+                                                                   dangerMode: true,
+                                                              }).then((willDisable) => {
+                                                        if (willDisable) {
+                                                    window.location.href = '/deletecoupon/?code={{code}}&status=false';
+                                                        }
+                                                       });">
+                                                        <button type="button" class="btn btn-danger">Disable</button>
+                                                    </a>
+                                                </td>
+                                                {{else}}
+                                                <td><a href="/editproduct/{{productIndex}}"><button type="button"
+                                                            class="btn btn-primary mb-3">Edit</button></a><br><a
+                                                        href="/deletecoupon/?code={{code}}&status=true"><button
+                                                            type="button" class="btn btn-success m">Enable</button></a>
+                                                </td>
+                                                {{/if}}
+
+
+
+
+                                            </tr>
+                                            {{/each}}
+
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-
-
-
-
-
                     </div>
+                </div>
 
 
-                    <!-- jquery 3.3.1 -->
 
 
 
-</body>
+            </div>
 
-</html>
+
+            <!-- jquery 3.3.1 -->
+
+
+
+            </body>
+            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+            </html>

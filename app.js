@@ -16,6 +16,25 @@ app.engine('hbs',hbs.engine({extname:'hbs',defaultLayout:'layout',layoutsDir:__d
 var fileUpload = require('express-fileupload')
 var session = require('express-session')
 
+hb.handlebars.registerHelper('eq', function (a, b) {
+  return a == b;
+});
+
+hb.handlebars.registerHelper('eqn', function (a) {
+  return a == null;
+});
+
+hb.handlebars.registerHelper('gtr', function (a,b) {
+  return a > b ;
+});
+
+hb.handlebars.registerHelper('ifAnd', function(v1, v2, options) {
+  if(v1 && v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
 
 
 // view engine setup
@@ -41,6 +60,8 @@ app.use('/', usersRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+
 
 // error handler
 app.use(function(err, req, res, next) {

@@ -1,4 +1,5 @@
 {{>admin-header}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <div class="dashboard-wrapper">
             {{!-- <div class="dashboard-ecommerce"> --}}
                 <div class="container-fluid dashboard-content ">
@@ -36,7 +37,7 @@
 
                             <!-- ============================================================== -->
 
-                            <!-- recent orders  -->
+                            <!-- recent req.session.orders  -->
                             <!-- ============================================================== -->
 
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
@@ -57,7 +58,7 @@
 
                                                
                                            
-                                             <div class="row">
+                                           <div class="row">
                                            <div class="col-12 col-md-6 col-lg-6">
                                                 <label for="exampleFormControlSelect1">upload images</label>
                                                
@@ -87,12 +88,12 @@
                       
                             <!-- ============================================================== -->
 
-                                          <!-- recent orders  -->
+                                          <!-- recent req.session.orders  -->
                             <!-- ============================================================== -->
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="card">
-                                    <h5 class="card-header">All Brands</h5>
-                                    <div class="card-body p-0"> 
+                                    <h5 class="card-header">All Banners</h5>
+                                    <div class="card-body"> 
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead class="bg-light">
@@ -127,9 +128,9 @@
                                                         
                                                     </tr>
                                                      {{/each}}
-                                                    <tr>
+                                                    {{!-- <tr>
                                                         <td colspan="9"><a href="#" class="btn btn-outline-light float-right">View Details</a></td>
-                                                    </tr>
+                                                    </tr> --}}
                                                    
                                                 </tbody>
                                             </table>
@@ -139,16 +140,8 @@
                             </div>
                     </div>
 
-                       
-
-
-
                     </div>
-
-
-                    <!-- jquery 3.3.1 -->
-
-                   
+               
       
 </body>
 
