@@ -2,10 +2,7 @@ const mongoose=require('mongoose')
 
 
 mongoose.set('strictQuery', false);
-mongoose.connect("mongodb://127.0.0.1/cozastore", { useNewUrlParser: true },()=>{
-    console.log("product database connected");
-});
-
+const addressConnection= require('../config/mongodb')
 
 const ProductSchema=new mongoose.Schema({
     

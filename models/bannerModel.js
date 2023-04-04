@@ -2,10 +2,7 @@ const mongoose=require('mongoose')
 
 
 mongoose.set('strictQuery', false);
-mongoose.connect("mongodb://127.0.0.1/cozastore", { useNewUrlParser: true },()=>{
-    console.log("banner database connected");
-});
-
+const addressConnection= require('../config/mongodb')
 
 const bannerSchema=new mongoose.Schema({
 
