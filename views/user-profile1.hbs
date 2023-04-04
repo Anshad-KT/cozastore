@@ -208,22 +208,33 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
                                         </div>
                                      </div>
                                      <div class="card-body">
-                                        <form>
+                                        <form action="/editpassword" method="post">
                                            <div class="form-group">
                                               <label for="cpass">Current Password:</label>
-                                              <a href="javascripe:void();" class="float-right">Forgot Password</a>
-                                              <input type="Password" class="form-control" id="cpass" value="">
+                                              {{!-- <a href="javascripe:void();" class="float-right">Forgot Password</a> --}}
+                                              <input type="Password" class="form-control" id="cpass" value="" name="previouspassword">
                                            </div>
                                            <div class="form-group">
                                               <label for="npass">New Password:</label>
-                                              <input type="Password" class="form-control" id="npass" value="">
+                                              <input type="Password" class="form-control" id="npass" value="" name="newpassword">
                                            </div>
-                                           <div class="form-group">
+                                           {{!-- <div class="form-group">
                                               <label for="vpass">Verify Password:</label>
                                               <input type="Password" class="form-control" id="vpass" value="">
-                                           </div>
+                                           </div> --}}
                                            <button type="reset" class="btn btn-outline-primary mr-2">Cancel</button>
                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                            {{#if editPassMsg}}
+								<div class="container">
+                                <div class="row">
+                                <div class="d-flex justify-content-center text-danger">
+                                    
+									<p class="text-danger">{{editPassMsg}}</p>	
+									
+                                </div>
+                                </div>
+                                </div>
+								{{/if}}
                                         </form>
                                      </div>
                                   </div>

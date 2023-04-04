@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var nocache = require('nocache')
-const middleware = require('../middleware/session')
+const middleware = require('../middleware/auth')
 //requiring get requests
 
 var userGet= require('../controllers/userController')

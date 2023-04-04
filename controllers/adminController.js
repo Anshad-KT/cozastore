@@ -3,33 +3,38 @@ let user_details = require('../models/userModel')
 let bcrypt = require('bcrypt');
 let newImg
 
-const multer  = require('multer')
+require('dotenv').config()
 
-const storage = multer.diskStorage({
-  destination:(req,file,cb)=>{
-    
-    cb(null,'./public/product-images/')
-  },
-  filename:(req,file,cb)=>{
-    const newId = uuidv4()
-    cb(null,`${newId}-${file.originalname}`)
-   
-}
-})
+// const multer  = require('multer')
 
-const upload = multer({storage})
+// const storage = multer.diskStorage({
+//   destination:(req,file,cb)=>{
+
+//     cb(null,'./public/product-images/')
+//   },
+//   filename:(req,file,cb)=>{
+//     const newId = uuidv4()
+//     cb(null,`${newId}-${file.originalname}`)
+
+// }
+// })
+
+// const upload = multer({storage})
 
 const { JSDOM } = require('jsdom');
 const XLSX = require('xlsx');
+let categoryMsg
+let subcategoryMsg
 // const fileUpload = require('express-fileupload')
 const product_details = require('../models/productModel')
 const brand_details = require('../models/brandModel')
 let bannerParam
-
 const category_details = require('../models/categoryModel')
 const subcategory_details = require('../models/subcategoryModel')
 const order_details = require('../models/orderModel')
 const banner_details = require('../models/bannerModel')
+let brandMsg
+let salesParam
 const coupon_details = require('../models/couponModel')
 var mongoose = require('mongoose')
 const { v4: uuidv4 } = require('uuid')
@@ -40,400 +45,397 @@ const printer = require('node-printer')
 const cheerio = require('cheerio');
 const axios = require('axios');
 
- 
-let adminSession
+
+
 let adminMsg
 let editId
-// let temp
+
 let couponMsg
-let salesParam
+
+
 
 let adminGetAllProducts = async function (req, res, next) {
   try {
-    if (adminSession) {
-      let products = await product_details.find().lean()
 
-      res.render('admin-products', { products });
-    } else {
-      res.redirect('/admin-login')
-    }
+    let products = await product_details.find().lean()
+
+    res.render('admin-products', { products });
+
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 }
 let adminGetDashboard = async function (req, res, next) {
-  if (adminSession) {
-    let dashBoard = await order_details.aggregate([
-      {
-        $unwind: '$products'
-      },
+try {
+   let dashBoard = await order_details.aggregate([
+    {
+      $unwind: '$products'
+    },
 
-      {
-        $match: {
-          "products.status": "Delivered"
-        }
+    {
+      $match: {
+        "products.status": "Delivered"
       }
-
-
-    ])
-    let dashBoard1 = await order_details.aggregate([
-      {
-        $unwind: '$products'
-      },
-
-      {
-        $match: {
-          "products.status": "Cancelled"
-        }
-      }
-
-
-    ])
-    let dashBoard2 = await order_details.aggregate([
-      {
-        $unwind: '$products'
-      },
-
-      {
-        $match: {
-          "products.status": "Pending"
-        }
-      }
-
-
-    ])
-    let dashBoard3 = await order_details.aggregate([
-      {
-        $unwind: '$products'
-      },
-
-
-
-
-    ])
-    let profit = 0;
-    for (var i = 0; i < dashBoard.length; i++) {
-
-      profit = dashBoard[i].products.price + profit
-
     }
 
-    const d = new Date();
-    let month = d.getMonth();
 
-    let totalOrders = dashBoard3.length
-    let totalCancelled = dashBoard1.length
-    let totalPending = dashBoard2.length
-    res.render('admin-home', { profit, month, totalOrders, totalCancelled, totalPending });
-  } else {
-    res.redirect('/admin-login')
+  ])
+  let dashBoard1 = await order_details.aggregate([
+    {
+      $unwind: '$products'
+    },
+
+    {
+      $match: {
+        "products.status": "Cancelled"
+      }
+    }
+
+
+  ])
+  let dashBoard2 = await order_details.aggregate([
+    {
+      $unwind: '$products'
+    },
+
+    {
+      $match: {
+        "products.status": "Pending"
+      }
+    }
+
+
+  ])
+  let dashBoard3 = await order_details.aggregate([
+    {
+      $unwind: '$products'
+    },
+
+
+
+
+  ])
+  let profit = 0;
+  for (var i = 0; i < dashBoard.length; i++) {
+
+    profit = dashBoard[i].products.price + profit
+
   }
 
+  const d = new Date();
+  let month = d.getMonth();
+
+  let totalOrders = dashBoard3.length
+  let totalCancelled = dashBoard1.length
+  let totalPending = dashBoard2.length
+  res.render('admin-home', { profit, month, totalOrders, totalCancelled, totalPending });
+
+
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+ 
 }
 
 let adminGetLogin = function (req, res, next) {
-  if (adminSession) {
 
-    res.redirect('/admin');
 
-  } else {
+try {
+   res.render('admin-login', { adminMsg });
+  adminMsg = null;
+} catch (error) {
+  console.log(error.message);
+  next()
+}
 
-    res.render('admin-login', { adminMsg });
-    adminMsg = null;
-  }
+ 
+
 
 }
 
 let adminGetDeleteCategory = async function (req, res, next) {
   try {
-    if (adminSession) {
 
-      let name = req.query
-      await category_details.updateOne({ name: name.name }, { $set: { status: name.status } })
-      res.redirect('/admin-addcategory')
+    let name = req.query
+    await category_details.updateOne({ name: name.name }, { $set: { status: name.status } })
+    res.redirect('/admin-addcategory')
 
-    } else {
 
-      res.redirect('/admin-login')
-
-    }
 
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetDeleteSubCategory = async function (req, res, next) {
   try {
-    if (adminSession) {
-      let name = req.query
-      await subcategory_details.updateOne({ name: name.name }, { $set: { status: name.status } })
 
-      res.redirect('/admin-addsubcategory')
-    } else {
-      res.redirect('/admin-login')
-    }
+    let name = req.query
+    await subcategory_details.updateOne({ name: name.name }, { $set: { status: name.status } })
+
+    res.redirect('/admin-addsubcategory')
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetDeleteProduct = async function (req, res, next) {
   try {
-    if (adminSession) {
-
-      let que = req.query
 
 
+    let que = req.query
 
-      await product_details.updateOne({ productIndex: que.productIndex }, { $set: { status: que.status } })
 
-      console.log("delete success");
 
-      res.redirect('/adminproducts')
+    await product_details.updateOne({ productIndex: que.productIndex }, { $set: { status: que.status } })
 
-    } else {
+    console.log("delete success");
 
-      res.redirect('/admin-login')
+    res.redirect('/adminproducts')
 
-    }
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetOrderStatus = async function (req, res, next) {
   try {
-    if (adminSession) {
-      req.session.orders = await order_details.find().sort({_id:-1}).lean()
 
-    
-     
+    req.session.orders = await order_details.find().sort({ _id: -1 }).lean()
 
-      let ord=req.session.orders
-      res.render('admin-orderstatus', { ord })
-      ord=null
-    } else {
-      res.redirect('/admin-login')
-    }
+
+
+
+    let ord = req.session.orders
+    res.render('admin-orderstatus', { ord })
+    ord = null
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetSetOrderStatus = async function (req, res, next) {
-  // try {
-    if (adminSession) {
-      let statusName = req.query
-      console.log(statusName);
-      await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.status": statusName.status } })
+   try {
 
-      let pId = uuidv4()
+  let statusName = req.query
+  console.log(statusName);
+  await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.status": statusName.status } })
 
-      if(statusName.status == "Return Accepted"){
-        let returnStatus = await order_details.aggregate([
-          {
-            $match:{
-              _id: mongoose.Types.ObjectId(statusName.id) 
-            }
-          },
-          {
-            $unwind:'$products'
-          },
-          {
-            $match:{
-              "products.paymentId":statusName.paymentId
-            }
-          }
-        ])
-  
-        console.log(returnStatus[0]);
-     //pass _id of order to here 
-     //check which is the order
-     //set a variable to get total count
-        if (returnStatus[0].couponId) {
-          console.log(returnStatus[0].products)
-          const amount = parseInt(returnStatus[0].products[0].price)*parseInt(returnStatus[0].products[0].quantity)-(parseInt(returnStatus[0].couponDiscount)/parseInt(returnStatus[0].products[0].quantity))
-          console.log(amount);
-          await user_details.updateOne({username:returnStatus[0].orderedUser},{$inc:{wallet:amount}})
-        }else{
-          
-          console.log(returnStatus[0].products.price);
-         
-         
-          // console.log(returnStatus[0].products[0].price);
-          
-          const amount = parseInt(returnStatus[0].products.price)*parseInt(returnStatus[0].products.quantity)
-          await user_details.updateOne({username:returnStatus[0].orderedUser},{$inc:{wallet:amount}})
+  let pId = uuidv4()
+
+  if (statusName.status == "Return Accepted") {
+    let returnStatus = await order_details.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(statusName.id)
         }
-     
-        
-      
-      
-       
-      }
-
-      if (statusName.status == "Delivered") {
-
-        let statusChecking = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
-
-        if (statusChecking.paymentType == "cash on delivery" || statusChecking.paymentType == "wallet") {
-
-
-          await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.paymentId": pId } })
-
-
-
+      },
+      {
+        $unwind: '$products'
+      },
+      {
+        $match: {
+          "products.paymentId": statusName.paymentId
         }
-
-        const changedDate = new Date().toDateString().slice(4)
-
-        await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "deliveryDate": changedDate } })
-        const salesDate=new Date()
-        await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.salesDate": salesDate } })
-
-      
       }
-      if(statusName.status == "Order Confirmed") {
-        const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
+    ])
 
-        await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: "-" + stockChanges.products[0].quantity } })
-      }
-
-      if(statusName.status == "Cancelled") {
-        const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
-
-        await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: stockChanges.products[0].quantity } })
-        console.log("lookk");
-      }
-      
-
-
-
-      res.redirect('/orderstatus')
+    console.log(returnStatus[0]);
+    //pass _id of order to here 
+    //check which is the order
+    //set a variable to get total count
+    if (returnStatus[0].couponId) {
+      console.log(returnStatus[0].products)
+      const amount = parseInt(returnStatus[0].products[0].price) * parseInt(returnStatus[0].products[0].quantity) - (parseInt(returnStatus[0].couponDiscount) / parseInt(returnStatus[0].products[0].quantity))
+      console.log(amount);
+      await user_details.updateOne({ username: returnStatus[0].orderedUser }, { $inc: { wallet: amount } })
     } else {
-      res.redirect('/admin-login')
+
+      console.log(returnStatus[0].products.price);
+
+
+      // console.log(returnStatus[0].products[0].price);
+
+      const amount = parseInt(returnStatus[0].products.price) * parseInt(returnStatus[0].products.quantity)
+      await user_details.updateOne({ username: returnStatus[0].orderedUser }, { $inc: { wallet: amount } })
     }
 
+    const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
+
+    await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: "-" + stockChanges.products[0].quantity } })
 
 
-  // } catch (error) {
-  //   console.log(error.message);
-  // }
-}
 
-let adminGetGetCartOrders = async function (req, res, next) {
-  try {
-    if (adminSession) {
-      // let statusName = req.query
-      req.session.admin.temp = mongoose.Types.ObjectId(req.params.id)
-      
-      console.log(req.params.id);
-      console.log(req.session.admin);
+  }
 
-      //  await order_details.updateOne({_id:statusName.id},{$set:{orderStatus:statusName.status}})
-      //  console.log("success");
-      res.redirect('/admincart')
+  if (statusName.status == "Delivered") {
 
-    } else {
-      res.redirect('/admin-login')
+    let statusChecking = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
+
+    if (statusChecking.paymentType == "cash on delivery" || statusChecking.paymentType == "wallet") {
+
+
+      await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.paymentId": pId } })
+
+
+
     }
+
+    const changedDate = new Date().toDateString().slice(4)
+
+    await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "deliveryDate": changedDate } })
+    const salesDate = new Date()
+    await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.salesDate": salesDate } })
+
+
+  }
+  if (statusName.status == "Order Confirmed") {
+    const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
+
+    await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: "-" + stockChanges.products[0].quantity } })
+  }
+
+  if (statusName.status == "Cancelled") {
+    const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
+
+    await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: stockChanges.products[0].quantity } })
+    console.log("lookk");
+  }
+
+
+
+
+  res.redirect('/orderstatus')
+
 
 
 
   } catch (error) {
     console.log(error.message);
+    next()
+  }
+}
+
+let adminGetGetCartOrders = async function (req, res, next) {
+  try {
+
+    // let statusName = req.query
+    req.session.admin.temp = mongoose.Types.ObjectId(req.params.id)
+
+    console.log(req.params.id);
+    console.log(req.session.admin);
+
+    //  await order_details.updateOne({_id:statusName.id},{$set:{orderStatus:statusName.status}})
+    //  console.log("success");
+    res.redirect('/admincart')
+
+
+
+
+
+  } catch (error) {
+    console.log(error.message);
+    next()
   }
 }
 
 let adminGetListOrderSpecific = async function (req, res, next) {
   try {
-    if (adminSession) {
-const Ltemp = mongoose.Types.ObjectId(req.session.admin.temp) 
-console.log(req.session.admin);
 
-      let resp = await order_details.aggregate([
+    const Ltemp = mongoose.Types.ObjectId(req.session.admin.temp)
+    console.log(req.session.admin);
 
-        {
-          $match: { _id: Ltemp }
-        },
+    let resp = await order_details.aggregate([
 
-        {
-          $unwind: '$products'
-        }
-      ])
-console.log(req.session.temp);
+      {
+        $match: { _id: Ltemp }
+      },
+
+      {
+        $unwind: '$products'
+      }
+    ])
+    console.log(req.session.temp);
 
     console.log(resp);
 
 
-      res.render('admin-cartorders', { resp })
-    } else {
-      res.redirect('/admin-login')
-    }
+    res.render('admin-cartorders', { resp })
+
 
 
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 
 let adminGetDeleteBrand = async function (req, res, next) {
   try {
-    if (adminSession) {
-      let hi = req.query
-      await brand_details.updateOne({ name: hi.name }, { $set: { status: hi.status } })
 
-      res.redirect('/admin-addbrand')
-    } else {
-      res.redirect('/admin-login')
-    }
+    let hi = req.query
+    await brand_details.updateOne({ name: hi.name }, { $set: { status: hi.status } })
+
+    res.redirect('/admin-addbrand')
+
 
 
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetAddCategory = async function (req, res, next) {
-  try {
-    if (adminSession) {
-      req.session.dbCategory = await category_details.find().lean()
-      console.log("reached");
 
-      res.render('admin-addcategory', { dbCategory:req.session.dbCategory });
-    } else {
-      res.redirect('/admin-login')
-    }
+  try {
+      req.session.dbCategory = await category_details.find().lean()
+  console.log("reached");
+
+  res.render('admin-addcategory', { dbCategory: req.session.dbCategory });
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
+
+
 
 }
 
 let adminGetAddCoupon = async function (req, res, next) {
-  try {
-    if (adminSession) {
-      dbCoupon = await coupon_details.find().lean()
-      // console.log("coupons$");
 
-      res.render('admin-addcoupon', { dbCoupon, couponMsg });
-    } else {
-      res.redirect('/admin-login')
-    }
+try {
+   dbCoupon = await coupon_details.find().lean()
+  // console.log("coupons$");
 
-  } catch (error) {
-    console.log(error.message);
-  }
+  res.render('admin-addcoupon', { dbCoupon, couponMsg });
+
+
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+ 
+
 
 }
 
@@ -441,13 +443,11 @@ let adminGetAddCoupon = async function (req, res, next) {
 let adminGetAddBrand = async function (req, res, next) {
 
   try {
-    if (adminSession) {
-      req.session.dbBrand = await brand_details.find().lean()
-      console.log(req.session.dbBrand);
-      res.render('admin-addbrand', { dbBrand:req.session.dbBrand });
-    } else {
-      res.redirect('/admin-login')
-    }
+
+    req.session.dbBrand = await brand_details.find().lean()
+    console.log(req.session.dbBrand);
+    res.render('admin-addbrand', { dbBrand: req.session.dbBrand });
+
   } catch (error) {
     console.log(error.message);
   }
@@ -455,13 +455,11 @@ let adminGetAddBrand = async function (req, res, next) {
 }
 let adminGetAddSubCategory = async function (req, res, next) {
   try {
-    if (adminSession) {
-      req.session.dbSubcategory = await subcategory_details.find().lean()
 
-      res.render('admin-addsubcategory', { dbSubcategory:req.session.dbSubcategory });
-    } else {
-      res.redirect('/admin-login')
-    }
+    req.session.dbSubcategory = await subcategory_details.find().lean()
+
+    res.render('admin-addsubcategory', { dbSubcategory: req.session.dbSubcategory });
+
 
   } catch (error) {
     console.log(error.message);
@@ -470,33 +468,31 @@ let adminGetAddSubCategory = async function (req, res, next) {
 }
 let adminGetAddProducts = async function (req, res, next) {
   try {
-    if (adminSession) {
 
-      req.session.dbBrand = await brand_details.find().lean()
-      req.session.dbCategory = await category_details.find().lean()
-      req.session.dbSubcategory = await subcategory_details.find().lean()
-      res.render('admin-addproduct', { dbBrand:req.session.dbBrand, dbSubcategory:req.session.dbSubcategory, dbCategory:req.session.dbCategory });
-    } else {
-      res.redirect('/admin-login')
-    }
+
+    req.session.dbBrand = await brand_details.find().lean()
+    req.session.dbCategory = await category_details.find().lean()
+    req.session.dbSubcategory = await subcategory_details.find().lean()
+    res.render('admin-addproduct', { dbBrand: req.session.dbBrand, dbSubcategory: req.session.dbSubcategory, dbCategory: req.session.dbCategory });
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 }
 
 let adminGetAllUsers = async function (req, res, next) {
   try {
-    if (adminSession) {
-      let users = await user_details.find().lean()
-      res.render('admin-users', { users });
-    } else {
-      res.redirect('/admin-login')
-    }
+
+    let users = await user_details.find().lean()
+    res.render('admin-users', { users });
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 }
@@ -506,215 +502,222 @@ let adminGetAllUsers = async function (req, res, next) {
 let adminGetBlockUsers = async function (req, res, next) {
   try {
 
-    if (adminSession) {
-      let id = req.params.id
-      let statusCheck = await user_details.findOne({ _id: id }).lean()
-      if (statusCheck == null) {
-        console.log("invalid id passed");
-      } else if (statusCheck.status == true) {
-        await user_details.updateOne({ _id: id }, { $set: { status: false } })
-        console.log("blcoked");
-        res.redirect('/admin-users')
-      } else {
-        await user_details.updateOne({ _id: id }, { $set: { status: true } })
-        console.log("unblocked");
-        res.redirect('/admin-users')
-      }
+
+    let id = req.params.id
+    let statusCheck = await user_details.findOne({ _id: id }).lean()
+    if (statusCheck == null) {
+      console.log("invalid id passed");
+    } else if (statusCheck.status == true) {
+      const blockChecker = await user_details.updateOne({ _id: id }, { $set: { status: false } })
+      console.log("blcoked");
+      req.session.user=null
+      res.redirect('/admin-users')
     } else {
-      res.redirect('/admin-login')
+      await user_details.updateOne({ _id: id }, { $set: { status: true } })
+      console.log("unblocked");
+      res.redirect('/admin-users')
     }
+
 
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 
 }
 let adminGetDeleteUsers = async function (req, res, next) {
   try {
-    if (adminSession) {
-      let id = req.params.id;
-      console.log(id);
-      await user_details.deleteOne({ _id: id })
-      console.log("deleted user");
-      res.redirect('/admin-users')
-    } else {
-      res.redirect('/admin-login')
-    }
+
+    let id = req.params.id;
+    console.log(id);
+    await user_details.deleteOne({ _id: id })
+    console.log("deleted user");
+    res.redirect('/admin-users')
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetEditProduct = async function (req, res, next) {
   try {
-    if (adminSession) {
-      editId = req.params.id
-      console.log(editId);
-      res.redirect('/adminedit')
-    } else {
-      res.redirect('/admin-login')
-    }
+
+    editId = req.params.id
+    console.log(editId);
+    res.redirect('/adminedit')
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetEdit = async function (req, res, next) {
   try {
-    if (adminSession) {
-      console.log("hi");
-      req.session.dbBrand = await brand_details.find().lean()
-      req.session.dbCategory = await category_details.find().lean()
-      req.session.dbSubcategory = await subcategory_details.find().lean()
-      res.render('admin-editproduct', { dbBrand:req.session.dbBrand, dbCategory:req.session.dbCategory, dbSubcategory:req.session.dbSubcategory, editId })
-    } else {
-      res.redirect('/admin-login')
-    }
+
+    console.log("good evening");
+    const editValue = await product_details.findOne({ productIndex: editId })
+    console.log(editValue)
+    req.session.dbBrand = await brand_details.find().lean()
+    req.session.dbCategory = await category_details.find().lean()
+    req.session.dbSubcategory = await subcategory_details.find().lean()
+    res.render('admin-editproduct', { dbBrand: req.session.dbBrand, dbCategory: req.session.dbCategory, dbSubcategory: req.session.dbSubcategory, editId, editValue, title: editValue.title, price: editValue.price, stock: editValue.stock, description: editValue.description, imageReference: editValue.imageReference })
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 let adminGetBanner = async function (req, res, next) {
   try {
-    if (adminSession) {
 
 
-      dbBanner = await banner_details.find().lean()
-      res.render('admin-addbanner', { dbBanner })
-    } else {
-      res.redirect('/admin-login')
-    }
+    dbBanner = await banner_details.find().lean()
+    res.render('admin-addbanner', { dbBanner })
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 //post requests
 
 let adminPostAddBanner = async function (req, res, next) {
   try {
-    if (adminSession) {
-      let editBanner = {}
 
-      editBanner.status = true
+    let editBanner = {}
 
-      ////////////////////////
-      let ImmiId = uuidv4()
-      let images = [];
-      let img = req.files.image;
-      let count = img.length
-      console.log(count);
-      if (count) {
+    editBanner.status = true
 
-        for (var i = 0; i < count; i++) {
+    ////////////////////////
+    let ImmiId = uuidv4()
+    let images = [];
+    let img = req.files.image;
+    let count = img.length
+    console.log(count);
+    if (count) {
 
-          img[i].mv('public/product-images/banner/' + ImmiId + i + '.jpg', (err, done) => {
-            console.log(err);
-          })
+      for (var i = 0; i < count; i++) {
 
-          images[i] = ImmiId + i;
-        }
-        editBanner.imageReference = images;
-      } else {
-        img.mv('./public/product-images/banner/' + ImmiId + '.jpg', (err, done) => {
+        img[i].mv('public/product-images/banner/' + ImmiId + i + '.jpg', (err, done) => {
           console.log(err);
         })
-        images[0] = ImmiId + '.jpg';
-        editBanner.imageReference = images;
+
+        images[i] = ImmiId + i;
       }
-      editBanner.category = req.body.category
-      editBanner.product = req.body.product
-
-      await banner_details.insertMany([editBanner])
-
-      res.redirect('admin-banner')
-      /////////////////////////
-
+      editBanner.imageReference = images;
     } else {
-      res.redirect('/admin-login')
+      img.mv('./public/product-images/banner/' + ImmiId + '.jpg', (err, done) => {
+        console.log(err);
+      })
+      images[0] = ImmiId + '.jpg';
+      editBanner.imageReference = images;
     }
+    editBanner.category = req.body.category
+    editBanner.product = req.body.product
+
+    await banner_details.insertMany([editBanner])
+
+    res.redirect('admin-banner')
+    /////////////////////////
+
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminPostEditBanner = async function (req, res, next) {
   try {
-    if (adminSession) {
 
-      let editBanner = {}
-
+    let editBanner = {}
 
 
-      ////////////////////////
 
-      let images = [];
-      let img = req.files.image;
-      let editHelper = await banner_details.findOne({ _id: req.body.hid })
-      console.log(editHelper);
-      img.mv('./public/product-images/banner/' + editHelper.imageReference[0], (err, done) => {
-        console.log(err);
-      })
-      images[0] = editHelper.imageReference[0];
-      editBanner.imageReference = images;
+    ////////////////////////
 
-      editBanner.category = req.body.category
-      editBanner.product = req.body.product
+    let images = [];
+    let img = req.files.image;
+    let editHelper = await banner_details.findOne({ _id: req.body.hid })
+    console.log(editHelper);
+    img.mv('./public/product-images/banner/' + editHelper.imageReference[0], (err, done) => {
+      console.log(err);
+    })
+    images[0] = editHelper.imageReference[0];
+    editBanner.imageReference = images;
 
-      await banner_details.updateOne({ _id: req.body.hid }, { $set: { product: req.body.product, category: req.body.category } })
-      res.redirect('/admin-banner')
-      /////////////////////////
+    editBanner.category = req.body.category
+    editBanner.product = req.body.product
 
-    } else {
-      res.redirect('/admin-login')
-    }
+    await banner_details.updateOne({ _id: req.body.hid }, { $set: { product: req.body.product, category: req.body.category } })
+    res.redirect('/admin-banner')
+    /////////////////////////
+
+
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 let adminGetParam = async (req, res) => {
-  newImg = mongoose.Types.ObjectId(req.query._id)
+  try {
+      newImg = mongoose.Types.ObjectId(req.query._id)
   console.log(newImg);
   res.redirect('/editbanner')
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 
 }
 
 const adminGetEditBanner = async (req, res) => {
-  let bannerEdit = await banner_details.find({ _id: newImg }).lean()
+  try {
+      let bannerEdit = await banner_details.find({ _id: newImg }).lean()
   console.log(bannerEdit);
   res.render('admin-editbanner', { bannerEdit })
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 }
 
 let adminPostEditProduct = async function (req, res, next) {
   try {
-    if (adminSession) {
 
-      let editProducts = {
-        title: req.body.title,
-        price: req.body.price,
-        category: req.body.category,
-        stock: req.body.stock,
 
-        brand: req.body.brand,
-        subcategory: req.body.subcategory,
-        productIndex: req.body.productindex,
-        description: req.body.description
-      }
+    let editProducts = {
+      title: req.body.title,
+      price: req.body.price,
+      category: req.body.category,
+      stock: req.body.stock,
 
-      console.log(req.body);
-      let productId = editProducts.productIndex;
-      console.log(productId);
+      brand: req.body.brand,
+      subcategory: req.body.subcategory,
+      productIndex: req.body.productindex,
+      description: req.body.description
+    }
 
-      let result = await product_details.findOne({ productIndex: productId }).lean()
-      console.log(result + "this is the result");
+    console.log(req.body);
+    let productId = editProducts.productIndex;
+    console.log(productId);
+
+    let result = await product_details.findOne({ productIndex: productId }).lean()
+    console.log(result + "this is the result");
+    if (req.files) {
       function fileEdit() {
 
         let images = [];
@@ -747,155 +750,171 @@ let adminPostEditProduct = async function (req, res, next) {
       console.log("edit success");
       res.redirect('/adminproducts')
     } else {
-      res.redirect('/admin-login')
+
+      await product_details.updateOne({ productIndex: productId }, { $set: { title: editProducts.title, price: editProducts.price, category: editProducts.category, subcategory: editProducts.subcategory, brand: editProducts.brand, stock: editProducts.stock, description: editProducts.description } })
+      console.log("edit success");
+      res.redirect('/adminproducts')
     }
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 
 const adminGetSalesReport = async (req, res) => {
-  if (adminSession) {
 
-    if (salesParam == "day") {
+try {
+  if (salesParam == "day") {
 
-      const today = new Date();
-      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-      const salesReport = await order_details.aggregate([
+    const salesReport = await order_details.aggregate([
 
-        {
-          $unwind: "$products"
-        },
-        {
-          $match: { "products.status": "Delivered" }
-        },
-        {
-          $match:{
-            "products.salesDate":{ $gte: startOfToday, $lte: endOfToday }
-          }
-        } 
-      ])
-      
-
-
-      res.render("admin-sales", { salesReport })
-
-    } else if (salesParam == "month") {
-
-      const today = new Date();
-      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-
-     
-      const salesReport = await order_details.aggregate([
-        {
-          $unwind: "$products"
-        },
-        {
-          $match: { "products.status": "Delivered" }
-        },
-        {
-          $match:{
-            "products.salesDate":{ $gte: startOfMonth, $lte: endOfMonth }
-          }
-        }, 
-      ])
-      console.log(salesReport);
-
-
-      
-      res.render("admin-sales", { salesReport })
-    } else {
-      const salesReport = await order_details.aggregate([
-        {
-          $unwind: "$products"
-        },
-        {
-          $match: { "products.status": "Delivered" }
+      {
+        $unwind: "$products"
+      },
+      {
+        $match: { "products.status": "Delivered" }
+      },
+      {
+        $match: {
+          "products.salesDate": { $gte: startOfToday, $lte: endOfToday }
         }
-      ])
-      res.render("admin-sales", { salesReport })
-    }
+      }
+    ])
 
 
 
+    res.render("admin-sales", { salesReport })
 
+  } else if (salesParam == "month") {
+
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+
+
+    const salesReport = await order_details.aggregate([
+      {
+        $unwind: "$products"
+      },
+      {
+        $match: { "products.status": "Delivered" }
+      },
+      {
+        $match: {
+          "products.salesDate": { $gte: startOfMonth, $lte: endOfMonth }
+        }
+      },
+    ])
+    console.log(salesReport);
+
+
+
+    res.render("admin-sales", { salesReport })
   } else {
-    res.redirect('/admin-login')
+    const salesReport = await order_details.aggregate([
+      {
+        $unwind: "$products"
+      },
+      {
+        $match: { "products.status": "Delivered" }
+      }
+    ])
+    res.render("admin-sales", { salesReport })
   }
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+  
+
+
+
+
+
 
   // console.log(bannerEdit);
   // res.render('admin-editbanner',{bannerEdit})
 }
 
 let adminGetSalesReportParams = async (req, res) => {
-  if (adminSession) {
+  try {
+      salesParam = req.params.id
+  console.log(salesParam);
 
-    salesParam = req.params.id
-    console.log(salesParam);
-
-    res.redirect('/admin-sales')
-
-  } else {
-    res.redirect('/admin-login')
+  res.redirect('/admin-sales')
+  } catch (error) {
+    console.log(error.message);
+    next()
   }
+
+
+
+
 
 
 }
 
 let adminGetDisableBanner = async (req, res) => {
-  if (adminSession) {
+try {
     console.log(req.query);
-    bannerParam = mongoose.Types.ObjectId(req.query._id) 
-    
-    await banner_details.updateOne({_id:bannerParam},{$set:{status:req.query.status}})
+  bannerParam = mongoose.Types.ObjectId(req.query._id)
 
-    console.log("lokkkk");
+  await banner_details.updateOne({ _id: bannerParam }, { $set: { status: req.query.status } })
 
-    res.redirect('/admin-banner')
+  console.log("lokkkk");
 
-  } else {
-    res.redirect('/admin-login')
-  }
+  res.redirect('/admin-banner')
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+
+
+
 
 }
 
 const adminDownloadSales = (req, res) => {
 
-  if(adminSession){
+try {
+   const url = 'http://localhost:3000/admin-sales';
+  const tableId = 'my-table';
 
-    const url = 'http://localhost:3000/admin-sales';
-    const tableId = 'my-table';
-  
-    JSDOM.fromURL(url).then(dom => {
+  JSDOM.fromURL(url).then(dom => {
 
-      const table = dom.window.document.querySelector(`#${tableId}`);
-     
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.table_to_sheet(table);
-  
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-     
-      res.set('Content-Disposition', 'attachment; filename=my-table.xlsx');
-      res.send(buffer);
-      
-  
-    });
-  }else{
+    const table = dom.window.document.querySelector(`#${tableId}`);
 
-  }
-  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.table_to_sheet(table);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    res.set('Content-Disposition', 'attachment; filename=my-table.xlsx');
+    res.send(buffer);
+
+
+  });
+
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+
  
+
+
 }
 
 
-   
+
 
 
 
@@ -915,9 +934,9 @@ const adminPostLogin = async function (req, res, next) {
       let result = await bcrypt.compare(data.password, adminValidator.password)
       console.log(result);
       if (result) {
-       
+
         req.session.admin = adminValidator;
-        adminSession = req.session.admin;
+
         res.redirect('/admin')
         console.log("logged to admin");
       } else {
@@ -930,13 +949,15 @@ const adminPostLogin = async function (req, res, next) {
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 }
 
 
 
 let adminPostUploadProduct = async function (req, res, next) {
-  let size1 = []
+  try {
+     let size1 = []
   size1 = req.body.size
   let colour1 = []
   colour1 = req.body.colour
@@ -958,41 +979,58 @@ let adminPostUploadProduct = async function (req, res, next) {
   console.log("hii");
   console.log(req.body);
 
-
-
-
-
-
-  function file() {
+  async function file() {
     let images = [];
-    let img = req.files.image;
-    let count = img.length
+    images = req.files.image;
+    let count = images.length
     console.log(count);
     if (count) {
 
       for (var i = 0; i < count; i++) {
-        img[i].mv('public/product-images/products/' + products.productIndex + i + '.jpg', (err, done) => {
-          console.log(err);
-        })
+       
+        let path = "" + images[i].tempFilePath
+        console.log(path);
+        await sharp(path)
+          .rotate()
+          .resize(1000, 1500)
+          .jpeg({ mozjpeg: true })
+          .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
 
         images[i] = products.productIndex + i;
       }
       products.imageReference = images;
+      console.log(products);
+      products.uploadedDate = new Date().toDateString().slice(4);
+      products.status = true;
+      await product_details.insertMany([products]);
+      res.redirect('/admin-products')
     } else {
-      img.mv('./public/product-images/products/' + products.productIndex + '.jpg', (err, done) => {
-        console.log(err);
-      })
+      let path = "" + images.tempFilePath
+      console.log(path);
+      await sharp(path)
+        .rotate()
+        .resize(1000, 1500)
+        .jpeg({ mozjpeg: true })
+        .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
       images[0] = products.productIndex;
       products.imageReference = images;
+      console.log(products)
+      console.log("samaina");
+      products.uploadedDate = new Date().toDateString().slice(4);
+      products.status = true;
+      await product_details.insertMany([products]);
+      res.redirect('/admin-products')
     }
 
   }
   file()
-  products.uploadedDate = new Date().toDateString().slice(4);
-  products.status = true;
-  await product_details.insertMany([products]);
-  res.redirect('/admin-addcategory')
+ 
 
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+ 
 }
 
 
@@ -1018,31 +1056,28 @@ let adminPostAddCategory = async function (req, res, next) {
 
 
   } catch (error) {
-    error.message
+    console.log(error.message);
+    next()
   }
 }
 
 let adminPostAddCoupon = async function (req, res, next) {
 
-
-  if (adminSession) {
+try {
     let coupon = req.body
-    coupon.status = true
-    console.log(coupon);
-    let checkCoupon = await coupon_details.findOne({ code: coupon.code }).lean()
-    console.log(checkCoupon);
-    if (checkCoupon == null) {
-      await coupon_details.insertMany([coupon])
-    } else {
-      couponMsg = "coupon already present"
-    }
-
-
-    res.redirect('/admin-coupon')
-    
+  coupon.status = true
+  console.log(coupon);
+  let checkCoupon = await coupon_details.findOne({ code: coupon.code }).lean()
+  console.log(checkCoupon);
+  if (checkCoupon == null) {
+    await coupon_details.insertMany([coupon])
   } else {
-    res.redirect('/admin')
+    couponMsg = "coupon already present"
   }
+
+
+  res.redirect('/admin-coupon')
+
 
 
   //  res.redirect('/admin-addcategory')
@@ -1052,29 +1087,37 @@ let adminPostAddCoupon = async function (req, res, next) {
   //    res.redirect('/admin-addcategory')
   //  }
 
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+
+
 
 
 }
 
 let adminPostDisableCoupon = async function (req, res, next) {
 
+try {
+   let couponParam = req.query;
+  console.log(couponParam);
 
-  if (adminSession) {
-    let couponParam = req.query;
-    console.log(couponParam);
-
-    await coupon_details.updateOne({ code: couponParam.code }, { $set: { status: couponParam.status } })
+  await coupon_details.updateOne({ code: couponParam.code }, { $set: { status: couponParam.status } })
 
 
-    res.redirect('/admin-coupon')
-  } else {
-    res.redirect('/admin')
-  }
+  res.redirect('/admin-coupon')
+} catch (error) {
+  console.log(error.message);
+  next()
+}
+
+ 
 }
 
 let adminPostAddBrand = async function (req, res, next) {
   try {
-    
+
     let checkBrand = await brand_details.findOne({ name: req.body.brand }).lean()
     console.log(req.body.brand);
     console.log(checkBrand);
@@ -1084,7 +1127,7 @@ let adminPostAddBrand = async function (req, res, next) {
 
       }
       //
-      await sharp(req.file.buffer).resize({width:229,height:306}).toFile(`./public/product-images/${brand.name}-${req.file.originalname}`)
+      await sharp(req.file.buffer).resize({ width: 229, height: 306 }).toFile(`./public/product-images/${brand.name}-${req.file.originalname}`)
       //
       brand.date = new Date().toDateString().slice(4);
       brand.status = true;
@@ -1093,9 +1136,9 @@ let adminPostAddBrand = async function (req, res, next) {
         res.redirect('/admin-addbrand')
       } else {
         let image = req.files.image;
-        // image.mv('./public/product-images/brand/' + brand.name + '.jpg', (err, done) => {
-        //   console.log(err);
-        // })
+        image.mv('./public/product-images/brand/' + brand.name + '.jpg', (err, done) => {
+          console.log(err);
+        })
         brand.imageReference = brand.name + '.jpg'
         console.log("brand");
 
@@ -1105,11 +1148,13 @@ let adminPostAddBrand = async function (req, res, next) {
 
     } else {
       console.log("brand already present");
+      brandMsg = "brand already present"
       res.redirect('/admin-addbrand')
     }
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 
@@ -1130,11 +1175,13 @@ let adminPostAddSubCategory = async function (req, res, next) {
       await subcategory_details.insertMany([subcategory])
     } else {
       console.log("subcategory already present");
+      subcategoryMsg = "subcategory already present"
       res.redirect('/admin-addsubcategory')
     }
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 }
@@ -1144,8 +1191,8 @@ let adminGetLogout = function (req, res, next) {
 
   req.session.admin = null;
   req.session.dbBrand = null
-  req.session.dbCategory=null
-  req.session.dbSubcategory=null;
+  req.session.dbCategory = null
+  req.session.dbSubcategory = null;
   res.redirect('/admin-login')
 
 }

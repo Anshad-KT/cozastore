@@ -1,16 +1,19 @@
 const verifyAdminLogin = (req,res,next)=>{
     if(req.session.admin){
-        console.log("poda");
+       
         next();
     }else{
+        
         res.redirect('/admin-login')
     }
 }
 
 const verifyAdminNotLogin = (req,res,next)=>{
     if(req.session.admin){
+       
         res.redirect('/admin');
     }else{   
+        console.log(req.session.admin)
         next();
     }
 }

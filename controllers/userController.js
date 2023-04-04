@@ -1,6 +1,7 @@
 let otp = require("../helpers/otp");
 const Promise = require("promise");
 // let ghh;
+require('dotenv').config()
 let couponErrorMsg;
 let defaultAddress;
 var mongoose = require("mongoose");
@@ -10,6 +11,7 @@ let user_details = require("../models/userModel");
 let product_details = require("../models/productModel");
 const category_details = require("../models/categoryModel");
 const cart_details = require("../models/cartModel");
+let walletMsg
 const order_details = require("../models/orderModel");
 const {
   ExecutionContextContextImpl,
@@ -27,12 +29,14 @@ const {
   DependentHostedNumberOrderListInstance,
 } = require("twilio/lib/rest/preview/hosted_numbers/authorizationDocument/dependentHostedNumberOrder");
 const session = require("express-session");
+const { triggerAsyncId } = require("async_hooks");
 
 var instance = new Razorpay({
-  key_id: "rzp_test_03pins9a8mVlgN",
-  key_secret: "EAY2f074OyETGQarM9TbZdtW",
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 /////
+// 82TDrxxV3gszhAK
 
 let loginMsg;
 let SignupMsg;
@@ -93,15 +97,24 @@ let userGetEditProfile = async function (req, res, next) {
       editMsg,
       selectedAddress,
       allAddress,
+      editPassMsg
     });
     editMsg = null;
+    editPassMsg=null
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 let userGetEditProfilePassword = function (req, res, next) {
-  res.render("user-editpassword", { editPassMsg });
+    try {
+        res.render("user-editpassword", { editPassMsg });
   editPassMsg = null;
+    } catch (error) {
+      console.log(error.message);
+      next()
+    }
+  
 };
 
 let userPostAddDefaultAddress = async (req, res, next) => {
@@ -117,56 +130,23 @@ let userPostAddDefaultAddress = async (req, res, next) => {
 };
 
 let userGetCheckout = async function (req, res, next) {
-  let userProfile = await user_details
+  try {
+    let userProfile = await user_details
     .findOne({ username: req.session.user })
     .lean();
   console.log(req.session.addressParams);
   let totalAmount = 0;
 
   let length = req.session.userdone.length;
-
-  let selectedAddress = await address_details.aggregate([
-    {
-      $match: { userId: req.session.user },
-    },
-    {
-      $unwind: "$address",
-    },
-    {
-      $match: { "address.id": req.session.addressParams },
-    },
-  ]);
-  console.log(selectedAddress.length);
-  if (selectedAddress.length == 0) {
-    let add = await address_details.findOne({ userId: req.session.user });
-    console.log(add);
-
-    let def = add.defaultAddress;
-    let selectedAddress = await address_details.aggregate([
-      {
-        $match: { userId: req.session.user },
-      },
-      {
-        $unwind: "$address",
-      },
-      {
-        $match: { "address.id": def },
-      },
-    ]);
-    console.log(selectedAddress);
-    console.log("gate 2");
-    let userdone = req.session.userdone;
-    res.render("user-checkout", {
-      name: userProfile.name,
-      username: userProfile.username,
-      phone: userProfile.phone,
-      email: userProfile.email,
-      selectedAddress,
-      userdone,
-      ghh: req.session.ghh,
-    });
-    userdone = null;
-  } else {
+ const addressCheck = await address_details.aggregate([
+  {
+    $match: { userId: req.session.user },
+  },
+  {
+    $unwind: "$address",
+  },
+])
+  if(addressCheck.length>0){
     let selectedAddress = await address_details.aggregate([
       {
         $match: { userId: req.session.user },
@@ -178,24 +158,94 @@ let userGetCheckout = async function (req, res, next) {
         $match: { "address.id": req.session.addressParams },
       },
     ]);
-    console.log(selectedAddress);
-    console.log("gate 3");
+    console.log(selectedAddress.length);
+    if (selectedAddress.length == 0) {
+      let add = await address_details.findOne({ userId: req.session.user });
+      console.log(add);
+  
+      let def = add.defaultAddress;
+      let selectedAddress = await address_details.aggregate([
+        {
+          $match: { userId: req.session.user },
+        },
+        {
+          $unwind: "$address",
+        },
+        {
+          $match: { "address.id": def },
+        },
+      ]);
+      console.log(selectedAddress);
+      console.log("gate 2");
+      let userdone = req.session.userdone;
+      res.render("user-checkout", {
+        name: userProfile.name,
+        username: userProfile.username,
+        phone: userProfile.phone,
+        email: userProfile.email,
+        selectedAddress,
+        userdone,
+        ghh: req.session.ghh,
+        walletMsg
+      });
+      userdone = null;
+      walletMsg=null
+    } else {
+      let selectedAddress = await address_details.aggregate([
+        {
+          $match: { userId: req.session.user },
+        },
+        {
+          $unwind: "$address",
+        },
+        {
+          $match: { "address.id": req.session.addressParams },
+        },
+      ]);
+      console.log(selectedAddress);
+      console.log("gate 3");
+      let userdone = req.session.userdone;
+      res.render("user-checkout", {
+        name: userProfile.name,
+        username: userProfile.username,
+        phone: userProfile.phone,
+        email: userProfile.email,
+        selectedAddress,
+        userdone,
+        ghh: req.session.ghh,
+        walletMsg
+      });
+      userdone = null;
+      walletMsg=null
+    }
+  }else{
     let userdone = req.session.userdone;
     res.render("user-checkout", {
       name: userProfile.name,
       username: userProfile.username,
       phone: userProfile.phone,
       email: userProfile.email,
-      selectedAddress,
+      // selectedAddress,
       userdone,
       ghh: req.session.ghh,
+      walletMsg
     });
     userdone = null;
+    walletMsg=null
   }
+
+
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+  
+  
 };
 
 let userGetCart = async function (req, res, next) {
-  req.session.Id = await user_details.findOne({ username: req.session.user });
+  try {
+      req.session.Id = await user_details.findOne({ username: req.session.user });
 
   uss = req.session.Id._id.toString();
 
@@ -335,10 +385,15 @@ let userGetCart = async function (req, res, next) {
 
   appliedCoupon = null;
   userdone = null;
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 };
 
 let userPostCheckoutBilling = async function (req, res, next) {
-  // try {
+   try {
   console.log("test", req.body);
 
   let billingDetails = req.body;
@@ -478,6 +533,7 @@ let userPostCheckoutBilling = async function (req, res, next) {
       res.json({ WALLET: true });
     }else{
       console.log("Sorry you dont have enough money on your wallet")
+      walletMsg="Sorry you dont have enough money on your wallet";
     }
   } else {
     const hijack = await user_details.findOne({ username: req.session.user });
@@ -497,13 +553,15 @@ let userPostCheckoutBilling = async function (req, res, next) {
 
   
 
-  // } catch (error) {
-  //     console.log(error.message);
-  // }
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
 };
 
 let userGetOrders = async function (req, res, next) {
-  req.session.orders = await order_details
+  try {
+    req.session.orders = await order_details
     .findOne({ orderedUser: req.session.user })
     .lean();
 
@@ -533,10 +591,16 @@ let userGetOrders = async function (req, res, next) {
   console.log("kdinidj");
   console.log(resp);
   res.render("user-orders", { resp, total: req.session.orders.billAmount });
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+  
 };
 
 let userGetDeleteCart = async function (req, res, next) {
-  let cartIds = req.query;
+  try {
+     let cartIds = req.query;
   console.log(cartIds);
 
   let qty = parseInt(cartIds.quantity);
@@ -558,10 +622,16 @@ let userGetDeleteCart = async function (req, res, next) {
   console.log("deleted cart");
 
   res.redirect("/cart");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+ 
 };
 
 let userGetDeleteOne = async function (req, res, next) {
-  let parm = req.query;
+  try {
+     let parm = req.query;
 
   console.log(parm.orderId + " " + parm.productIndex + " " + parm.status);
 
@@ -585,10 +655,16 @@ let userGetDeleteOne = async function (req, res, next) {
   }
 
   res.redirect("/orders");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userGetAddress = async function (req, res, next) {
-  let allAddress = await address_details.aggregate([
+  try {
+     let allAddress = await address_details.aggregate([
     {
       $match: { userId: req.session.user },
     },
@@ -600,25 +676,43 @@ let userGetAddress = async function (req, res, next) {
   console.log(allAddress);
 
   res.render("user-addresslist", { allAddress });
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userGetAddressParams = async function (req, res, next) {
-  req.session.addressParams = req.params.id;
+  try {
+    req.session.addressParams = req.params.id;
   console.log(req.session.addressParams);
   res.redirect("/checkout");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+  
 };
 let userGetDeleteAddressParams = async function (req, res, next) {
-  let addressdltParams = req.params.id;
+  try {
+     let addressdltParams = req.params.id;
   await address_details.updateOne(
     { userId: req.session.user },
     { $pull: { address: { id: addressdltParams } } }
   );
 
   res.redirect("/editprofile");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userGetApplyCoupon = async function (req, res, next) {
-  let appliCoupon = req.body;
+  try {
+     let appliCoupon = req.body;
   console.log(req.body);
   const checkDate = await coupon_details
     .findOne({ code: appliCoupon.coupon })
@@ -634,6 +728,8 @@ let userGetApplyCoupon = async function (req, res, next) {
       const formattedDate = date.toISOString().slice(0, 10);
       if (formattedDate > checkDate.expiryDate) {
         console.log("coupon expired");
+        couponErrorMsg="coupon expired"
+        res.redirect("/cart");
       } else {
         req.session.appliedCoupon = checkDate;
 
@@ -642,10 +738,16 @@ let userGetApplyCoupon = async function (req, res, next) {
     };
     checkValidCoupon();
   }
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userGetOrdersList = async function (req, res, next) {
-  console.log("hi");
+  try {
+     console.log("hi");
 
   const checkOrder = await order_details
     .find({ orderedUser: req.session.user })
@@ -653,12 +755,23 @@ let userGetOrdersList = async function (req, res, next) {
     .lean();
 
   res.render("user-orderlist", { checkOrder });
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userGetOrderParam = async function (req, res, next) {
-  userOrderParam = mongoose.Types.ObjectId(req.params.id);
+  try {
+      userOrderParam = mongoose.Types.ObjectId(req.params.id);
   console.log(userOrderParam);
   res.redirect("/orders");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+
 };
 
 const userGetOrderConfirm = async (req, res, next) => {
@@ -686,11 +799,15 @@ const userGetOrderConfirm = async (req, res, next) => {
     console.log(invoiceDetails[0].products);
 
     res.render("order-confirm", { invoiceDetails });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
 };
 
 let userPostChangeQuantity = async function (req, res, next) {
-  const cart = req.body.cart;
+  try {
+    const cart = req.body.cart;
   const productId = req.body.product;
   let k = req.body.count;
   let count = parseInt(k);
@@ -712,6 +829,11 @@ let userPostChangeQuantity = async function (req, res, next) {
   const frontQuantity = cartQuantity.products[0].quantity;
 
   res.json({ quantity: frontQuantity, cart: cart, productId: productId });
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+  
 };
 
 let userPostAddAddress = async function (req, res, next) {
@@ -721,7 +843,9 @@ let userPostAddAddress = async function (req, res, next) {
   //         $set:{}
   //     }
   //     )
-  let newAddress = {};
+
+   try {
+     let newAddress = {};
   newAddress.userId = req.session.user;
   newAddress.address = req.body;
 
@@ -758,10 +882,17 @@ let userPostAddAddress = async function (req, res, next) {
   }
 
   res.redirect("/editprofile");
+   } catch (error) {
+     console.log(error.message)
+     next()
+   }
+
+ 
 };
 
 let userPostCartOperation = async function (req, res, next) {
-  console.log(req.body);
+  try {
+     console.log(req.body);
   req.session.quantity = parseInt(req.body.quantity);
   (req.session.size = req.body.size), (req.session.colour = req.body.colour);
 
@@ -854,10 +985,16 @@ let userPostCartOperation = async function (req, res, next) {
   console.log(req.session.Id._id);
 
   res.redirect("/cart");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userPostEditPassword = async function (req, res, next) {
-  let passwordUpdation = req.body;
+  try {
+     let passwordUpdation = req.body;
   let pass = await user_details.findOne({ username: req.session.user }).lean();
   let result = await bcrypt.compare(
     passwordUpdation.previouspassword,
@@ -878,11 +1015,17 @@ let userPostEditPassword = async function (req, res, next) {
   }
   console.log("hi");
 
-  res.redirect("/editpassword");
+  res.redirect("/editprofile");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userVerifyPayment = async function (req, res, next) {
-  console.log(req.body);
+  try {
+     console.log(req.body);
 
   const crypto = require("crypto");
   let hmac = crypto.createHmac("sha256", "EAY2f074OyETGQarM9TbZdtW");
@@ -908,16 +1051,27 @@ let userVerifyPayment = async function (req, res, next) {
   }
 
   console.log("hi");
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+ 
 };
 
 let userPostSearch = async function (req, res, next) {
-  let payload = req.body.payload.trim();
+  try {
+      let payload = req.body.payload.trim();
 
   let searchResults = await product_details
     .find({ title: { $regex: new RegExp("^" + payload + ".*", "i") } })
     .exec();
   searchResults = searchResults.slice(0, 10);
   res.send({ payload: searchResults });
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+
 };
 
 let userPostEditProfile = async function (req, res, next) {
@@ -962,14 +1116,21 @@ let userPostEditProfile = async function (req, res, next) {
     }
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 
 //////////////////////////////////GET USER LOGIN PAGE///////////////////////
 
 let userGetLogin = function (req, res, next) {
-  res.render("user-login", { loginMsg });
+  try {
+      res.render("user-login", { loginMsg });
   loginMsg = null;
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 };
 
 //////////////////////////////////GET USER SIGNUP PAGE///////////////////////
@@ -995,6 +1156,7 @@ let userGetProductDetails = async function (req, res, next) {
     res.redirect("/product-details");
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 
@@ -1029,6 +1191,7 @@ let userGetDetails = async function (req, res, next) {
     res.render("user-product-details", { value, j, s, c, checkWish });
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 
@@ -1049,16 +1212,23 @@ let userGetOtp = function (req, res, next) {
 //////////////////////////////////GET LANDING PAGE///////////////////////
 
 let userGetHome = async function (req, res, next) {
-  let products = await product_details.find().lean();
+  try {
+      let products = await product_details.find().lean();
   let banners = await banner_details.find({ status: true }).lean();
 
   res.render("user-home", { products, banners });
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 };
 
 //////////////////////////////////GET PRODUTS PAGE///////////////////////
 
 let userGetProducts = async function (req, res, next) {
-  console.log(req.session.categoryRequested);
+  try {
+      console.log(req.session.categoryRequested);
   console.log("huythuyt");
   let categories = await category_details.find({ status: true }).lean();
 
@@ -1387,32 +1557,56 @@ let userGetProducts = async function (req, res, next) {
       }
     }
   }
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 };
 
 //////////////////////////////////GET REQUESTED PRODUCTS PARAMS HELPER REQUEST///////////////////////
 
 let userGetProductsRequested = function (req, res, next) {
-  req.session.categoryRequested = req.params.id;
+  try {
+     req.session.categoryRequested = req.params.id;
   console.log(req.session.categoryRequested);
 
   res.redirect("/products");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+ 
 };
 
 let userGetFilter = function (req, res, next) {
-  req.session.captured = req.query;
+  try {
+     req.session.captured = req.query;
 
   console.log(req.session.captured);
   res.redirect("/products");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+ 
 };
 
 let userGetFilterPrice = function (req, res, next) {
-  req.session.capturedFilter = req.query;
+  try {
+     req.session.capturedFilter = req.query;
   console.log(req.session.capturedFilter);
   res.redirect("/products");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+ 
 };
 
 let userPostAddWishlist = async function (req, res, next) {
-  let wishlistCheck = await user_details
+  try {
+     let wishlistCheck = await user_details
     .findOne({ username: req.session.user, wishlist: { $exists: true } })
     .lean();
 
@@ -1422,10 +1616,16 @@ let userPostAddWishlist = async function (req, res, next) {
     { $push: { wishlist: req.body.productIndex } }
   );
   console.log("success");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+ 
 };
 
 let userGetWishlist = async function (req, res, next) {
-  let userwishlist = await user_details.aggregate([
+  try {
+      let userwishlist = await user_details.aggregate([
     {
       $match: {
         username: req.session.user,
@@ -1451,10 +1651,16 @@ let userGetWishlist = async function (req, res, next) {
   ]);
   console.log(userwishlist);
   res.render("user-wishlist", { userwishlist });
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 };
 
 let userPostDeleteWishlist = async function (req, res, next) {
-  let wishlistCheck = await user_details
+  try {
+      let wishlistCheck = await user_details
     .findOne({ username: req.session.user, wishlist: { $exists: true } })
     .lean();
 
@@ -1464,7 +1670,14 @@ let userPostDeleteWishlist = async function (req, res, next) {
     { $pull: { wishlist: req.body.productIndex } }
   );
   console.log("remove");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+
 };
+
+
 //////////////////////////////////POST SIGNUP req.session.details///////////////////////
 
 let userPostSignup = async function (req, res, next) {
@@ -1511,6 +1724,7 @@ let userPostSignup = async function (req, res, next) {
     }
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 
@@ -1552,6 +1766,7 @@ let userPostLogin = async function (req, res, next) {
     }
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 
@@ -1593,13 +1808,15 @@ let userPostOtp = async function (req, res, next) {
     }
   } catch (error) {
     console.log(error.message);
+    next()
   }
 };
 
 /////////////////////////////POST  PRODUCTS PAGE///////////////////////
 
 let userPostOtpLogin = async function (req, res, next) {
-  didLogin = true;
+  try {
+    didLogin = true;
   let number = req.body.phone;
 
   otpValue = Math.floor(100000 + Math.random() * 900000);
@@ -1614,6 +1831,11 @@ let userPostOtpLogin = async function (req, res, next) {
   }
   didLogin = true;
   res.redirect("/otp");
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+  
 };
 
 let userGetLogout = function (req, res, next) {

@@ -6,52 +6,53 @@ const multer  = require('multer')
 const storage = multer.memoryStorage()
 const upload = multer({storage})
 
-let admin= require('../controllers/adminController')
+let admin = require('../controllers/adminController')
+const middleware = require('../middleware/auth')
 
 /* GET home page. */
-router.get('/admin',nocache(),admin.adminGetDashboard);
-router.get('/adminproducts',nocache(),admin.adminGetAllProducts);
-router.get('/admin-add',nocache(),admin.adminGetAddProducts);
-router.get('/admin-login',nocache(),admin.adminGetLogin)
-router.get('/admin-users',nocache(),admin.adminGetAllUsers)
-router.get('/block/:id',admin.adminGetBlockUsers);
-router.get('/delete/:id',admin.adminGetDeleteUsers);
-router.get('/admin-addcategory',nocache(),admin.adminGetAddCategory);
-router.get('/admin-addbrand',nocache(),admin.adminGetAddBrand);
-router.get('/admin-addsubcategory',nocache(),admin.adminGetAddSubCategory);
-router.get('/deletecategory/',admin.adminGetDeleteCategory)
-router.get('/deletesubcategory/',admin.adminGetDeleteSubCategory)
-router.get('/deletebrand/',admin.adminGetDeleteBrand)
+router.get('/admin',nocache(),middleware.verifyAdminLogin,admin.adminGetDashboard);
+router.get('/adminproducts',nocache(),middleware.verifyAdminLogin,admin.adminGetAllProducts);
+router.get('/admin-add',nocache(),middleware.verifyAdminLogin,admin.adminGetAddProducts);
+router.get('/admin-login',nocache(),middleware.verifyAdminNotLogin,admin.adminGetLogin)
+router.get('/admin-users',nocache(),middleware.verifyAdminLogin,admin.adminGetAllUsers)
+router.get('/block/:id',middleware.verifyAdminLogin,admin.adminGetBlockUsers);
+router.get('/delete/:id',middleware.verifyAdminLogin,admin.adminGetDeleteUsers);
+router.get('/admin-addcategory',nocache(),middleware.verifyAdminLogin,admin.adminGetAddCategory);
+router.get('/admin-addbrand',nocache(),middleware.verifyAdminLogin,admin.adminGetAddBrand);
+router.get('/admin-addsubcategory',nocache(),middleware.verifyAdminLogin,admin.adminGetAddSubCategory);
+router.get('/deletecategory/',middleware.verifyAdminLogin,admin.adminGetDeleteCategory)
+router.get('/deletesubcategory/',middleware.verifyAdminLogin,admin.adminGetDeleteSubCategory)
+router.get('/deletebrand/',middleware.verifyAdminLogin,admin.adminGetDeleteBrand)
 router.get('/logout-admin',admin.adminGetLogout)
-router.get('/deleteproduct/',admin.adminGetDeleteProduct)
-router.get('/orderstatus',admin.adminGetOrderStatus)
-router.get('/status/',admin.adminGetSetOrderStatus)
+router.get('/deleteproduct/',middleware.verifyAdminLogin,admin.adminGetDeleteProduct)
+router.get('/orderstatus',middleware.verifyAdminLogin,admin.adminGetOrderStatus)
+router.get('/status/',middleware.verifyAdminLogin,admin.adminGetSetOrderStatus)
 router.get('/admin-cart/:id',admin.adminGetGetCartOrders)
-router.get('/admincart',admin.adminGetListOrderSpecific)
-router.get('/editproduct/:id',admin.adminGetEditProduct)
-router.get('/adminedit',admin.adminGetEdit)
-router.get('/admin-banner',admin.adminGetBanner)
-router.get('/admin-coupon',admin.adminGetAddCoupon)
-router.get('/editbannerparam/',admin.adminGetParam)
-router.get('/editbanner',admin.adminGetEditBanner)
-router.get('/deletecoupon/',admin.adminPostDisableCoupon)
-router.get('/admin-sales',admin.adminGetSalesReport)
-router.get('/sales/:id',admin.adminGetSalesReportParams)
-router.get('/disablebanner/',admin.adminGetDisableBanner)
-router.get('/download-excel',admin.adminDownloadSales);
+router.get('/admincart',middleware.verifyAdminLogin,admin.adminGetListOrderSpecific)
+router.get('/editproduct/:id',middleware.verifyAdminLogin,admin.adminGetEditProduct)
+router.get('/adminedit',middleware.verifyAdminLogin,admin.adminGetEdit)
+router.get('/admin-banner',middleware.verifyAdminLogin,admin.adminGetBanner)
+router.get('/admin-coupon',middleware.verifyAdminLogin,admin.adminGetAddCoupon)
+router.get('/editbannerparam/',middleware.verifyAdminLogin,admin.adminGetParam)
+router.get('/editbanner',middleware.verifyAdminLogin,admin.adminGetEditBanner)
+router.get('/deletecoupon/',middleware.verifyAdminLogin,admin.adminPostDisableCoupon)
+router.get('/admin-sales',middleware.verifyAdminLogin,admin.adminGetSalesReport)
+router.get('/sales/:id',middleware.verifyAdminLogin,admin.adminGetSalesReportParams)
+router.get('/disablebanner/',middleware.verifyAdminLogin,admin.adminGetDisableBanner)
+router.get('/download-excel',middleware.verifyAdminLogin,admin.adminDownloadSales);
   
 
 //Post home page
 
 router.post('/adminlogin',admin.adminPostLogin)
-router.post('/upload',admin.adminPostUploadProduct)
-router.post('/brand',upload.array('image', 12),admin.adminPostAddBrand)
-router.post('/category',admin.adminPostAddCategory)
-router.post('/coupon',admin.adminPostAddCoupon)
-router.post('/subcategory',admin.adminPostAddSubCategory)
-router.post('/editProduct',admin.adminPostEditProduct)
-router.post('/banner',admin.adminPostAddBanner)
-router.post('/editbannerpost',admin.adminPostEditBanner)
+router.post('/upload',middleware.verifyAdminLogin,admin.adminPostUploadProduct)
+router.post('/brand',middleware.verifyAdminLogin,admin.adminPostAddBrand)
+router.post('/category',middleware.verifyAdminLogin,admin.adminPostAddCategory)
+router.post('/coupon',middleware.verifyAdminLogin,admin.adminPostAddCoupon)
+router.post('/subcategory',middleware.verifyAdminLogin,admin.adminPostAddSubCategory)
+router.post('/editProduct',middleware.verifyAdminLogin,admin.adminPostEditProduct)
+router.post('/banner',middleware.verifyAdminLogin,admin.adminPostAddBanner)
+router.post('/editbannerpost',middleware.verifyAdminLogin,admin.adminPostEditBanner)
 
 
 
