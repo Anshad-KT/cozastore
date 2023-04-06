@@ -1,3 +1,5 @@
+const user_details = require("../models/userModel");
+
 const verifyAdminLogin = (req,res,next)=>{
     if(req.session.admin){
        
@@ -19,9 +21,16 @@ const verifyAdminNotLogin = (req,res,next)=>{
 }
 
 
-const verifyUserLogin = (req,res,next)=>{
+const verifyUserLogin = async(req,res,next)=>{
     if(req.session.user){
-        next();
+        const checkBlock = await user_details.findOne({username:req.session.user})
+        console.log(checkBlock.status);
+        if(checkBlock.status==false){
+            res.redirect('/login')
+            req.session.user=null
+        }else{
+            next();
+    }
     }else{   
         res.redirect('/login')
     }
@@ -30,7 +39,10 @@ const verifyUserLogin = (req,res,next)=>{
 
 const verifyUserNotLogin = (req,res,next)=>{
     if(req.session.user){
-        res.redirect("/home");
+       
+              res.redirect("/home");
+     
+      
     }else{   
         next();
     }

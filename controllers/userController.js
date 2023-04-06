@@ -22,7 +22,7 @@ const banner_details = require("../models/bannerModel");
 
 const { v4: uuidv4 } = require("uuid");
 const Razorpay = require("razorpay");
-const { log } = require("console");
+const { log, Console } = require("console");
 const { search } = require("../routes");
 const coupon_details = require("../models/couponModel");
 const {
@@ -138,6 +138,11 @@ let userGetCheckout = async function (req, res, next) {
   let totalAmount = 0;
 
   let length = req.session.userdone.length;
+  const userCheck = await user_details.findOne({username:req.session.user})
+  console.log(userCheck);
+  const checkDouble = await cart_details.findOne({userId:userCheck._id})
+  console.log(checkDouble)
+  console.log("unicorn");
  const addressCheck = await address_details.aggregate([
   {
     $match: { userId: req.session.user },
@@ -186,7 +191,8 @@ let userGetCheckout = async function (req, res, next) {
         selectedAddress,
         userdone,
         ghh: req.session.ghh,
-        walletMsg
+        walletMsg,
+        checkDouble
       });
       userdone = null;
       walletMsg=null
@@ -213,7 +219,8 @@ let userGetCheckout = async function (req, res, next) {
         selectedAddress,
         userdone,
         ghh: req.session.ghh,
-        walletMsg
+        walletMsg,
+        checkDouble
       });
       userdone = null;
       walletMsg=null
@@ -228,7 +235,8 @@ let userGetCheckout = async function (req, res, next) {
       // selectedAddress,
       userdone,
       ghh: req.session.ghh,
-      walletMsg
+      walletMsg,
+      checkDouble
     });
     userdone = null;
     walletMsg=null
@@ -805,6 +813,19 @@ const userGetOrderConfirm = async (req, res, next) => {
   }
 };
 
+const userGetResendOtp = async(req,res,next)=>{
+  try {
+    const number = req.params.id
+    otpValue = Math.floor(100000 + Math.random() * 900000);
+    otp(number, otpValue);
+    didLogin = true;
+    res.redirect(`/otp/${number}`);
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+}
+
 let userPostChangeQuantity = async function (req, res, next) {
   try {
     const cart = req.body.cart;
@@ -1083,10 +1104,10 @@ let userPostEditProfile = async function (req, res, next) {
       .lean();
 
     if (check == null) {
-      req.session.checkPhone = await user_details
-        .findOne({ phone: userUpdates.phone })
+      req.session.checkEmail = await user_details
+        .findOne({ email: userUpdates.email })
         .lean();
-      if (req.session.checkPhone == null) {
+      if (req.session.checkEmail == null) {
         console.log(req.session.user);
 
         await user_details.updateOne(
@@ -1199,7 +1220,9 @@ let userGetDetails = async function (req, res, next) {
 
 let userGetOtp = function (req, res, next) {
   if (didLogin == true || didSIgnUp == true) {
-    res.render("user-otp", { otpMsg });
+    const number = req.params.id
+    console.log(number)
+    res.render("user-otp", { otpMsg,number });
     otpMsg = null;
   } else {
     res.redirect("/signup");
@@ -1616,6 +1639,7 @@ let userPostAddWishlist = async function (req, res, next) {
     { $push: { wishlist: req.body.productIndex } }
   );
   console.log("success");
+  res.json({status:true,productIndex:req.body.productIndex})
   } catch (error) {
     console.log(error.message);
     next()
@@ -1692,7 +1716,7 @@ let userPostSignup = async function (req, res, next) {
     };
 
     const phoneValidator = await user_details
-      .findOne({ phone: signupData.phone })
+      .findOne({ email: signupData.email })
       .lean();
     const usernameValidator = await user_details
       .findOne({ username: signupData.username })
@@ -1700,17 +1724,21 @@ let userPostSignup = async function (req, res, next) {
 
     if (phoneValidator == null) {
       if (usernameValidator == null) {
-        otpNumber = signupData.phone;
+        otpNumber = signupData.email;
 
         didSIgnUp = true;
 
         console.log("gate1");
 
-        res.redirect(`/otp`);
-
         otpValue = Math.floor(100000 + Math.random() * 900000);
 
         otp(otpNumber, otpValue);
+        console.log(otpNumber)
+        console.log(otpValue)
+        
+        res.redirect(`/otp/${otpNumber}`);
+
+        
       } else {
         SignupMsg = "This username is taken";
         console.log(SignupMsg);
@@ -1776,14 +1804,14 @@ let userPostOtp = async function (req, res, next) {
   try {
     if (req.body.otp == otpValue) {
       if (signupData == null) {
-        if (req.session.checkPhone.status == false) {
+        if (req.session.checkEmail.status == false) {
           loginMsg = "This account has been blocked";
           res.redirect("/login");
         } else {
-          req.session.user = req.session.checkPhone.username;
+          req.session.user = req.session.checkEmail.username;
           // userSession = req.session.user;
           console.log(req.session.user);
-          console.log("req.session.checkPhone.username");
+          console.log("req.session.checkEmail.username");
           res.redirect("/home");
           console.log("login success");
         }
@@ -1817,20 +1845,21 @@ let userPostOtp = async function (req, res, next) {
 let userPostOtpLogin = async function (req, res, next) {
   try {
     didLogin = true;
-  let number = req.body.phone;
+  let email = req.body.email;
+  console.log(req.body)
 
   otpValue = Math.floor(100000 + Math.random() * 900000);
 
   console.log(otpValue);
 
-  req.session.checkPhone = await user_details.findOne({ phone: number }).lean();
-  if (req.session.checkPhone == null) {
-    console.log("invalid telephone");
+  req.session.checkEmail = await user_details.findOne({ email: email }).lean();
+  if (req.session.checkEmail == null) {
+    console.log("invalid Email");
   } else {
-    otp(number, otpValue);
+    otp(email, otpValue);
   }
   didLogin = true;
-  res.redirect("/otp");
+  res.redirect("/otp/"+email);
   } catch (error) {
     console.log(error.message);
     next()
@@ -1845,13 +1874,13 @@ let userGetLogout = function (req, res, next) {
   req.session.deducted = null;
   req.session.payReciept = null;
   req.session.orders = null;
-  req.session.checkPhone = null;
+  req.session.checkEmail = null;
   //   loginMsg
   //   SignupMsg;
   //   otpMsg
   req.session.captured = null;
   req.session.capturedFilter = null;
-  req.session.checkPhone = null;
+  req.session.checkEmail = null;
   req.session.userdone = null;
 
   //   editMsg
@@ -1927,4 +1956,5 @@ module.exports = {
   userGetOrderParam,
   userPostAddDefaultAddress,
   userGetOrderConfirm,
+  userGetResendOtp
 };

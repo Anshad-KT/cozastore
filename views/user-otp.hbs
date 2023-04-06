@@ -31,20 +31,26 @@
 								
 								
 								<div class="mb-3">
-									<label class="mb-2 text-muted" for="email">please enter the otp sent to </label>
-									<input id="otp" type="number" class="form-control" name="otp" value="" required autofocus>
+									<label class="mb-2 text-muted" for="email">please enter the otp sent to </label><span id="otp">{{number}}</span>
+									<input type="number" class="form-control" name="otp" value="" required autofocus>
 									<div class="invalid-feedback">
 										Email is invalid
 									</div>
 								</div>
 
-								<div class="mb-3">
-									<div class="mb-2 w-100">
-										<p>Resent otp in 90s<p>
-									</div>
+								<div>
+									<button id="myButton" class="btn btn-outline-dark d-none"><a class="tag" href="/otpresent/{{number}}">Resend OTP</a></button>
+
+<script>
+  setTimeout(function() {
+    document.getElementById("myButton").classList.remove("d-none");
+  }, 5000);
+</script>
+
 									
 								    
 								</div>
+								
 
 								{{!-- <div class="d-flex align-items-center">
 									<div class="form-check">
