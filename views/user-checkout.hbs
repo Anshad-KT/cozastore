@@ -138,6 +138,7 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 			method:'POST',
 			data:$('#checkoutForm').serialize(),
 			success:(order)=>{
+				console.log("bey")
 				if(order.COD){
 					location.href='/confirm'
 				}else if(order.WALLET){

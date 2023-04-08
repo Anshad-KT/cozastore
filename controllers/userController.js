@@ -12,6 +12,7 @@ let product_details = require("../models/productModel");
 const category_details = require("../models/categoryModel");
 const cart_details = require("../models/cartModel");
 let walletMsg
+const {ObjectId}=require('mongodb')
 const order_details = require("../models/orderModel");
 const {
   ExecutionContextContextImpl,
@@ -139,9 +140,9 @@ let userGetCheckout = async function (req, res, next) {
 
   let length = req.session.userdone.length;
   const userCheck = await user_details.findOne({username:req.session.user})
-  console.log(userCheck);
+  // console.log(userCheck);
   const checkDouble = await cart_details.findOne({userId:userCheck._id})
-  console.log(checkDouble)
+  // console.log(checkDouble)
   console.log("unicorn");
  const addressCheck = await address_details.aggregate([
   {
@@ -166,7 +167,7 @@ let userGetCheckout = async function (req, res, next) {
     console.log(selectedAddress.length);
     if (selectedAddress.length == 0) {
       let add = await address_details.findOne({ userId: req.session.user });
-      console.log(add);
+      // console.log(add);
   
       let def = add.defaultAddress;
       let selectedAddress = await address_details.aggregate([
@@ -389,7 +390,8 @@ let userGetCart = async function (req, res, next) {
   let appliedCoupon = req.session.appliedCoupon;
 
   let userdone = req.session.userdone;
-  res.render("user-cart", { userdone, ghh:req.session.ghh, appliedCoupon, couponErrorMsg });
+  const dbWallet = await user_details.findOne({username:req.session.user})
+  res.render("user-cart", { userdone, ghh:req.session.ghh, appliedCoupon, couponErrorMsg , dbWallet:dbWallet.wallet });
 
   appliedCoupon = null;
   userdone = null;
@@ -439,7 +441,7 @@ let userPostCheckoutBilling = async function (req, res, next) {
       },
     },
   ]);
-  console.log(userdone1);
+  // console.log(userdone1);
 
   req.session.orders = { products: [] };
   req.session.orders.orderedUser = req.body.username;
@@ -459,7 +461,7 @@ let userPostCheckoutBilling = async function (req, res, next) {
   }
   for (var i = 0; i < userdone1.length; i++) {
     totalCash = parseInt(totalCash) + parseInt(userdone1[i].total);
-    console.log(userdone1[i].total);
+    // console.log(userdone1[i].total);
   }
 
   if (req.session.appliedCoupon) {
@@ -522,11 +524,18 @@ let userPostCheckoutBilling = async function (req, res, next) {
     const walletCheck = await user_details.findOne({
       username: req.session.user,
     });
-    console.log(walletCheck);
+    // console.log(walletCheck);
     console.log("yassar");
     if ((req.session.orders.billAmount < walletCheck.wallet)) {
       const hijack = await user_details.findOne({ username: req.session.user });
       const uss = hijack._id.toString();
+      for (var i = 0; i < req.session.userdone.length; i++) {
+        req.session.orders.products[i].paymentId =
+          uuidv4()
+          console.log(req.session.orders.products[i].paymentId)
+      }
+      
+      console.log("yassqar");
       await order_details.insertMany([req.session.orders]);
 
       await user_details.updateOne({username:req.session.user},{$inc:{wallet:"-"+req.session.orders.billAmount}})
@@ -542,6 +551,8 @@ let userPostCheckoutBilling = async function (req, res, next) {
     }else{
       console.log("Sorry you dont have enough money on your wallet")
       walletMsg="Sorry you dont have enough money on your wallet";
+      res.redirect('/checkout')
+
     }
   } else {
     const hijack = await user_details.findOne({ username: req.session.user });
@@ -641,7 +652,8 @@ let userGetDeleteOne = async function (req, res, next) {
   try {
      let parm = req.query;
 
-  console.log(parm.orderId + " " + parm.productIndex + " " + parm.status);
+  console.log(parm) ;
+  console.log("patti");
 
   await order_details.updateOne(
     { _id: parm.orderId, "products.productIndex": parm.productIndex },
@@ -660,6 +672,27 @@ let userGetDeleteOne = async function (req, res, next) {
       { productIndex: parm.productIndex },
       { $inc: { stock: stockChanges.products[0].quantity } }
     );
+    if(parm.paymentType=="wallet" || parm.paymentType=="Pay using razorpay"){
+      const walletInc = await order_details.aggregate([
+        {
+          $match:{
+            _id:new ObjectId(parm.orderId)
+          },
+        },
+        {
+          $unwind:"$products"
+        },
+        {
+          $match:{
+            "products.paymentId":parm.paymentId
+          }
+        }
+      ])
+ 
+      const amountAdd = walletInc[0].products.price*walletInc[0].products.quantity
+      console.log(amountAdd)
+      await user_details.updateOne({ username: req.session.user }, { $inc: { wallet: amountAdd } })
+    }
   }
 
   res.redirect("/orders");
@@ -725,7 +758,7 @@ let userGetApplyCoupon = async function (req, res, next) {
   const checkDate = await coupon_details
     .findOne({ code: appliCoupon.coupon })
     .lean();
-  console.log(checkDate);
+  // console.log(checkDate);
 
   if (checkDate == null) {
     console.log("invalid coupon");
@@ -1301,7 +1334,7 @@ let userGetProducts = async function (req, res, next) {
           price: { $gt: startingprice, $lt: endingprice },
         })
         .lean();
-      console.log(products);
+      // console.log(products);
       let checkW1 = await user_details
         .findOne({
           username: req.session.user,
@@ -1421,7 +1454,7 @@ let userGetProducts = async function (req, res, next) {
           wish = false;
         }
         res.render("user-products", { products, categories, wish });
-        console.log(wish);
+        // console.log(wish);
       }
     }
   } else {
@@ -1714,6 +1747,7 @@ let userPostSignup = async function (req, res, next) {
       phone: req.body.phone,
       password: req.body.password,
     };
+    signupData.wallet=0
 
     const phoneValidator = await user_details
       .findOne({ email: signupData.email })
@@ -1811,7 +1845,7 @@ let userPostOtp = async function (req, res, next) {
           req.session.user = req.session.checkEmail.username;
           // userSession = req.session.user;
           console.log(req.session.user);
-          console.log("req.session.checkEmail.username");
+          // console.log("req.session.checkEmail.username");
           res.redirect("/home");
           console.log("login success");
         }

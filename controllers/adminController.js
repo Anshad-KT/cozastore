@@ -40,7 +40,7 @@ var mongoose = require('mongoose')
 const { v4: uuidv4 } = require('uuid')
 const sharp = require('sharp')
 const printer = require('node-printer')
-
+const {ObjectId}=require('mongodb')
 
 const cheerio = require('cheerio');
 const axios = require('axios');
@@ -265,7 +265,6 @@ let adminGetSetOrderStatus = async function (req, res, next) {
       await user_details.updateOne({ username: returnStatus[0].orderedUser }, { $inc: { wallet: amount } })
     } else {
 
-      console.log(returnStatus[0].products.price);
 
 
       // console.log(returnStatus[0].products[0].price);
@@ -276,7 +275,7 @@ let adminGetSetOrderStatus = async function (req, res, next) {
 
     const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
 
-    await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: "-" + stockChanges.products[0].quantity } })
+    await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock:  stockChanges.products[0].quantity } })
 
 
 
@@ -286,9 +285,9 @@ let adminGetSetOrderStatus = async function (req, res, next) {
 
     let statusChecking = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
 
-    if (statusChecking.paymentType == "cash on delivery" || statusChecking.paymentType == "wallet") {
+    if (statusChecking.paymentType == "cash on delivery") {
 
-
+      console.log("aswin")
       await order_details.updateOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }, { $set: { "products.$.paymentId": pId } })
 
 
@@ -308,10 +307,31 @@ let adminGetSetOrderStatus = async function (req, res, next) {
 
     await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: "-" + stockChanges.products[0].quantity } })
   }
-
+  console.log(statusName)
+  console.log("farhan");
   if (statusName.status == "Cancelled") {
     const stockChanges = await order_details.findOne({ _id: statusName.id, "products.productIndex": statusName.productIndex }).lean()
-
+    if(statusName.paymentType=="wallet" || statusName.paymentType=="Pay using razorpay"){
+      const walletInc = await order_details.aggregate([
+        {
+          $match:{
+            _id:new ObjectId(statusName.id)
+          },
+        },
+        {
+          $unwind:"$products"
+        },
+        {
+          $match:{
+            "products.paymentId":statusName.paymentId
+          }
+        }
+      ])
+ 
+      const amountAdd = walletInc[0].products.price*walletInc[0].products.quantity
+      console.log(amountAdd)
+      await user_details.updateOne({ username: req.session.user }, { $inc: { wallet: amountAdd } })
+    }
     await product_details.updateOne({ productIndex: statusName.productIndex }, { $inc: { stock: stockChanges.products[0].quantity } })
     console.log("lookk");
   }
@@ -336,8 +356,8 @@ let adminGetGetCartOrders = async function (req, res, next) {
     // let statusName = req.query
     req.session.admin.temp = mongoose.Types.ObjectId(req.params.id)
 
-    console.log(req.params.id);
-    console.log(req.session.admin);
+    // console.log(req.params.id);
+    // console.log(req.session.admin);
 
     //  await order_details.updateOne({_id:statusName.id},{$set:{orderStatus:statusName.status}})
     //  console.log("success");
@@ -369,13 +389,13 @@ let adminGetListOrderSpecific = async function (req, res, next) {
         $unwind: '$products'
       }
     ])
-    console.log(req.session.temp);
+    // console.log(req.session.temp);
 
-    console.log(resp);
+    // console.log(resp);
 
 
     res.render('admin-cartorders', { resp })
-
+    // console.log(resp);
 
 
 
@@ -445,7 +465,7 @@ let adminGetAddBrand = async function (req, res, next) {
   try {
 
     req.session.dbBrand = await brand_details.find().lean()
-    console.log(req.session.dbBrand);
+    // console.log(req.session.dbBrand);
     res.render('admin-addbrand', { dbBrand: req.session.dbBrand });
 
   } catch (error) {
@@ -531,7 +551,7 @@ let adminGetDeleteUsers = async function (req, res, next) {
   try {
 
     let id = req.params.id;
-    console.log(id);
+    // console.log(id);
     await user_details.deleteOne({ _id: id })
     console.log("deleted user");
     res.redirect('/admin-users')
@@ -547,7 +567,7 @@ let adminGetEditProduct = async function (req, res, next) {
   try {
 
     editId = req.params.id
-    console.log(editId);
+    // console.log(editId);
     res.redirect('/adminedit')
 
 
@@ -648,7 +668,7 @@ let adminPostEditBanner = async function (req, res, next) {
     let images = [];
     let img = req.files.image;
     let editHelper = await banner_details.findOne({ _id: req.body.hid })
-    console.log(editHelper);
+    // console.log(editHelper);
     img.mv('./public/product-images/banner/' + editHelper.imageReference[0], (err, done) => {
       console.log(err);
     })
@@ -711,9 +731,9 @@ let adminPostEditProduct = async function (req, res, next) {
       description: req.body.description
     }
 
-    console.log(req.body);
+    // console.log(req.body);
     let productId = editProducts.productIndex;
-    console.log(productId);
+    // console.log(productId);
 
     let result = await product_details.findOne({ productIndex: productId }).lean()
     console.log(result + "this is the result");
@@ -812,7 +832,7 @@ try {
         }
       },
     ])
-    console.log(salesReport);
+    // console.log(salesReport);
 
 
 
@@ -846,7 +866,7 @@ try {
 let adminGetSalesReportParams = async (req, res) => {
   try {
       salesParam = req.params.id
-  console.log(salesParam);
+  // console.log(salesParam);
 
   res.redirect('/admin-sales')
   } catch (error) {
@@ -863,7 +883,7 @@ let adminGetSalesReportParams = async (req, res) => {
 
 let adminGetDisableBanner = async (req, res) => {
 try {
-    console.log(req.query);
+    // console.log(req.query);
   bannerParam = mongoose.Types.ObjectId(req.query._id)
 
   await banner_details.updateOne({ _id: bannerParam }, { $set: { status: req.query.status } })
@@ -977,7 +997,7 @@ let adminPostUploadProduct = async function (req, res, next) {
     description: req.body.description
   }
   console.log("hii");
-  console.log(req.body);
+  // console.log(req.body);
 
   async function file() {
     let images = [];

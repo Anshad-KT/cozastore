@@ -224,7 +224,7 @@
 										{{#if (eq products.status "Order Confirmed")}}
 
 									<td><button class="btn btn-danger"><a style="text-decoration: none;"
-												href="/deleteorder/?productIndex={{products.productIndex}}&orderId={{products.userId}}&status=Cancelled">cancel</a></button>
+												href="/deleteorder/?productIndex={{products.productIndex}}&orderId={{products.userId}}&status=Cancelled&paymentId={{products.paymentId}}&paymentType={{paymentType}}">cancel</a></button>
 
 
 										{{/if}}

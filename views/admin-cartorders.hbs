@@ -87,11 +87,15 @@
 
                                                     {{/if}}
                                                     {{#if (eq products.status "Pending")}}
-                                                    <td><span class="badge-dot badge-danger mr-1"></span>Pending </td>
+                                                    <td><span class="badge-dot badge-secondary mr-1"></span>Pending </td>
 
                                                     {{/if}}
                                                     {{#if (eq products.status "Delivered")}}
-                                                    <td><span class="badge-dot badge-danger mr-1"></span>Delivered </td>
+                                                    <td><span class="badge-dot badge-success mr-1"></span>Delivered </td>
+
+                                                    {{/if}}
+                                                    {{#if (eq products.status "Order Confirmed")}}
+                                                    <td><span class="badge-dot badge-secondary mr-1"></span>Order Confirmed</td>
 
                                                     {{/if}}
 
@@ -116,7 +120,7 @@
                                                                 aria-labelledby="dropdownMenuButton">
 
                                                                 <a class="dropdown-item" onclick="swtfn()"
-                                                                    href="/status/?id={{_id}}&status=Return Accepted&productIndex={{products.productIndex}}&paymentId={{products.paymentId}}">Accept</a>
+                                                                    href="/status/?id={{_id}}&status=Return Accepted&productIndex={{products.productIndex}}&paymentId={{products.paymentId}}&paymentType={{paymentType}}">Accept</a>
                                                                 <a class="dropdown-item"
                                                                     href="/status/?id={{_id}}&status=Delivered&productIndex={{products.productIndex}}">Decline</a>
                                                                 
@@ -142,6 +146,14 @@
                                                         </div>
                                                     </td>
                                                     {{/if}}
+                                                     {{#if (eq products.status "Delivered")}}
+                                                    <td>Delivered </td>
+
+                                                    {{/if}}
+                                                    {{#if (eq products.status "Return Pending")}}
+                                                    <td>Awaitign confirmation </td>
+
+                                                    {{/if}}
                                                      {{#if (eq products.status "Order Confirmed")}}
                                                     <td>
                                                         <div class="dropdown">
@@ -153,12 +165,11 @@
                                                             <div class="dropdown-menu"
                                                                 aria-labelledby="dropdownMenuButton">
 
-                                                                <a class="dropdown-item" onclick="swtfn()"
-                                                                    href="/status/?id={{_id}}&status=Pending&productIndex={{products.productIndex}}">Pending</a>
+                                                                
                                                                 <a class="dropdown-item"
                                                                     href="/status/?id={{_id}}&status=Delivered&productIndex={{products.productIndex}}">Delivered</a>
                                                                 <a class="dropdown-item"
-                                                                    href="/status/?id={{_id}}&status=Cancelled&productIndex={{products.productIndex}}">Cancelled</a>
+                                                                    href="/status/?id={{_id}}&status=Cancelled&productIndex={{products.productIndex}}&paymentId={{products.paymentId}}&paymentType={{paymentType}}">Cancelled</a>
                                                             </div>
                                                         </div>
                                                     </td>
