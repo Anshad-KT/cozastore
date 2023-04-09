@@ -346,16 +346,16 @@
                                        {{#if out}}
                                        <p class="text-danger">Unfortunately, the following items from your cart are out of stock.</p>
                                        {{else}}
-                                            <ul class="pagination justify-content-end set_quantity">
-                                               <p  id="stock" class="{{@index}}" value="" hidden>{{product.stock}}</p>
+                                            <ul id="{{@index}}{{size}}" class="pagination justify-content-end set_quantity">
+                                               <p  id="{{productId}}{{size}}{{@index}}" class="{{@index}}" value="" hidden>{{product.stock}}</p>
                                                 <li class="page-item">  
-                                                    <button class="page-link" id="{{@index}}{{productId}}" onclick="changeQuantity('{{_id}}','{{productId}}',-1,'{{@index}}','{{size}}')"><i class="fa-solid fa-minus"></i></button>
+                                                    <button class="page-link" id="{{@index}}{{productId}}" onclick="decreaseValue('{{productId}}','{{size}}','{{@index}}'),changeQuantity('{{_id}}','{{productId}}',-1,'{{@index}}','{{size}}')"><i class="fa-solid fa-minus"></i></button>
                                                 </li>
                                                 <li class="page-item">
                                                     <button class="page-link"  id="{{productId}}{{size}}" >{{quantity}}</button>
                                                 </li>
                                                 <li class="page-item">
-                                                    <button id="{{@index}}" onclick="changeQuantity('{{_id}}','{{productId}}',1,'{{@index}}','{{size}}')" class="page-link" ><i class="fa-solid fa-plus"></i></button>
+                                                    <button id="{{@index}}" onclick="increaseValue('{{productId}}','{{size}}','{{@index}}'),changeQuantity('{{_id}}','{{productId}}',1,'{{@index}}','{{size}}')" class="page-link" ><i class="fa-solid fa-plus"></i></button>
                                                 </li>
                                                
                                             </ul>
@@ -591,9 +591,96 @@
 
 		})
 	} */
+	 function increaseValue(productId, size,index) {
+    var element = document.getElementById(productId+size);
+	var element1 = document.getElementById(productId+size+index)
+	var val = parseInt(document.getElementById(index+productId).value,10)
+    if (element) {
+        var value = parseInt(element.textContent);
+        value = isNaN(value) ? 0 : value;
+        value++;
+        
+        
+         console.log(value)
+			console.log(parseInt(element1.innerHTML))
+		if(parseInt(element1.innerHTML)<value){
+			console.log("dey")
+            val.remove()
+			//document.getElementById(index).style.visibility="hidden"
+		}else{
+			element.textContent = value;
+			//document.getElementById(index).style.visibility="visible"
+		}
+		return value;
+    }
+}
+
+
+	    function decreaseValue(productId, size,index) {
+    var element = document.getElementById(productId+size);
+	var element1 = document.getElementById(index+productId)
+	var val = parseInt(document.getElementById(index).value,10)
+    if (element) {
+        var value = parseInt(element.textContent);
+        value = isNaN(value) ? 0 : value;
+        if (value > 0) {
+            value--;
+            if (value == 0) {
+                val.remove()
+				//  element1.style.visibility = 'hidden';
+            } else {
+                element.textContent = value;
+				//element1.style.visibility = 'visible';
+            }
+			
+        }
+        return value;
+    }
+}
+
+   function changeQuantity(cartId, productId, count, index, size){
 	
-    function changeQuantity(cartId, productId, count, index, size) {
-        let quantity = parseInt(document.getElementById(productId + size).innerHTML);
+	console.log("cartId -"+cartId)
+	console.log("productId -"+productId)
+	
+	console.log("count -"+count)
+	console.log("index -"+index)
+
+	console.log("size -"+size)
+let quantity = parseInt(document.getElementById(productId+size).innerHTML);
+          $.ajax({
+                url: '/change-product-quantity',
+                data: {
+                    cart: cartId,
+                    product: productId,
+                    count: count,
+                    quantity:quantity,
+                    size: size
+                },
+                method: 'post',
+                success: (response) => {
+                    console.log(response.productId +" "+response.quantity);
+                    if (response.delete) {
+                        alert("Product Removed From The Cart");
+                        location.reload();
+                    } else {
+						}
+                        document.getElementById(index).disabled = false;
+                        document.getElementById(index + productId).disabled = false;
+                        document.getElementById(response.productId + response.size).innerHTML = response.quantity;
+                        
+						
+						document.getElementById('subT').innerHTML = response.subtotal;
+						 
+						
+                    
+                }
+            });
+        }
+
+
+   /* function changeQuantity(cartId, productId, count, index, size,colour) {
+        let quantity = parseInt(document.getElementById(productId+size).innerHTML);
         let stock = parseInt(document.getElementsByClassName(index)[0].innerHTML);
         
         console.log(quantity + "ji");
@@ -601,20 +688,31 @@
         
         document.getElementById(index).disabled = true;
         document.getElementById(index + productId).disabled = true;
-		 
-        if (quantity<2){
-			document.getElementById(index + productId).disabled = true;
+		 console.log(quantity+" ghj")
 
+        if (quantity<2){
+			console.log("hey")
+			
+             $.ajax({
+                url: `/deletecart/?productId=${productId}&quantity=${quantity}&colour=${colour}&size=${size}`,
+                
+                method: 'get',
+                success: (response) => {
+					if(response.status)
+                   location.reload()
+            }
+		});
+			
 		}
 		
-        else if (stock - quantity <= 0) {
+         if (stock - quantity <= 0) {
 			console.log(stock)
 			console.log(quantity)
             console.log("kooi");
             document.getElementById(index).style.visibility = 'hidden';
 
             document.getElementById('msg').innerHTML = "Stock Exceeded, 'We sincerely apologize for this inconvenience. We've experienced an unusually high number of orders and have run out of inventory.'";
-		 document.getElementById(productId+size).style.visibility = 'visible'; 
+		  
 	    } else {
             document.getElementById(index).style.visibility = 'visible';
             document.getElementById('msg').innerHTML = "";
@@ -634,19 +732,21 @@
                         alert("Product Removed From The Cart");
                         location.reload();
                     } else {
-						}*/
+						}
                         document.getElementById(index).disabled = false;
                         document.getElementById(index + productId).disabled = false;
                         document.getElementById(response.productId + response.size).innerHTML = response.quantity;
                         
 						
 						document.getElementById('subT').innerHTML = response.subtotal;
+						 
 						
                     
                 }
             });
         }
-	}
+		
+	}*/
     
 </script>
 

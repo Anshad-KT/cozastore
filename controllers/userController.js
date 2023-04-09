@@ -256,6 +256,7 @@ let userGetCheckout = async function (req, res, next) {
       ]);
       console.log(selectedAddress);
       console.log("gate 3");
+      const dbC = await user_details.findOne({username:req.session.user})
       let userdone =  await cart_details.aggregate([
         {
           $match: { userId:  dbC._id.toString()},
@@ -740,6 +741,7 @@ let userGetDeleteCart = async function (req, res, next) {
   try {
      let cartIds = req.query;
   console.log(cartIds);
+  console.log("manjadi");
 
   let qty = parseInt(cartIds.quantity);
 
@@ -759,7 +761,7 @@ let userGetDeleteCart = async function (req, res, next) {
 
   console.log("deleted cart");
 
-  res.redirect("/cart");
+  res.json({status:true})
   } catch (error) {
     console.log(error.message);
     next()
@@ -1060,7 +1062,7 @@ let userPostChangeQuantity = async function (req, res, next) {
     { $inc: { "products.$.quantity": count } }
   );
   
-  
+
 
   console.log("quantity changed");
 
