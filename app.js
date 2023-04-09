@@ -13,7 +13,7 @@ const hb =hbs.create({})
 var app = express();
 app.engine('hbs',hbs.engine({extname:'hbs',defaultLayout:'layout',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}))
 
-var fileUpload = require('express-fileupload')
+// var fileUpload = require('express-fileupload')
 var session = require('express-session')
 
 hb.handlebars.registerHelper('eq', function (a, b) {
@@ -50,10 +50,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(fileUpload({
-  useTempFiles : true,
-  tempFileDir : __dirname + '/public/temp/'
-}))
+// app.use(fileUpload({
+//   useTempFiles : true,
+//   tempFileDir : __dirname + '/public/temp/'
+// }))
 app.use(session({secret:"Key",cookie:{maxAge:6000000}}))
 
 app.use('/', indexRouter);

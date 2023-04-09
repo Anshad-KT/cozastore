@@ -32,12 +32,12 @@ const otp = (verifiedEmail, otpValue)=>{
         let mailTransporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "cozastore.official@gmail.com",
-            pass: "newtebjujttiswqp"
+            user: "cozastore.tech@gmail.com",
+            pass: "qgugogtpjodsdmov"
           }
         })
         let docs = {
-          from: "cozastore.official@gmail.com",
+          from: "cozastore.tech@gmail.com",
           to: verifiedEmail,
           subject: "cozastore Varification",
           text: `Hey there! we are thrilled to have you as a member of cozastore, ${otpValue} is your otp, please do not share it with others`

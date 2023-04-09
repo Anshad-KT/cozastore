@@ -40,7 +40,7 @@ const verifyUserLogin = async(req,res,next)=>{
 const verifyUserNotLogin = (req,res,next)=>{
     if(req.session.user){
        
-              res.redirect("/home");
+              res.redirect("/");
      
       
     }else{   

@@ -976,7 +976,7 @@ const adminPostLogin = async function (req, res, next) {
 
 
 let adminPostUploadProduct = async function (req, res, next) {
-  try {
+  // try {
      let size1 = []
   size1 = req.body.size
   let colour1 = []
@@ -1001,55 +1001,42 @@ let adminPostUploadProduct = async function (req, res, next) {
 
   async function file() {
     let images = [];
-    images = req.files.image;
-    let count = images.length
-    console.log(count);
-    if (count) {
-
-      for (var i = 0; i < count; i++) {
+    // images = req.files.image;
+    // let count = images.length
+    // console.log(count);
+    // if (count) {
+      req.files.forEach(file => {
+        images.push(file.filename)
+      })
+      // for (var i = 0; i < count; i++) {
        
-        let path = "" + images[i].tempFilePath
-        console.log(path);
-        await sharp(path)
-          .rotate()
-          .resize(1000, 1500)
-          .jpeg({ mozjpeg: true })
-          .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
+        // let path = "" + images[i].tempFilePath
+        // console.log(path);
+        // await sharp(path)
+        //   .rotate()
+        //   .resize(1000, 1500)
+        //   .jpeg({ mozjpeg: true })
+        //   .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
 
-        images[i] = products.productIndex + i;
-      }
+      //   images[i] = req.file
+      //   console.log(images[i]);
+      // }
       products.imageReference = images;
       console.log(products);
       products.uploadedDate = new Date().toDateString().slice(4);
       products.status = true;
       await product_details.insertMany([products]);
-      res.redirect('/admin-products')
-    } else {
-      let path = "" + images.tempFilePath
-      console.log(path);
-      await sharp(path)
-        .rotate()
-        .resize(1000, 1500)
-        .jpeg({ mozjpeg: true })
-        .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
-      images[0] = products.productIndex;
-      products.imageReference = images;
-      console.log(products)
-      console.log("samaina");
-      products.uploadedDate = new Date().toDateString().slice(4);
-      products.status = true;
-      await product_details.insertMany([products]);
-      res.redirect('/admin-products')
-    }
+      res.redirect('/adminproducts')
+    
 
   }
   file()
  
 
-  } catch (error) {
-    console.log(error.message);
-    next()
-  }
+  // } catch (error) {
+  //   console.log(error.message);
+  //   next()
+  // }
  
 }
 

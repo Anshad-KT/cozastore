@@ -3,11 +3,11 @@ const nocache = require('nocache');
 var router = express.Router();
 const { v4: uuidv4 } = require('uuid')
 const multer  = require('multer')
-const storage = multer.memoryStorage()
-const upload = multer({storage})
+
 
 let admin = require('../controllers/adminController')
 const middleware = require('../middleware/auth')
+const multerConfig = require('../middleware/muterConfigurations')
 
 /* GET home page. */
 router.get('/admin',nocache(),middleware.verifyAdminLogin,admin.adminGetDashboard);
@@ -45,13 +45,13 @@ router.get('/download-excel',middleware.verifyAdminLogin,admin.adminDownloadSale
 //Post home page
 
 router.post('/adminlogin',admin.adminPostLogin)
-router.post('/upload',middleware.verifyAdminLogin,admin.adminPostUploadProduct)
-router.post('/brand',middleware.verifyAdminLogin,admin.adminPostAddBrand)
+router.post('/upload',middleware.verifyAdminLogin,multerConfig.upload.array('image'),admin.adminPostUploadProduct)
+router.post('/brand',middleware.verifyAdminLogin,multerConfig.upload.single('image'),admin.adminPostAddBrand)
 router.post('/category',middleware.verifyAdminLogin,admin.adminPostAddCategory)
 router.post('/coupon',middleware.verifyAdminLogin,admin.adminPostAddCoupon)
 router.post('/subcategory',middleware.verifyAdminLogin,admin.adminPostAddSubCategory)
 router.post('/editProduct',middleware.verifyAdminLogin,admin.adminPostEditProduct)
-router.post('/banner',middleware.verifyAdminLogin,admin.adminPostAddBanner)
+router.post('/banner',middleware.verifyAdminLogin,multerConfig.upload.single('image'),admin.adminPostAddBanner)
 router.post('/editbannerpost',middleware.verifyAdminLogin,admin.adminPostEditBanner)
 
 

@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt");
 let user_details = require("../models/userModel");
 let product_details = require("../models/productModel");
 const category_details = require("../models/categoryModel");
+let otpData
 const cart_details = require("../models/cartModel");
 let walletMsg
 const {ObjectId}=require('mongodb')
@@ -31,6 +32,7 @@ const {
 } = require("twilio/lib/rest/preview/hosted_numbers/authorizationDocument/dependentHostedNumberOrder");
 const session = require("express-session");
 const { triggerAsyncId } = require("async_hooks");
+const { unwatchFile } = require("fs");
 
 var instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -45,6 +47,7 @@ let otpMsg;
 
 // let userSession;
 let editMsg;
+let editPMsg
 
 let uss;
 
@@ -96,11 +99,13 @@ let userGetEditProfile = async function (req, res, next) {
       email: userProfile.email,
       wallet:userProfile.wallet,
       editMsg,
+      editPMsg,
       selectedAddress,
       allAddress,
       editPassMsg
     });
     editMsg = null;
+    editPMsg=null
     editPassMsg=null
   } catch (error) {
     console.log(error.message);
@@ -183,7 +188,46 @@ let userGetCheckout = async function (req, res, next) {
       ]);
       console.log(selectedAddress);
       console.log("gate 2");
-      let userdone = req.session.userdone;
+      const dbC = await user_details.findOne({username:req.session.user})
+      console.log(dbC);
+      dbC._id.toString();
+      let userdone = await cart_details.aggregate([
+        {
+          $match: { userId:  dbC._id.toString()},
+        },
+        {
+          $unwind: "$products",
+        },
+        {
+          $project: {
+            productId: "$products.productId",
+            quantity: "$products.quantity",
+            size: "$products.size",
+            colour: "$products.colour",
+          },
+        },
+        
+         
+        {
+          $lookup: {
+            from: "product_details",
+            localField: "productId",
+            foreignField: "productIndex",
+            as: "product",
+          },
+        },
+        {
+          $project: {
+            productId: 1,
+            quantity: 1,
+            size: 1,
+            colour: 1,
+            product: { $arrayElemAt: ["$product", 0] },
+          },
+        },
+        
+       
+      ]);
       res.render("user-checkout", {
         name: userProfile.name,
         username: userProfile.username,
@@ -195,6 +239,7 @@ let userGetCheckout = async function (req, res, next) {
         walletMsg,
         checkDouble
       });
+      console.log(userdone);
       userdone = null;
       walletMsg=null
     } else {
@@ -211,7 +256,43 @@ let userGetCheckout = async function (req, res, next) {
       ]);
       console.log(selectedAddress);
       console.log("gate 3");
-      let userdone = req.session.userdone;
+      let userdone =  await cart_details.aggregate([
+        {
+          $match: { userId:  dbC._id.toString()},
+        },
+        {
+          $unwind: "$products",
+        },
+        {
+          $project: {
+            productId: "$products.productId",
+            quantity: "$products.quantity",
+            size: "$products.size",
+            colour: "$products.colour",
+          },
+        },
+        
+         
+        {
+          $lookup: {
+            from: "product_details",
+            localField: "productId",
+            foreignField: "productIndex",
+            as: "product",
+          },
+        },
+        {
+          $project: {
+            productId: 1,
+            quantity: 1,
+            size: 1,
+            colour: 1,
+            product: { $arrayElemAt: ["$product", 0] },
+          },
+        },
+        
+       
+      ]);
       res.render("user-checkout", {
         name: userProfile.name,
         username: userProfile.username,
@@ -223,11 +304,48 @@ let userGetCheckout = async function (req, res, next) {
         walletMsg,
         checkDouble
       });
+      console.log(userdone);
       userdone = null;
       walletMsg=null
     }
   }else{
-    let userdone = req.session.userdone;
+    let userdone = await cart_details.aggregate([
+      {
+        $match: { userId:  dbC._id.toString()},
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $project: {
+          productId: "$products.productId",
+          quantity: "$products.quantity",
+          size: "$products.size",
+          colour: "$products.colour",
+        },
+      },
+      
+       
+      {
+        $lookup: {
+          from: "product_details",
+          localField: "productId",
+          foreignField: "productIndex",
+          as: "product",
+        },
+      },
+      {
+        $project: {
+          productId: 1,
+          quantity: 1,
+          size: 1,
+          colour: 1,
+          product: { $arrayElemAt: ["$product", 0] },
+        },
+      },
+      
+     
+    ]);
     res.render("user-checkout", {
       name: userProfile.name,
       username: userProfile.username,
@@ -239,6 +357,7 @@ let userGetCheckout = async function (req, res, next) {
       walletMsg,
       checkDouble
     });
+    console.log(userdone);
     userdone = null;
     walletMsg=null
   }
@@ -859,18 +978,89 @@ const userGetResendOtp = async(req,res,next)=>{
   }
 }
 
+const userGetForgotPassword = async(req,res,next)=>{
+  try {
+    console.log("htnll")
+    res.render('user-forgot-password')
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+}
+
+const userGetResetPassword = async(req,res,next)=>{
+  try {
+    console.log("aswinachuz")
+    const resetParam=req.params.id
+    res.render('user-reset-password',{resetParam})
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+}
+
+const userPostEmailCheck = async(req,res,next)=>{
+  try {
+    console.log("famms")
+    const email = req.body.email
+    res.redirect(`/otp/${email}`)
+    
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+}
+
+const userPostUpdatePassword = async(req,res,next)=>{
+  try {
+    console.log("famms")
+    let passWd = req.body.password
+    const email = req.body.email
+
+
+    passWd = await bcrypt.hash(
+      passWd,
+      10
+    );
+    await user_details.updateOne(
+      { email:email },
+      { $set: { password:passWd } }
+    );
+   
+
+   
+    res.redirect('/login')
+    loginMsg="pasword updated successfully"
+     console.log("pasword updated successfully");
+    
+  } catch (error) {
+    console.log(error.message)
+    next()
+  }
+}
+
 let userPostChangeQuantity = async function (req, res, next) {
   try {
     const cart = req.body.cart;
-  const productId = req.body.product;
+    console.log(cart);
+  const productid = req.body.product;
+  console.log(productid);
   let k = req.body.count;
   let count = parseInt(k);
   await cart_details.updateOne(
-    { _id: req.body.cart, "products.productId": req.body.product },
-    {
-      $inc: { "products.$.quantity": count },
-    }
+    { 
+      _id: new ObjectId(req.body.cart),
+      "products": {
+        $elemMatch: {
+          "productId": req.body.product,
+          "size": req.body.size
+        }
+      }
+    },
+    { $inc: { "products.$.quantity": count } }
   );
+  
+  
 
   console.log("quantity changed");
 
@@ -880,9 +1070,99 @@ let userPostChangeQuantity = async function (req, res, next) {
   });
   //  console.log(cartQuantity.products[0].quantity);
 
-  const frontQuantity = cartQuantity.products[0].quantity;
-
-  res.json({ quantity: frontQuantity, cart: cart, productId: productId });
+  
+  const frontSize = cartQuantity.products[0].size;
+  const price = await cart_details.aggregate([
+    {
+      $match: { _id: new ObjectId(req.body.cart) },
+    },
+    {
+      $unwind: "$products",
+    },
+    {
+      $project: {
+        productId: "$products.productId",
+        quantity: "$products.quantity",
+        size: "$products.size",
+        colour: "$products.colour",
+      },
+    },
+    
+     
+    {
+      $lookup: {
+        from: "product_details",
+        localField: "productId",
+        foreignField: "productIndex",
+        as: "product",
+      },
+    },
+    {
+      $project: {
+        productId: 1,
+        quantity: 1,
+        size: 1,
+        colour: 1,
+        product: { $arrayElemAt: ["$product", 0] },
+      },
+    },
+    
+   
+  ]);
+  const price1 = await cart_details.aggregate([
+    {
+      $match: { _id: new ObjectId(req.body.cart) },
+    },
+    {
+      $unwind: "$products",
+    },
+    {
+      $project: {
+        productId: "$products.productId",
+        quantity: "$products.quantity",
+        size: "$products.size",
+        colour: "$products.colour",
+      },
+    },
+    
+     
+    {
+      $lookup: {
+        from: "product_details",
+        localField: "productId",
+        foreignField: "productIndex",
+        as: "product",
+      },
+    },
+    {
+      $match:{productId:productid}
+    },
+    {
+      $project: {
+        productId: 1,
+        quantity: 1,
+        size: 1,
+        colour: 1,
+        product: { $arrayElemAt: ["$product", 0] },
+      },
+    },
+    
+   
+  ]);
+  let subT=0
+ 
+  const frontQuantity=price1[0].quantity
+  for(var i=0;i<price.length;i++){
+    subT=subT+parseInt(price[i].quantity)*parseInt(price[i].product.price)
+    console.log(price[i].quantity+"  hh   "+price[i].product.price);
+  }
+  console.log(subT);
+  req.session.ghh=subT
+  console.log("kij");
+const total = price[0].product.price
+console.log(productid);
+req.session.userdone=price
+  res.json({ quantity: frontQuantity, cart: cart, size:frontSize,productId: productid,total:total,subtotal:subT });
   } catch (error) {
     console.log(error.message)
     next()
@@ -1132,11 +1412,8 @@ let userPostEditProfile = async function (req, res, next) {
   try {
     let userUpdates = req.body;
 
-    let check = await user_details
-      .findOne({ username: userUpdates.username })
-      .lean();
 
-    if (check == null) {
+   
       req.session.checkEmail = await user_details
         .findOne({ email: userUpdates.email })
         .lean();
@@ -1148,7 +1425,7 @@ let userPostEditProfile = async function (req, res, next) {
           {
             $set: {
               name: userUpdates.name,
-              username: userUpdates.username,
+             
               phone: userUpdates.phone,
               email: userUpdates.email,
             },
@@ -1157,17 +1434,14 @@ let userPostEditProfile = async function (req, res, next) {
         req.session.user = userUpdates.username;
         // userSession = req.session.user;
         res.redirect("/editprofile");
+        editPMsg = "Profile updated";
         console.log("success");
       } else {
-        editMsg = "phone already in use";
+        editPMsg = "Email already in use";
         res.redirect("/editprofile");
         console.log("phone failed");
       }
-    } else {
-      editMsg = "username already present";
-      console.log("username failed");
-      res.redirect("/editprofile");
-    }
+    
   } catch (error) {
     console.log(error.message);
     next()
@@ -1262,7 +1536,8 @@ let userGetOtp = function (req, res, next) {
     didLogin = false;
     didSIgnUp = false;
   }
-  res.render("user-otp");
+  console.log("poda");
+  
 };
 
 //////////////////////////////////GET LANDING PAGE///////////////////////
@@ -1820,7 +2095,8 @@ let userPostLogin = async function (req, res, next) {
         console.log(req.session);
         // userSession = req.session.user;
         console.log(req.session.user);
-        res.redirect("/home");
+        res.redirect("/");
+        loginData=null
       } else {
         loginMsg = "invalid password";
         res.redirect("/login");
@@ -1836,8 +2112,17 @@ let userPostLogin = async function (req, res, next) {
 
 let userPostOtp = async function (req, res, next) {
   try {
+    console.log(req.body.otp);
+    console.log("poocha");
+    console.log(signupData);
+    console.log(loginData);
     if (req.body.otp == otpValue) {
-      if (signupData == null) {
+      if (otpData) {
+        console.log("both are null");
+        res.redirect('/reset-passeord/'+req.body.email)
+        otpData=null
+        
+      }else if(signupData ==null){
         if (req.session.checkEmail.status == false) {
           loginMsg = "This account has been blocked";
           res.redirect("/login");
@@ -1846,7 +2131,8 @@ let userPostOtp = async function (req, res, next) {
           // userSession = req.session.user;
           console.log(req.session.user);
           // console.log("req.session.checkEmail.username");
-          res.redirect("/home");
+          res.redirect("/");
+          loginData=null
           console.log("login success");
         }
       } else {
@@ -1861,12 +2147,12 @@ let userPostOtp = async function (req, res, next) {
         // userSession = req.session.user;
         console.log(req.session.user);
         console.log("signup success");
-        res.redirect("/home");
+        res.redirect("/");
         signupData = null;
       }
     } else {
       otpMsg = "wrong otp";
-      res.redirect("/otp");
+      res.redirect(`/otp/${otpNumber}`);
     }
   } catch (error) {
     console.log(error.message);
@@ -1900,6 +2186,33 @@ let userPostOtpLogin = async function (req, res, next) {
   }
   
 };
+
+const userPostforgotCheck =  async function (req, res, next) {
+  try {
+    didLogin = true;
+  let email = req.body.email;
+  console.log(req.body)
+   otpData = true
+
+  otpValue = Math.floor(100000 + Math.random() * 900000);
+
+  console.log(otpValue);
+
+  req.session.checkEmail = await user_details.findOne({ email: email }).lean();
+  if (req.session.checkEmail == null) {
+    console.log("invalid Email");
+  } else {
+    otp(email, otpValue);
+  }
+  didLogin = true;
+  res.redirect("/otp/"+email);
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+  
+};
+
 
 let userGetLogout = function (req, res, next) {
   req.session.user = null;
@@ -1990,5 +2303,9 @@ module.exports = {
   userGetOrderParam,
   userPostAddDefaultAddress,
   userGetOrderConfirm,
-  userGetResendOtp
+  userGetResendOtp,
+  userGetForgotPassword,
+  userGetResetPassword,
+  userPostUpdatePassword,
+  userPostforgotCheck
 };

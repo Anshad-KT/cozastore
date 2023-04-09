@@ -7,10 +7,55 @@
 	<meta name="description" content="This is a login page template based on Bootstrap 5">
 	<title>Bootstrap 5 Login Page</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<link rel="stylesheet" href="/stylesheets/login.css">
 </head>
 
 <body>
-	<section class="h-100">
+      	<div>
+    <div class="wrapper">
+        <div class="container main">
+            <div class="row">
+                <div class="col-md-6 side-image">
+
+
+                    <div class="text ">
+                        <p class="d-none d-md-block" style="text-stroke: 0.3px black; -webkit-text-stroke: 0.3px black;">"Fashion is the armor to survive the reality of everyday life." <i> — Bill Cunningham</i></p>
+                    </div>
+                </div>
+                <div class="col-md-6 right">
+                    <div class="input-box">
+                        <header>OTP Login</header>
+                        <form name="otploginVerificationform" action="/otpcheck" method="post" class="p-3">
+                        <div class="input-field">
+                            <input id="otp" type="text" class="input" name="otp" value="" required autofocus>
+                            <label for="email">OTP </label>
+                        </div>
+						<input type="text" name="email" value="{{number}}" hidden>
+                        
+                        <p id="err" class="text-danger">{{otpMsg}}</p>
+                        <div class="input-field">
+                            <input type="submit" class="submit" value="submit ">
+
+                        </div>
+                        </form>
+                        
+                      <div class="signin">
+                            <a id="myButton" href="/otpresent/{{number}}" class="mb-2 text-center pe-3">Resend OTP</a> |
+                            <a href="/user-recovery" class="ps-3">Forgot password?</a><br>
+                            <span>Don't have an account? <a href="/signup">Sign up here</a></span><br>
+                            <a href="/" class="mb-2 text-center">Home</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+	{{!-- <section class="h-100">
 		<div class="container h-100">
 			<div class="row justify-content-sm-center h-100">
 				<div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9 mt-5">
@@ -36,10 +81,10 @@
 									<div class="invalid-feedback">
 										Email is invalid
 									</div>
-								</div>
-
+								</div> --}}
+{{!-- 
 								<div>
-									<button id="myButton" class="btn btn-outline-dark d-none"><a class="tag" href="/otpresent/{{number}}">Resend OTP</a></button>
+									<button id="myButton" class="btn btn-outline-dark d-none"><a class="tag" href="/otpresent/{{number}}">Resend OTP</a></button> --}}
 
 <script>
   setTimeout(function() {
@@ -49,7 +94,7 @@
 
 									
 								    
-								</div>
+								{{!-- </div>
 								
 
 								{{!-- <div class="d-flex align-items-center">
@@ -82,15 +127,35 @@
 								Don't have an account? <a href="register.html" class="text-dark">Create One</a>
 							</div>
 						</div>
-					</div>
+					</div> --}}
 					{{!-- <div class="text-center mt-5 text-muted">
 						Copyright &copy; 2017-2021 &mdash; Your Company 
 					</div> --}}
-				</div>
+				{{!-- </div>
 			</div>
 		</div>
-	</section>
+	</section> --}}
 
 	{{!-- <script src="js/login.js"></script> --}}
 </body>
+<script>
+	const otpForm = document.querySelector("form[name='otploginVerificationform']");
+const otpInput = document.getElementById("otp");
+
+otpForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const otp = otpInput.value;
+
+    // check if OTP is empty or not a 6-digit number
+    if (otp === "" || !/^\d{6}$/.test(otp)) {
+        document.getElementById("err").textContent = "Please enter a valid 6-digit OTP";
+        return false;
+    }
+
+    // submit form if validation passes
+    this.submit();
+});
+
+</script>
 </html>

@@ -6,6 +6,145 @@
 		/* Firefox, Chrome, Opera */
 		text-align: center;
 	}
+	/* Shopping Cart Styles */
+
+.cart {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.cart-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.cart-items {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+}
+
+.cart-item {
+  display: flex;
+  padding: 20px 0;
+}
+
+.cart-item-image {
+  width: 20%;
+  min-width: 80px;
+  margin-right: 20px;
+}
+
+.cart-item-image img {
+  width: 100%;
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.cart-item-brand {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.cart-item-size {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.cart-item-price {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+}
+
+.cart-item-remove {
+  background-color: #f44336;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.cart-item-remove:hover {
+  cursor: pointer;
+  background-color: #d32f2f;
+}
+
+.cart-item-quantity {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  margin-right: 10px;
+  overflow: hidden;
+}
+
+.cart-item-decrement,
+.cart-item-increment {
+  background-color: #eee;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.cart-item-decrement:hover,
+.cart-item-increment:hover {
+  cursor: pointer;
+  background-color: #ddd;
+}
+
+.cart-item-quantity-value {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.cart-total {
+  text-align: right;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.cart-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-clear,
+.cart-checkout {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.cart-clear:hover,
+.cart-checkout:hover {
+  cursor: pointer;
+  background-color: #3e8e41;
+}
+
 </style>
 
 
@@ -116,21 +255,16 @@
 
 <!-- Shoping Cart -->
 
-<div class="container mt-5">
+<div class="container-fluid mt-5 ms-3">
 	<div class="row mt-5">
 
 		<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
 			<div class="m-l-25 m-r--38 m-lr-0-xl">
-				<button
-					class="btn-secondary mb-5 flex-c-m stext-101 cl0 size-116 bg10 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-					<a href="/products">
-						<h6 class="text-dark">continue shopping</h6>
-					</a>
-				</button>
 				
-				<div class="wrap-table-shopping-cart mt-5">
+				
+				{{!-- <div class="wrap-table-shopping-cart mt-5"> --}}
 
-					<table class="table-shopping-cart">
+					{{!-- <table class="table-shopping-cart">
 						<tr class="table_head">
 							<th class="column-1">Product</th>
 							<th class="column-2"></th>
@@ -190,8 +324,61 @@
 						</tr>
 
 						{{/each}}
-					</table>
-				</div>
+					</table> --}}
+					{{!-- <div class="col-md-12 col-lg-8 col-11 mx-auto mb-lg-0 mb-5"> --}}
+                    {{#each userdone}}
+                    <div class="card p-4 border">
+                        
+                        <div class="row">
+                            <div class="col-md-5 col-11 mx-auto bg-light d-flex justify-content-center align-items-center shadow product_img">
+                                <img src="product-images/products/{{product.imageReference.[0]}}" alt="" class="img-fluid" width="50%">
+                            </div>
+                            {{!-- product data --}}
+                            <div class="col-md-7 col-11 mx-auto px-4 mt-2 ">
+                                <div class="row">
+                                    <div class="col-6 cart-title">
+                                        <h4 class="mb-4 product_name">{{product.title}}</h4>
+                                        <p class="mb-2">Brand : {{product.brand}} </p>
+                                        <p class="mb-2">Size :{{product.size}} </p>
+                                        {{!-- <p class="mb-2">Price : </p> --}}
+                                    </div>
+                                    <div class="col-6">
+                                       {{#if out}}
+                                       <p class="text-danger">Unfortunately, the following items from your cart are out of stock.</p>
+                                       {{else}}
+                                            <ul class="pagination justify-content-end set_quantity">
+                                               <p  id="stock" class="{{@index}}" value="" hidden>{{product.stock}}</p>
+                                                <li class="page-item">  
+                                                    <button class="page-link" id="{{@index}}{{productId}}" onclick="changeQuantity('{{_id}}','{{productId}}',-1,'{{@index}}','{{size}}')"><i class="fa-solid fa-minus"></i></button>
+                                                </li>
+                                                <li class="page-item">
+                                                    <button class="page-link"  id="{{productId}}{{size}}" >{{quantity}}</button>
+                                                </li>
+                                                <li class="page-item">
+                                                    <button id="{{@index}}" onclick="changeQuantity('{{_id}}','{{productId}}',1,'{{@index}}','{{size}}')" class="page-link" ><i class="fa-solid fa-plus"></i></button>
+                                                </li>
+                                               
+                                            </ul>
+                                            {{/if}}
+                                        
+                                    </div>
+                                </div>
+                                <div id="{{_id}}{{size}}" class="row">
+                                    <div onclick="removeProduct('{{_id}}','{{productId}}','{{size}}')" class="col-8 d-flex justify-content-between remove-wish">
+                                        <p><i class="fa-solid fa-trash-can"></i> Remove from cart</p>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-end price_money">
+                                    <h3>₹  <span>{{product.price}}</span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     {{/each}}
+					 
+
+                {{!-- </div> --}}
+				{{!-- </div> --}}
 
 				<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
 					<div class="flex-w flex-m m-r-20 m-tb-5">
@@ -221,7 +408,9 @@
 				</div>
 
 			</div>
+			
 		</div>
+		
 
 
 
@@ -258,7 +447,7 @@
 					</div>
 
 					<div class="size-209">
-						<span class="mtext-110 cl2">
+						<span id="subT" class="mtext-110 cl2">
 							{{ghh}}
 						</span>
 					</div>
@@ -270,13 +459,15 @@
 
 
 				<div id="checkoutBt">
-					{{#if userdone.bt}}
+					{{!-- {{#if userdone.bt}} --}}
 					<button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
 						<a href="/checkout">Proceed to Checkout</a>
 					</button>
-					{{else}}
-					<h6 class="text-danger">Please update the Cart</h6>
-					{{/if}}
+					{{!-- {{else}} --}}
+					<p id="msg" class="text-danger text-center">Sorry for the inconvenience. Please remove the out of stock product to continue your shopping.</p>
+					
+					{{!-- {{/if}} --}}
+					
 				</div>
 
 
@@ -306,13 +497,23 @@
 
 
 
-				
 
 
 			</div>
+			<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+			<button class="flex-c-m stext-101 cl0 size-68 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"></button>
+					<a href="/products">
+						<h6 class="text-dark">continue shopping</h6>
+					</a>
+				</button>
+				</div>
+				
+			
 		</div>
+		
 
 	</div>
+	
 	
 </div>
 
@@ -336,7 +537,7 @@
 
 
 <script>
-	function changeQuantity(cartId, productId, count) {
+/*	function changeQuantity(cartId, productId, count) {
 		$.ajax({
 			url: '/change-product-quantity',
 			data: {
@@ -389,7 +590,64 @@
 
 
 		})
+	} */
+	
+    function changeQuantity(cartId, productId, count, index, size) {
+        let quantity = parseInt(document.getElementById(productId + size).innerHTML);
+        let stock = parseInt(document.getElementsByClassName(index)[0].innerHTML);
+        
+        console.log(quantity + "ji");
+        console.log(stock + "hi");
+        
+        document.getElementById(index).disabled = true;
+        document.getElementById(index + productId).disabled = true;
+		 
+        if (quantity<2){
+			document.getElementById(index + productId).disabled = true;
+
+		}
+		
+        else if (stock - quantity <= 0) {
+			console.log(stock)
+			console.log(quantity)
+            console.log("kooi");
+            document.getElementById(index).style.visibility = 'hidden';
+
+            document.getElementById('msg').innerHTML = "Stock Exceeded, 'We sincerely apologize for this inconvenience. We've experienced an unusually high number of orders and have run out of inventory.'";
+		 document.getElementById(productId+size).style.visibility = 'visible'; 
+	    } else {
+            document.getElementById(index).style.visibility = 'visible';
+            document.getElementById('msg').innerHTML = "";
+            $.ajax({
+                url: '/change-product-quantity',
+                data: {
+                    cart: cartId,
+                    product: productId,
+                    count: count,
+                    quantity: quantity,
+                    size: size
+                },
+                method: 'post',
+                success: (response) => {
+                    console.log(response.productId +" "+response.quantity);
+                    /*if (response.delete) {
+                        alert("Product Removed From The Cart");
+                        location.reload();
+                    } else {
+						}*/
+                        document.getElementById(index).disabled = false;
+                        document.getElementById(index + productId).disabled = false;
+                        document.getElementById(response.productId + response.size).innerHTML = response.quantity;
+                        
+						
+						document.getElementById('subT').innerHTML = response.subtotal;
+						
+                    
+                }
+            });
+        }
 	}
+    
 </script>
 
 
@@ -421,6 +679,7 @@
 		})
 	});
 </script>
+<script src="https://kit.fontawesome.com/e62bf9ccce.js" crossorigin="anonymous"></script>
 <!--===============================================================================================-->
 
 

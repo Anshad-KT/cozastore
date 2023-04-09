@@ -7,99 +7,150 @@
 	<meta name="description" content="This is a login page template based on Bootstrap 5">
 	<title>Bootstrap 5 Login Page</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<link rel="stylesheet" href="/stylesheets/signup.css">
+
 </head>
 
 <body>
-	<section class="h-100">
-		<div class="container h-100">
-			<div class="row justify-content-sm-center h-100">
-				<div class="col-xxl-6 col-xl-7 col-lg-7 col-md-9 col-sm-11 mt-5">
-					<div class="text-center mt-5">
-						{{!-- <img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="logo" width="100"> --}}
-                       
-					</div>
-					<div class="card shadow-lg mb-5">
-						<div class="card-body p-5">
-                             <div class="container">
-                                <div class="row">
-                                <div class="d-flex justify-content-center">
-							<h1 class="mb-4">Signup</h1>
-                                </div>
-                                </div>
-                                </div>
-							<form action="/signupcheck" onsubmit="return validateform()" name="sub" method="POST" class="needs-validation" novalidate="" autocomplete="off">
-								<div class="mb-3">
-									<label class="mb-2 text-muted" for="username">Username</label>
-									<input id="usernametxt" type="text" class="form-control" name="username" value="" required autofocus>
-								
-								</div>
-                                <div class="mb-3">
-									<label class="mb-2 text-muted" for="name">Name</label>
-									<input id="nametxt" type="text" class="form-control" name="name" value="" required autofocus>
-									
-								</div><div class="mb-3">
-									<label class="mb-2 text-muted" for="email">E-Mail Address</label>
-									<input id="emailtxt" type="email" class="form-control" name="email" value="" required autofocus>
-									
-								</div><div class="mb-3">
-									<label class="mb-2 text-muted" for="email">Phone</label>
-									<input id="phonetxt" type="number" class="form-control" name="phone" value="" required autofocus>
-									
-								</div><div class="mb-3">
-									<label class="mb-2 text-muted" for="email">Password</label>
-									<input id="password" type="password" class="form-control" name="password" value="" required autofocus>
-									
-								</div>
+	
+    <div class="wrapper ">
+        <div class="container main ">
+            <div class="row mt-3 mt-md-0 mt-lg-5 mb-lg-4">
+                <div class="col-md-6 d-none d-md-block side-image">
+                    <!-------Image-------->
+                    <img src="images/white.png" alt="">
+                    <div class="text">
+                        <p class="d-none d-md-block">"Fashion is the armor to survive the reality of everyday life." <i> — Bill Cunningham</i></p>
+                    </div>
+                </div>
+                <div class="col-md-6 right " > 
+                     <div class="input-box">
+                        <header>Create account</header>
+                        <form id="signupe" name="signupe" action="/signupcheck" method="post">
+  <div class="input-field">
+    <input id="username" type="text" class="input" name="username" autocomplete="off">
+    <label for="username">Username</label>
+  </div>
+  <div class="input-field">
+    <input id="name" type="text" class="input" name="name" autocomplete="off">
+    <label for="name">Name</label>
+  </div>
+  <div class="input-field">
+    <input id="email" type="text" class="input" name="email" autocomplete="off">
+    <label for="email">Email</label>
+  </div>
+  <div class="input-field">
+    <input id="phone" type="number" class="input" name="phone" autocomplete="off">
+    <label for="phone">Phone</label>
+  </div>
+  <div class="input-field">
+    <input id="password" type="password" class="input" name="password">
+    <label for="password">Password</label>
+  </div>
+  <div class="input-field">
+    <input id="reenterpassword" type="password" class="input" name="reenterpassword">
+    <label for="reenterpassword">Confirm Password</label>
+  </div>
+  <p class="text-danger" id="signupErr"></p>
+  <div class="input-field">
+    <input type="submit" class="submit" value="Sign Up">
+  </div>
+</form>
+                        <div class="signin">
+                            <span>Already have an account? <a href="/login">Log in here</a></span><br>
+                            <a href="/" class="text-center">Home</a>
+                            
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-								<div class="mb-3">
-									<div class="mb-2 w-100">
-										<label class="text-muted" for="password">Confirm password</label>
-										
-									</div>
-									<input id="confirmpasswordtxt" type="password" class="form-control" name="reenterpassword" required>
-								  
-								</div>
-
-								{{!-- <div class="d-flex align-items-center">
-									<div class="form-check">
-										<input type="checkbox" name="remember" id="remember" class="form-check-input">
-										<label for="remember" class="form-check-label">Remember Me</label>
-									</div>
-									
-								</div> --}}
-                                <div class="container mt-5">
-                                <div class="row">
-                                <div id="error-message" class="d-flex justify-content-center text-danger">
-                                     <p id="error-message">{{SignupMsg}}</p>
-                                </div>
-                                </div>
-                                </div>
-								 <div class="container mt-5">
-                                <div class="row">
-                                <div class="d-flex justify-content-center">
-                                     <button type="submit" class="btn btn-dark text-right">
-										Request OTP
-									</button>
-                                </div>
-                                </div>
-                                </div>
-							</form>
-						</div>
-						<div class="card-footer py-3 border-0 mb-3">
-							<div class="text-center">
-								Don't have an account? <a href="register.html" class="text-dark">Create One</a>
-							</div>
-						</div>
-					</div>
-					{{!-- <div class="text-center mt-5 text-muted">
-						Copyright &copy; 2017-2021 &mdash; Your Company 
-					</div> --}}
-				</div>
-			</div>
-		</div>
-	</section>
 
 	{{!-- <script src="js/login.js"></script> --}}
 </body>
-<script src="/javascripts/validation.js"></script>
+
+<script>
+  const form = document.getElementById('signupe');
+  const usernameInput = document.getElementById('username');
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const phoneInput = document.getElementById('phone');
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('reenterpassword');
+  const errorElement = document.getElementById('signupErr');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    let isValid = true;
+    const username = usernameInput.value.trim();
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const password = passwordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
+
+    // Validate username
+    const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_-]{2,15}$/
+
+    if (!usernameRegex.test(username)) {
+      isValid = false;
+      errorElement.innerHTML = '<p>Please enter a valid username. It should have alphanumeric characters, hyphens, or underscores and be between 5 to 20 characters long.</p>';
+      usernameInput.focus();
+      return;
+    }
+
+    // Validate name
+    const nameRegex = /^[a-zA-Z ]{2,30}$/;
+    if (!nameRegex.test(name)) {
+      isValid = false;
+      errorElement.innerHTML = '<p>Please enter a valid name. It should contain only alphabets and be between 2 to 30 characters long.</p>';
+      nameInput.focus();
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      isValid = false;
+      errorElement.innerHTML = '<p>Please enter a valid email address.</p>';
+      emailInput.focus();
+      return;
+    }
+
+    // Validate phone format
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      isValid = false;
+      errorElement.innerHTML = '<p>Please enter a valid phone number. It should contain exactly 10 digits.</p>';
+      phoneInput.focus();
+      return;
+    }
+
+    // Validate password format
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      isValid = false;
+      errorElement.innerHTML = '<p>Please enter a password with at least 8 characters, including uppercase and lowercase letters and at least one number.</p>';
+      passwordInput.focus();
+      return;
+    }
+
+    // Validate confirm password
+    if (password !== confirmPassword) {
+      isValid = false;
+      errorElement.innerHTML = '<p>Passwords do not match.</p>';
+      confirmPasswordInput.focus();
+      return;
+    }
+
+    // If all validations pass, submit the form
+    if (isValid) {
+      form.submit();
+    }
+  });
+</script>
+
+
 </html>
