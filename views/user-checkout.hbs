@@ -1,8 +1,106 @@
   <!DOCTYPE html>
 <html lang="en">
 <head>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/2owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css2/bootstrap.min.css">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="css2/style.css">
 	{{>user-header}}
     <style>
+      
+.md-select {
+  *, :after, :before {
+    box-sizing: border-box;
+  }
+  /*Demo css do not add to your project*/
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /*--*/
+
+  display: block;
+  margin: 10px 0 8px 0;
+  padding-bottom: 2px;
+  /*  position: relative;*/
+  min-width: 180px;
+
+  [type=button] {
+    background: #fff;
+    border-color: rgba(0, 0, 0, 0.12); 
+    border-width: 0 0 1px 0;
+    color: rgba(0, 0, 0, 0.73);
+    cursor: default;
+    display: block;
+    line-height: 48px;
+    padding: 2px 0 1px 16px;
+    position: relative;
+    text-align: left;
+    text-shadow: none;
+    width: 100%;
+    z-index: 1;
+    outline: none;
+    overflow: hidden;
+
+
+    &:focus, &:hover {
+      background: rgba(0,0,0,0.1);
+    }
+    &:after {
+      content: '\25be';
+      float: right;
+      padding-right: 16px;
+    }
+  }
+  ul[role=listbox] {
+    background-color: white;
+    cursor: default;
+    list-style: none;
+    line-height: 26px;
+    overflow: hidden;
+    margin: 0;
+    max-height: 0;
+    position: absolute;
+    padding: 0;
+    transform: translateY(-50%);
+    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1);
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+
+    li {
+      height: 48px;
+      margin: 0;
+      padding: 10px 16px;
+      outline: none;
+      overflow: hidden;
+
+      &:focus, &:hover, &.active {
+        background: rgba(0,0,0,0.1);
+      }
+    }
+  }
+
+  &.active ul {
+    max-height: 200px;
+    overflow: auto;
+    padding: 8px 0 16px 0px;
+    z-index: 2;
+    transition: all .2s ease
+  }
+}
+
         .gradient-custom-2 {
 /* fallback for old browsers */
 background: #fbc2eb;
@@ -67,21 +165,21 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 
               
                 <div class="row mt-2">
-                    <div class="col-md-6"><label class="labels">Name</label><input name="name" type="text" class="form-control" value={{name}}></div>
-                    <div class="col-md-6"><label class="labels">username</label><input type="text" name="username" class="form-control" value={{username}}  value=""></div>
+                    <div class="col-md-6"><label class="labels">Name</label><input id="name" name="name" type="text" class="form-control" value={{name}} pattern="^[a-zA-Z]+$" title="Name can only contain letters (no spaces)" required></div>
+                    <div class="col-md-6"><label class="labels">username</label><input id="name" type="text" name="username" class="form-control" value={{username}}  pattern="[a-zA-Z0-9_-]{3,16}$" title="Username must be between 3 and 16 characters and can only contain letters, numbers, underscores, and hyphens." required></div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" class="form-control" name="phone" value={{phone}}></div>
+                    <div class="col-md-12"><label class="labels">Mobile Number</label><input id="phone" type="text" class="form-control" name="phone" value={{phone}} pattern="[0-9]{10}$" title="Mobile number must be 10 digits." required></div>
                      
-                    <div class="col-md-12"><label class="labels">Email ID</label><input type="text" name="email" class="form-control" placeholder="enter email id" value={{email}}></div>
+                    <div class="col-md-12"><label class="labels">Email ID</label><input id="email" type="email" name="email" class="form-control" placeholder="enter email id" value={{email}} pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" title="Please enter a valid email address."></div>
                    
                     <div class="col-md-6 mb-2"><label class="labels">Address</label></div>
-                    <div class="col-md-12 mb-2"><input type="text" name="housename" placeholder="Enter your housename" class="form-control" value={{selectedAddress.[0].address.housename}}></div>
-					 <div class="col-md-6 mb-2"><input name="postalname" type="text" class="form-control" placeholder="Enter your postalName" value={{selectedAddress.[0].address.postalname}}></div>
-                    <div class="col-md-6 mb-2"><input type="number" name="pincode" class="form-control" placeholder="Enter your pincode" value={{selectedAddress.[0].address.pincode}}></div>
-					 <div class="col-md-6 mb-2"><input name="district" type="text" class="form-control" placeholder="Enter your district" value={{selectedAddress.[0].address.district}}></div>
-                    <div class="col-md-6 mb-2"><input type="text" name="state" class="form-control" placeholder="Enter your state"  value={{selectedAddress.[0].address.state}}></div>
-					 <div class="col-md-6 mb-2"><input name="country" type="text" class="form-control" placeholder="Enter your country" value={{selectedAddress.[0].address.country}}></div>
+                    <div class="col-md-12 mb-2"><input id="housename" type="text" name="housename" placeholder="Enter your housename" class="form-control" value={{selectedAddress.[0].address.housename}} pattern="^[A-Za-z]+$" title="housname can only contain letters and spaces." required></div>
+					 <div class="col-md-6 mb-2"><input id="postalname" name="postalname" type="text" class="form-control" placeholder="Enter your postalName" value={{selectedAddress.[0].address.postalname}} pattern="^[A-Za-z]+$" title="postalname can only contain letters and spaces." required></div>
+                    <div class="col-md-6 mb-2"><input id="pincode" type="number" name="pincode" class="form-control" placeholder="Enter your pincode" value={{selectedAddress.[0].address.pincode}} pattern="^\d{6}$" title="Mobile number must be 10 digits." required></div>
+					 <div class="col-md-6 mb-2"><input id="district" name="district" type="text" class="form-control" placeholder="Enter your district" value={{selectedAddress.[0].address.district}} pattern="^[A-Za-z]+$" title="district can only contain letters and spaces." required></div>
+                    <div class="col-md-6 mb-2"><input id="state" type="text" name="state" class="form-control" placeholder="Enter your state"  value={{selectedAddress.[0].address.state}} pattern="^[A-Za-z]+$" title="state can only contain letters and spaces." required></div>
+					 <div class="col-md-6 mb-2"><input id="country" name="country" type="text" class="form-control" placeholder="Enter your country" value={{selectedAddress.[0].address.country}} pattern="^[A-Za-z]+$" title="country can only contain letters and spaces." required></div>
                 
                 </div>
 
@@ -91,33 +189,39 @@ background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238
 
         <div class="d-block my-3">
           <div class="custom-control custom-radio">
-            
-            <select class="form-control" name="checkout" id="exampleFormControlSelect1">
+            <div class="md-select">
+
+ 
+
+</div>
+            <select class="form-control" name="checkout" id="checkout">
 				 <option>cash on delivery</option> 
-				 <option>Pay using razorpay</option>    
-				 <option>wallet</option>                                
+				 <option>Pay using razorpay</option>
+				 {{#if walletValid}}    
+				 <option>wallet</option>   
+				 {{/if}}                             
             </select>
           </div>
          
         </div>
 		{{#if checkDouble}}
-		<div class="mt-5 text-center"><button class="btn btn-primary profile-button" onclick="return checkoutValidate()" type="submit">Continue</button></div>
+		<div class="mt-5 text-center"><button onclick="return validateForm()" class="btn btn-primary profile-button"  type="submit">Continue</button></div>
 
 		{{else}}
 		<div class="mt-5 text-center">Empty Cart</div>
 		{{/if}}
 		
-				               {{#if walletMsg}}
+				              
 								<div class="container">
                                 <div class="row">
                                 <div class="d-flex justify-content-center">
                                     
-									<p id="error.message">{{walletMsg}}</p>	
+									<p id="err"></p>	
 									
                                 </div>
                                 </div>
                                 </div>
-								{{/if}}
+							
 				                <div class="mt-5">
 								 <a href="/address">saved addresses</a>
 								</div>
@@ -478,6 +582,24 @@ location.href='/confirm'
 				ps.update();
 			})
 		});
+	</script>
+
+    <script src="js2/jquery-3.3.1.min.js"></script>
+    <script src="js2/popper.min.js"></script>
+    <script src="js2/bootstrap.min.js"></script>
+    <script src="js2/owl.carousel.min.js"></script>
+    <script src="js2/main.js"></script>
+	<script>
+		$('.md-select').on('click', function(){
+  $(this).toggleClass('active')
+})
+
+$('.md-select ul li').on('click', function() {
+  var v = $(this).text();
+  $('.md-select ul li').not($(this)).removeClass('active');
+  $(this).addClass('active');
+  $('.md-select label button').text(v)
+})
 	</script>
 <!--===============================================================================================-->
 

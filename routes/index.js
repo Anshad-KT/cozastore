@@ -17,9 +17,9 @@ router.get('/admin-login',nocache(),middleware.verifyAdminNotLogin,admin.adminGe
 router.get('/admin-users',nocache(),middleware.verifyAdminLogin,admin.adminGetAllUsers)
 router.get('/block/:id',middleware.verifyAdminLogin,admin.adminGetBlockUsers);
 router.get('/delete/:id',middleware.verifyAdminLogin,admin.adminGetDeleteUsers);
-router.get('/admin-addcategory',nocache(),middleware.verifyAdminLogin,admin.adminGetAddCategory);
-router.get('/admin-addbrand',nocache(),middleware.verifyAdminLogin,admin.adminGetAddBrand);
-router.get('/admin-addsubcategory',nocache(),middleware.verifyAdminLogin,admin.adminGetAddSubCategory);
+router.get('/admin-addcategory/',nocache(),middleware.verifyAdminLogin,admin.adminGetAddCategory);
+router.get('/admin-addbrand/',nocache(),middleware.verifyAdminLogin,admin.adminGetAddBrand);
+router.get('/admin-addsubcategory/',nocache(),middleware.verifyAdminLogin,admin.adminGetAddSubCategory);
 router.get('/deletecategory/',middleware.verifyAdminLogin,admin.adminGetDeleteCategory)
 router.get('/deletesubcategory/',middleware.verifyAdminLogin,admin.adminGetDeleteSubCategory)
 router.get('/deletebrand/',middleware.verifyAdminLogin,admin.adminGetDeleteBrand)
@@ -30,9 +30,9 @@ router.get('/status/',middleware.verifyAdminLogin,admin.adminGetSetOrderStatus)
 router.get('/admin-cart/:id',admin.adminGetGetCartOrders)
 router.get('/admincart',middleware.verifyAdminLogin,admin.adminGetListOrderSpecific)
 router.get('/editproduct/:id',middleware.verifyAdminLogin,admin.adminGetEditProduct)
-router.get('/adminedit',middleware.verifyAdminLogin,admin.adminGetEdit)
+router.get('/adminedit/',middleware.verifyAdminLogin,admin.adminGetEdit)
 router.get('/admin-banner',middleware.verifyAdminLogin,admin.adminGetBanner)
-router.get('/admin-coupon',middleware.verifyAdminLogin,admin.adminGetAddCoupon)
+router.get('/admin-coupon/',middleware.verifyAdminLogin,admin.adminGetAddCoupon)
 router.get('/editbannerparam/',middleware.verifyAdminLogin,admin.adminGetParam)
 router.get('/editbanner',middleware.verifyAdminLogin,admin.adminGetEditBanner)
 router.get('/deletecoupon/',middleware.verifyAdminLogin,admin.adminPostDisableCoupon)
@@ -46,13 +46,15 @@ router.get('/download-excel',middleware.verifyAdminLogin,admin.adminDownloadSale
 
 router.post('/adminlogin',admin.adminPostLogin)
 router.post('/upload',middleware.verifyAdminLogin,multerConfig.upload.array('image'),admin.adminPostUploadProduct)
-router.post('/brand',middleware.verifyAdminLogin,multerConfig.upload.single('image'),admin.adminPostAddBrand)
+router.post('/brand',middleware.verifyAdminLogin,multerConfig.brandConfiguration.array('image'),admin.adminPostAddBrand)
 router.post('/category',middleware.verifyAdminLogin,admin.adminPostAddCategory)
 router.post('/coupon',middleware.verifyAdminLogin,admin.adminPostAddCoupon)
 router.post('/subcategory',middleware.verifyAdminLogin,admin.adminPostAddSubCategory)
 router.post('/editProduct',middleware.verifyAdminLogin,admin.adminPostEditProduct)
-router.post('/banner',middleware.verifyAdminLogin,multerConfig.upload.single('image'),admin.adminPostAddBanner)
+router.post('/editImage',middleware.verifyAdminLogin,multerConfig.upload.array('image'),admin.adminPostEditImage)
+router.post('/banner',middleware.verifyAdminLogin,multerConfig.bannerConfiguration.array('image'),admin.adminPostAddBanner)
 router.post('/editbannerpost',middleware.verifyAdminLogin,admin.adminPostEditBanner)
+router.get('/deleteimage/',middleware.verifyAdminLogin,admin.adminDeleteImage)
 
 
 

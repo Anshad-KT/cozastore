@@ -52,7 +52,7 @@
                                         <label for="exampleFormControlSelect1">Price</label>
                                         <input id="price" type="text" class="form-control mb-4" name="price">
                                         <label for="exampleFormControlSelect1">Category</label>
-                                        <select class="form-control" name="category" id="exampleFormControlSelect1">
+                                        <select class="form-control" name="category" id="category">
                                             {{#each dbCategory}}
                                             <option>{{name}}</option>
                                             {{/each}}
@@ -62,7 +62,7 @@
                                         <label for="exampleFormControlSelect1">Stock</label>
                                         <input id="stock" type="text" class="form-control mb-4" name="stock">
                                         <label for="exampleFormControlSelect1">Brand</label>
-                                        <select class="form-control" name="brand" id="exampleFormControlSelect1">
+                                        <select class="form-control" name="brand" id="brand">
                                             {{#each dbBrand}}
                                             <option>{{name}}</option>
                                             {{/each}}
@@ -74,7 +74,7 @@
                                     <div class="col-12 col-md-6 col-lg-6">
 
                                         <label for="exampleFormControlSelect1">Size</label>
-                                        <select class="form-control" name="size" id="exampleFormControlSelect1"
+                                        <select class="form-control" name="size" id="size"
                                             multiple>
 
                                             <option>L</option>
@@ -87,7 +87,7 @@
                                     <div class="col-12 col-md-6 col-lg-6 ">
 
                                         <label for="exampleFormControlSelect1">colour</label>
-                                        <select class="form-control" name="colour" id="exampleFormControlSelect1"
+                                        <select class="form-control" name="colour" id="colour"
                                             multiple>
 
                                             <option>red</option>
@@ -145,7 +145,7 @@
                                 <div class="container">
                                     <div class="row">
                                         <div id="error-message" class="d-flex justify-content-center text-danger">
-                                            <a href="" class="text-danger" id="error-message"></a>
+                                            <p class="text-danger" id="error-message"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -169,5 +169,75 @@
 
 
             </body>
+            <script>
+               function productValidate() {
+  let title = document.forms["products"]["title"].value.trim();
+  let price = document.forms["products"]["price"].value.trim();
+  let stock = document.forms["products"]["stock"].value.trim();
+  let productindex = document.forms["products"]["productindex"].value.trim();
+  let description = document.forms["products"]["description"].value.trim();
+  let image = document.forms["products"]["image"].files;
+
+  // Check if title is empty
+  if (title == "") {
+    document.getElementById('error-message').innerHTML="Please enter a title"
+    return false;
+  }
+
+  // Check if price is empty or not a number
+  if (price == "" || isNaN(price)) {
+    document.getElementById('error-message').innerHTML="Please enter a valid price"
+    return false;
+  }
+
+  // Check if stock is empty or not a number
+  if (stock == "" || isNaN(stock)) {
+     document.getElementById('error-message').innerHTML="Please enter a valid stock count"
+    return false;
+  }
+
+  // Check if product index is empty or not a number
+  if (productindex == "") {
+     document.getElementById('error-message').innerHTML="Please enter a valid product index"
+    return false;
+  }
+
+  // Check if description is empty
+  if (description == "") {
+    document.getElementById('error-message').innerHTML="Please enter a description"
+    return false;
+  }
+
+  // Check if image field is empty
+  if (image.length == 0) {
+    document.getElementById('error-message').innerHTML="Please select at least one image to upload"
+    return false;
+  }
+
+  // Check if only one file is selected
+  if (image.length ==1) {
+    let ext = image[0].name.split(".").pop().toLowerCase();
+    if (ext != "jpg" && ext != "jpeg" && ext != "png" && ext != "gif") {
+     document.getElementById('error-message').innerHTML="Please select a valid image file (jpg, jpeg, png, gif)"
+      return false;
+    }
+  }
+
+  // Check if multiple files are selected
+  if (image.length > 1) {
+    for (let i = 0; i < image.length; i++) {
+      let ext = image[i].name.split(".").pop().toLowerCase();
+      if (ext != "jpg" && ext != "jpeg" && ext != "png" && ext != "gif") {
+        document.getElementById('error-message').innerHTML="Please select only image files (jpg, jpeg, png, gif)"
+        return false;
+      }
+    }
+  }
+
+  // If all validation passes, return true to submit the form
+  return true;
+}
+
+            </script>
 
             </html>

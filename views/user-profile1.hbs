@@ -584,7 +584,7 @@
 
                                                 <div class="section_our_solution">
                                                    <div class="row">
-                                                      {{#each allAddress.address}}
+                                                      {{#each allAddress}}
 
                                                       <div class="col-lg-5 col-md-5 col-sm-6 mt-3">
                                                          <div class="our_solution_category">
@@ -671,17 +671,26 @@
                                                                   </div>
                                                                   <div class="solu_description">
                                                                      <p>
-                                                                        {{housename}},{{postalname}},<br>
-                                                                        {{pincode}},{{district}},
-                                                                        <br>{{state}},{{country}}
+                                                                        {{address.housename}},{{address.postalname}},<br>
+                                                                        {{address.pincode}},{{address.district}},
+                                                                        <br>{{address.state}},{{address.country}}
                                                                      </p>
-                                                                     <button class="read_more_btn mt-2 mb-2"><a
-                                                                           href="/defaultaddress/{{id}}">set as
-                                                                           default</a></button>
-                                                                    
-                                                                           <a
-                                                                           href="/addressparamsdelete/{{id}}"><i class="fa-solid fa-trash"></i></a>
 
+                                                    {{#if (eq defaultAddress address.id)}}
+                                                                     {{!-- {{#if defaultaddress}} --}}
+                                                                       <a
+                                                                           href="/addressparamsdelete/{{address.id}}"><i class="fa-solid fa-trash mt-3"></i></a>
+
+                                                                           {{else}}
+                                                                           <button class="read_more_btn mt-2 mb-2"><a
+                                                                           href="/defaultaddress/{{address.id}}">set as
+                                                                           default</a></button>
+                                                                             <a
+                                                                           href="/addressparamsdelete/{{address.id}}"><i class="fa-solid fa-trash"></i></a>
+
+                                                                           {{/if}}
+                                                                    
+                                                                         
                                                                      
                                                                   </div>
                                                                </div>

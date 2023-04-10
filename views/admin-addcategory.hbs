@@ -39,14 +39,14 @@
                             <!-- ============================================================== -->
 
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
-                                <form action="/category" method="post" role="form" enctype="multipart/form-data" onsubmit="return categoryValidate()" name="categoryform">
+                                <form action="/category" method="post" role="form" onsubmit="return categoryValidate()" name="categoryform">
                                    
                                   
                                     {{!-- <div class="mb-3"> --}}
                                         <div class="row">
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <label for="exampleFormControlSelect1">new category</label>
-                                                <input id="price" type="text" class="form-control mb-4" name="category">
+                                                <input id="category" type="text" class="form-control mb-4" name="category">
                                                 
                                             </div>
                                             
@@ -54,8 +54,8 @@
 
                                         {{!-- <div class="container">
                                             <div class="row"> --}}
-                                                <div id="error" class="d-flex justify-content-center">
-                                                    <a href="" id="error"></a>
+                                                <div id="error" class="d-flex justify-content-center mt-2 mb-2 text-danger">
+                                                    <p id="error">{{msg}}</p>
                                                 </div>
                                             {{!-- </div>
                                         </div> --}}
@@ -147,5 +147,23 @@
 
                
 </body>
+<script>
+    function categoryValidate() {
+  // Get the category input element
+  const categoryInput = document.forms["categoryform"]["category"];
+
+  // Get the error message element
+  const errorMessage = document.getElementById("error");
+
+  // Check if the category input is empty or contains only spaces
+  if (categoryInput.value.trim() === "") {
+    errorMessage.innerHTML = "Please enter a valid category";
+    return false;
+  }
+
+  return true;
+}
+
+</script>
 
 </html>

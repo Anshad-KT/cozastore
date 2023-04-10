@@ -86,9 +86,28 @@ let userGetEditProfile = async function (req, res, next) {
         },
       },
     ]);
-    let allAddress = await address_details
-      .findOne({ userId: req.session.user })
-      .lean();
+    
+    // let addressDefault = await user_details.aggregate([
+    //   {
+    //     $match:{
+    //       username:req.session.user
+    //     },
+    //     {
+
+    //     }
+    //   }
+    // ])
+    // let addressDefault=userProfile.
+
+    let allAddress = await address_details.aggregate([
+      {
+        $match: { userId: req.session.user },
+      },
+      {
+        $unwind: "$address",
+      },
+    ]);
+      // allAddress.defaultAddress
     console.log(userProfile);
     console.log("hii");
     console.log(selectedAddress);
@@ -228,6 +247,21 @@ let userGetCheckout = async function (req, res, next) {
         
        
       ]);
+      
+      // for(var i=0;i<userdone.length;i++ ){
+      //      userdone[i].product.total= parseInt(userdone[i].product.price)*parseInt(userdone[i].quantity)
+      // }
+      // let subT = 0
+      // for(var i=0;i<userdone.length;i++){
+      //   subT=subT+ parseInt(userdone[i].product.total)
+      // }
+      // console.log(subT);
+      if(req.session.ghh>dbC.wallet){
+        var walletValid=false
+      }else
+      {
+        var walletValid=true
+      }
       res.render("user-checkout", {
         name: userProfile.name,
         username: userProfile.username,
@@ -236,8 +270,9 @@ let userGetCheckout = async function (req, res, next) {
         selectedAddress,
         userdone,
         ghh: req.session.ghh,
-        walletMsg,
-        checkDouble
+       
+        checkDouble,
+        walletValid
       });
       console.log(userdone);
       userdone = null;
@@ -294,6 +329,12 @@ let userGetCheckout = async function (req, res, next) {
         
        
       ]);
+      if(req.session.ghh>dbC.wallet){
+        var walletValid=false
+      }else
+      {
+        var walletValid=true
+      }
       res.render("user-checkout", {
         name: userProfile.name,
         username: userProfile.username,
@@ -302,8 +343,9 @@ let userGetCheckout = async function (req, res, next) {
         selectedAddress,
         userdone,
         ghh: req.session.ghh,
-        walletMsg,
-        checkDouble
+       
+        checkDouble,
+        walletValid
       });
       console.log(userdone);
       userdone = null;
@@ -761,7 +803,7 @@ let userGetDeleteCart = async function (req, res, next) {
 
   console.log("deleted cart");
 
-  res.json({status:true})
+  res.redirect('/cart')
   } catch (error) {
     console.log(error.message);
     next()
@@ -859,6 +901,7 @@ let userGetAddressParams = async function (req, res, next) {
 let userGetDeleteAddressParams = async function (req, res, next) {
   try {
      let addressdltParams = req.params.id;
+     console.log(addressdltParams);
   await address_details.updateOne(
     { userId: req.session.user },
     { $pull: { address: { id: addressdltParams } } }
@@ -2004,6 +2047,7 @@ let userPostDeleteWishlist = async function (req, res, next) {
     { $pull: { wishlist: req.body.productIndex } }
   );
   console.log("remove");
+  res.json({status:true})
   } catch (error) {
     console.log(error.message);
     next()

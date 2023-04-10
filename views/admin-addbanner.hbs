@@ -41,18 +41,18 @@
                             <!-- ============================================================== -->
 
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
-                                <form action="/banner" method="post" role="form" enctype="multipart/form-data" onsubmit="return brandValidate()" name="brandform">
+                                <form action="/banner" method="post" role="form" enctype="multipart/form-data" onsubmit="return bannerValidate()" name="brandform">
                                    
                                   
                                     {{!-- <div class="mb-3"> --}}
                                         <div class="row">
                                             <div class="col-12 col-md-6 col-lg-6 mt-3">
                                                 <label for="exampleFormControlSelect1">Title 1</label>
-                                                 <input id="price" type="text" class="form-control mb-4" name="category">
+                                                 <input id="category" type="text" class="form-control mb-4" name="category">
                                                     </div>
                                                      <div class="col-12 col-md-6 col-lg-6 mt-3">
                                                 <label for="exampleFormControlSelect1">Title 2</label>
-                                                 <input id="price" type="text" class="form-control mb-4" name="product">
+                                                 <input id="product" type="text" class="form-control mb-4" name="product">
                                                     </div>
                                         </div>
 
@@ -62,7 +62,7 @@
                                            <div class="col-12 col-md-6 col-lg-6">
                                                 <label for="exampleFormControlSelect1">upload images</label>
                                                
-                                                        <input class="mt-2" type="file" name="image" id="image" multiple>
+                                                        <input class="mt-2" type="file" name="image" id="image">
                                                     </div>
                                               
                                             </div> 
@@ -75,8 +75,10 @@
                                                         Upload details
                                                     </button>
                                                 </div>
-                                           <div id="error" class="d-flex justify-content-center">
-                                                    <a href="" id="error"></a>
+                                           <div id="error" class="d-flex justify-content-center text-danger">
+                                                    <p id="categoryError"></p>
+                                                    <p id="productError"></p>
+                                                    <p id="imageError"></p>
                                                 </div>
                                         
                                 </form>
@@ -144,5 +146,50 @@
                
       
 </body>
+<script>
+   function bannerValidate() {
+  // Get form inputs
+  const categoryInput = document.getElementById("category");
+  const productInput = document.getElementById("product");
+  const imageInput = document.getElementById("image");
+  
+  // Get error elements
+  const categoryError = document.getElementById("categoryError");
+  const productError = document.getElementById("productError");
+  const imageError = document.getElementById("imageError");
+  
+  // Reset errors
+  categoryError.innerText = "";
+  productError.innerText = "";
+  imageError.innerText = "";
+  
+  // Validate category input
+  if (categoryInput.value.trim() === "") {
+    categoryError.innerText = "Title 1 is required";
+    categoryInput.focus();
+    return false;
+  }
+  
+  // Validate product input
+  if (productInput.value.trim() === "") {
+    productError.innerText = "Title 2 is required";
+    productInput.focus();
+    return false;
+  }
+  
+  // Validate image input
+  const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+  if (!allowedExtensions.exec(imageInput.value)) {
+    imageError.innerText = "Invalid file type. Please upload a JPG, JPEG, or PNG image";
+    imageInput.value = "";
+    imageInput.focus();
+    return false;
+  }
+  
+  return true;
+}
+
+
+</script>
 
 </html>

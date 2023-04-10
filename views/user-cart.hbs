@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 <style>
 	input[type="text"]::placeholder {
 
@@ -7,7 +8,68 @@
 		text-align: center;
 	}
 	/* Shopping Cart Styles */
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    border: none;
+    position: relative;
+    margin-bottom: 30px;
+    box-shadow: 0 0.46875rem 2.1875rem rgba(90,97,105,0.1), 0 0.9375rem 1.40625rem rgba(90,97,105,0.1), 0 0.25rem 0.53125rem rgba(90,97,105,0.12), 0 0.125rem 0.1875rem rgba(90,97,105,0.1);
+}
+.l-bg-cherry {
+    background: linear-gradient(to right, #493240, #f09) !important;
+    color: #fff;
+}
 
+.l-bg-blue-dark {
+    background: linear-gradient(to right, #373b44, #4286f4) !important;
+    color: #fff;
+}
+
+.l-bg-green-dark {
+    background: linear-gradient(to right, #0a504a, #38ef7d) !important;
+    color: #fff;
+}
+
+.l-bg-orange-dark {
+    background: linear-gradient(to right, #a86008, #ffba56) !important;
+    color: #fff;
+}
+
+.card .card-statistic-3 .card-icon-large .fas, .card .card-statistic-3 .card-icon-large .far, .card .card-statistic-3 .card-icon-large .fab, .card .card-statistic-3 .card-icon-large .fal {
+    font-size: 110px;
+}
+
+.card .card-statistic-3 .card-icon {
+    text-align: center;
+    line-height: 50px;
+    margin-left: 15px;
+    color: #000;
+    position: absolute;
+    right: -5px;
+    top: 20px;
+    opacity: 0.1;
+}
+
+.l-bg-cyan {
+    background: linear-gradient(135deg, #289cf5, #84c0ec) !important;
+    color: #fff;
+}
+
+.l-bg-green {
+    background: linear-gradient(135deg, #23bdb8 0%, #43e794 100%) !important;
+    color: #fff;
+}
+
+.l-bg-orange {
+    background: linear-gradient(to right, #f9900e, #ffba56) !important;
+    color: #fff;
+}
+
+.l-bg-cyan {
+    background: linear-gradient(135deg, #289cf5, #84c0ec) !important;
+    color: #fff;
+}
 .cart {
   max-width: 800px;
   margin: 0 auto;
@@ -364,8 +426,8 @@
                                     </div>
                                 </div>
                                 <div id="{{_id}}{{size}}" class="row">
-                                    <div onclick="removeProduct('{{_id}}','{{productId}}','{{size}}')" class="col-8 d-flex justify-content-between remove-wish">
-                                        <p><i class="fa-solid fa-trash-can"></i> Remove from cart</p>
+                                    <div class="col-8 d-flex justify-content-between remove-wish">
+                                        <p><a href="/deletecart/?productId={{productId}}&quantity={{quantity}}&colour={{colour}}&size={{size}}"><i class="fa-solid fa-trash-can"></i></a> Remove from cart</p>
                                     </div>
                                     <div class="col-4 d-flex justify-content-end price_money">
                                     <h3>₹  <span>{{product.price}}</span></h3>
@@ -379,7 +441,7 @@
 
                 {{!-- </div> --}}
 				{{!-- </div> --}}
-
+               {{#if userdone.bt}}
 				<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
 					<div class="flex-w flex-m m-r-20 m-tb-5">
 						<form action="/applyhelo" method="post">
@@ -406,6 +468,51 @@
 						Update Cart
 					</div> --}}
 				</div>
+				{{else}}
+                <div class="card p-4 border">
+                        
+                        <div class="row">
+                            <div class="col-md-5 col-11 mx-auto bg-light d-flex justify-content-center align-items-center shadow product_img">
+                                <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fstores.maxfashion.in%2Fmax-shopping-centre-magadi-road-bengaluru-105496%2FProducts%2Fgirls%2Fwinter-wear%2Fsweater&psig=AOvVaw0qz5LQ3y0ouKg_Iu1zL7gx&ust=1681149359898000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCMiMiMWvnf4CFQAAAAAdAAAAABAR" alt="" class="img-fluid" width="50%">
+                            </div>
+                            {{!-- product data --}}
+                            <div class="col-md-7 col-11 mx-auto px-4 mt-2 ">
+                                <div class="row">
+									<h4>NO product found</h4>
+                                    <div class="col-6 cart-title">
+                                        <h4 class="mb-4 product_name"></h4>
+                                        <p class="mb-2">Brand : err</p>
+                                        <p class="mb-2">Size :err</p>
+                                        {{!-- <p class="mb-2">Price : </p> --}}
+                                    </div>
+                                    <div class="col-6">
+                                       {{#if out}}
+                                       <p class="text-danger">Unfortunately, the following items from your cart are out of stock.</p>
+                                       {{else}}
+                                            <ul class="pagination justify-content-end set_quantity">
+                                               <p  value="" hidden>error</p>
+                                                <li class="page-item">  
+                                                    <h5>error</h5>
+                                                </li>
+                                                
+                                               
+                                            </ul>
+                                            {{/if}}
+                                        
+                                    </div>
+                                </div>
+                                <div  class="row">
+                                    <div  class="col-8 d-flex justify-content-between remove-wish">
+                                        <p><a href=""><i class="fa-solid fa-trash-can"></i></a> Remove from cart</p>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-end price_money">
+                                    <h6>  <span>No Product found</span></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				{{/if}}
 
 			</div>
 			
@@ -459,22 +566,22 @@
 
 
 				<div id="checkoutBt">
-					{{!-- {{#if userdone.bt}} --}}
+					{{#if userdone.bt}}
 					<button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
 						<a href="/checkout">Proceed to Checkout</a>
 					</button>
-					{{!-- {{else}} --}}
-					<p id="msg" class="text-danger text-center">Sorry for the inconvenience. Please remove the out of stock product to continue your shopping.</p>
+					{{else}}
+					<p id="msg" class="text-danger text-center">Please update the cart</p>
 					
-					{{!-- {{/if}} --}}
+					{{/if}}
 					
 				</div>
 
 
 			</div>
 			<br>
-			<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-				<h4 class="mtext-109 cl2 p-b-30">
+			 <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+			{{!--	<h4 class="mtext-109 cl2 p-b-30">
 					Wallet Totals
 				</h4>
 
@@ -490,16 +597,45 @@
 							{{dbWallet}}
 						</span>
 					</div>
-				</div>
+				</div>--}}
 
 				
 
 
+<div class="col-md-10">
+    <div class="row">
+<div class="col-xl-12 col-lg-12 mt-2">
+            <div class="card l-bg-orange-dark">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="mb-4">
+                        <h5 class="card-title mb-0">COZASTORE WALLET</h5>
+                    </div>
+                    <div class="row align-items-center mb-2 d-flex">
+                        <div class="col-8">
+                            <h2 class="d-flex align-items-center mb-0">
+                                Rs {{dbWallet}}
+                            </h2>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span>2.5% <i class="fa fa-arrow-up"></i></span>
+                        </div>
+                    </div>
+                    <div class="progress mt-1 " data-height="8" style="height: 8px;">
+                        <div class="progress-bar l-bg-cyan" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+	</div>
 
 
 
+			</div> 
 
-			</div>
+
+	
 			<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
 			<button class="flex-c-m stext-101 cl0 size-68 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"></button>
 					<a href="/products">

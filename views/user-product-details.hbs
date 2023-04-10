@@ -233,6 +233,7 @@
 			<!--  -->
 			<div class="flex-w flex-m p-l-100 p-t-40 respon7">
 				{{#if checkWish}}
+				<div id="wishPos1">
 				<div class="flex-m bor9 p-r-10 m-r-11">
 					<a class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
 						data-tooltip="Add to Wishlist">
@@ -240,6 +241,7 @@
 						<button onclick="wishlist('{{productIndex}}')"><i class="zmdi zmdi-favorite"></i></button>
 						{{/each}}
 					</a>
+				</div>
 				</div>
 				{{else}}
 				<div id='wishPos1'>
@@ -982,7 +984,7 @@
 
 					Toast.fire({
 						icon: 'success',
-						title: 'Signed in successfully'
+						title: 'added to wishlist'
 					})
 					const check=document.getElementById('wishPos1')
 					console.log(check.innerHTML)
@@ -1011,7 +1013,36 @@
 				},
 				method: 'POST',
 				success: (responce) => {
+					if (responce.status == true) { 
 					console.log(responce)
+					const Toast = Swal.mixin({
+						toast: true,
+						position: 'top-end',
+						showConfirmButton: false,
+						timer: 3000,
+						timerProgressBar: true,
+						didOpen: (toast) => {
+							toast.addEventListener('mouseenter', Swal.stopTimer)
+							toast.addEventListener('mouseleave', Swal.resumeTimer)
+						}
+					})
+
+					Toast.fire({
+						icon: 'success',
+						title: 'removed from wishlist'
+					})
+					const check=document.getElementById('wishPos1')
+					console.log(check.innerHTML)
+					console.log(check)
+					check.innerHTML=`<div class="flex-m bor9 p-r-10 m-r-11">
+					<a class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-removewish-detail tooltip100"
+						data-tooltip="Add to wishlist">
+						
+						<button onclick="wishlist('${responce.productIndex}')"><i class="zmdi zmdi-favorite"></i></button>
+					
+					</a>
+				</div>`
+					}
 
 				}
 			}

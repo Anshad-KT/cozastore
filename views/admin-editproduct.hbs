@@ -92,26 +92,7 @@
                                                         {{!-- <input class="mt-5" type="file" name="image" id="image" multiple> --}}
                                                     </div>
                                                     </div>
-                           <div class="row">
-                           {{#each imageReference}}
-                            <div class="col-12 col-md-6 col-lg-4 mt-3">
-                            <div class="form-row ">
-                            <div class="card ">
-                                <div class="card-body">
-                                    
-                                    <img  width="150px" height="250px" src="/product-images/products/{{[]}}" alt="">
-                                    <div style="float: right;" class="mb-3">
-  
-                                    <input  class="form-control" value="/product-images/products/{{[]}}" name="image" id="image" type="file" >
-                                    <button type="button" style="margin: 1rem;float: right;" class="btn btn-outline-danger ">Delete</button>
-    
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                        {{/each}}
-                        </div>
+                   
                                         
                                              <div class="mb-4 mt-5">
                                         <label for="exampleFormControlSelect1">Product Id</label>
@@ -145,6 +126,35 @@
                                             </div>
                                         </div>
                                 </form>
+                                <form action="/editImage" method="post" role="form" enctype="multipart/form-data">
+                                        <div class="row">
+                           {{#each imageReference}}
+                           <input type="text" value="{{../editId}}" name="productId" class="text" hidden>
+                           
+                            <div class="col-12 col-md-6 col-lg-4 mt-3">
+                            <div class="form-row ">
+                            <div class="card ">
+                                <div class="card-body">
+                                    
+                                    <img  width="150px" height="250px" src="/product-images/products/{{[]}}" alt="">
+                                    <div style="float: right;" class="mb-3">
+  
+                                    
+                                    <button type="button" style="margin: 1rem;float: right;" class="btn btn-outline-danger "><a href="/deleteimage/?image={{this}}&productId={{../editId}}">Delete</a></button>
+    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        {{/each}}
+                        <div class="container">
+                        <input class="form-control" name="image" id="image" type="file" multiple>
+                        </div>
+                        </div>
+                        <p class="mt-2 mb-2">please add upto 4 images only</p>
+                        <button class="btn btn-outline-primary mt-4" type="submit">Upload images</button>
+                        </form>
                             </div>
                         </div>
                     </div>

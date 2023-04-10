@@ -23,8 +23,7 @@ require('dotenv').config()
 
 const { JSDOM } = require('jsdom');
 const XLSX = require('xlsx');
-let categoryMsg
-let subcategoryMsg
+
 // const fileUpload = require('express-fileupload')
 const product_details = require('../models/productModel')
 const brand_details = require('../models/brandModel')
@@ -33,7 +32,7 @@ const category_details = require('../models/categoryModel')
 const subcategory_details = require('../models/subcategoryModel')
 const order_details = require('../models/orderModel')
 const banner_details = require('../models/bannerModel')
-let brandMsg
+
 let salesParam
 const coupon_details = require('../models/couponModel')
 var mongoose = require('mongoose')
@@ -48,7 +47,7 @@ const axios = require('axios');
 
 
 let adminMsg
-let editId
+// let editId
 
 let couponMsg
 
@@ -429,8 +428,8 @@ let adminGetAddCategory = async function (req, res, next) {
       req.session.dbCategory = await category_details.find().lean()
   console.log("reached");
 
-  res.render('admin-addcategory', { dbCategory: req.session.dbCategory });
-
+  res.render('admin-addcategory', { dbCategory: req.session.dbCategory,msg:req.query.msg });
+  
 
   } catch (error) {
     console.log(error.message);
@@ -445,9 +444,10 @@ let adminGetAddCoupon = async function (req, res, next) {
 
 try {
    dbCoupon = await coupon_details.find().lean()
+   const msg=req.query.msg
   // console.log("coupons$");
 
-  res.render('admin-addcoupon', { dbCoupon, couponMsg });
+  res.render('admin-addcoupon', { dbCoupon, couponMsg ,msg});
 
 
 } catch (error) {
@@ -466,7 +466,7 @@ let adminGetAddBrand = async function (req, res, next) {
 
     req.session.dbBrand = await brand_details.find().lean()
     // console.log(req.session.dbBrand);
-    res.render('admin-addbrand', { dbBrand: req.session.dbBrand });
+    res.render('admin-addbrand', { dbBrand: req.session.dbBrand,msg:req.query.msg });
 
   } catch (error) {
     console.log(error.message);
@@ -478,7 +478,7 @@ let adminGetAddSubCategory = async function (req, res, next) {
 
     req.session.dbSubcategory = await subcategory_details.find().lean()
 
-    res.render('admin-addsubcategory', { dbSubcategory: req.session.dbSubcategory });
+    res.render('admin-addsubcategory', { dbSubcategory: req.session.dbSubcategory,msg:req.query.msg });
 
 
   } catch (error) {
@@ -568,7 +568,7 @@ let adminGetEditProduct = async function (req, res, next) {
 
     editId = req.params.id
     // console.log(editId);
-    res.redirect('/adminedit')
+    res.redirect('/adminedit/?editId='+editId)
 
 
   } catch (error) {
@@ -617,29 +617,20 @@ let adminPostAddBanner = async function (req, res, next) {
     editBanner.status = true
 
     ////////////////////////
-    let ImmiId = uuidv4()
+    
     let images = [];
-    let img = req.files.image;
-    let count = img.length
-    console.log(count);
-    if (count) {
-
-      for (var i = 0; i < count; i++) {
-
-        img[i].mv('public/product-images/banner/' + ImmiId + i + '.jpg', (err, done) => {
-          console.log(err);
-        })
-
-        images[i] = ImmiId + i;
-      }
-      editBanner.imageReference = images;
-    } else {
-      img.mv('./public/product-images/banner/' + ImmiId + '.jpg', (err, done) => {
-        console.log(err);
+    // images = req.files.image;
+    // let count = images.length
+    // console.log(count);
+    // if (count) {
+      req.files.forEach(file => {
+        images.push(file.filename)
       })
-      images[0] = ImmiId + '.jpg';
-      editBanner.imageReference = images;
-    }
+   
+     
+    editBanner.imageReference = images;
+   
+    
     editBanner.category = req.body.category
     editBanner.product = req.body.product
 
@@ -718,13 +709,20 @@ const adminGetEditBanner = async (req, res) => {
 let adminPostEditProduct = async function (req, res, next) {
   try {
 
-
+    let size1 = []
+    size1 = req.body.size
+    let colour1 = []
+    colour1 = req.body.colour
+  
     let editProducts = {
+      
+
       title: req.body.title,
       price: req.body.price,
       category: req.body.category,
       stock: req.body.stock,
-
+      size: size1,
+      colour: colour1,
       brand: req.body.brand,
       subcategory: req.body.subcategory,
       productIndex: req.body.productindex,
@@ -737,44 +735,13 @@ let adminPostEditProduct = async function (req, res, next) {
 
     let result = await product_details.findOne({ productIndex: productId }).lean()
     console.log(result + "this is the result");
-    if (req.files) {
-      function fileEdit() {
+    
+    console.log(editProducts);
 
-        let images = [];
-        let img = req.files.image;
-        let count = img.length
-        console.log(count);
-        if (count) {
-
-          for (var i = 0; i < count; i++) {
-
-            img[i].mv('public/product-images/products/' + editProducts.productIndex + i + '.jpg', (err, done) => {
-              console.log(err);
-            })
-
-            images[i] = result.productIndex + i;
-          }
-          editProducts.imageReference = images;
-        } else {
-          img.mv('./public/product-images/products/' + editProducts.productIndex + '.jpg', (err, done) => {
-            console.log(err);
-          })
-          images[0] = editProducts.productIndex;
-          editProducts.imageReference = images;
-        }
-      }
-      fileEdit()
-      console.log(editProducts);
-      await product_details.updateOne({ productIndex: productId }, { $set: { title: editProducts.title, price: editProducts.price, category: editProducts.category, subcategory: editProducts.subcategory, brand: editProducts.brand, stock: editProducts.stock, description: editProducts.description, imageReference: editProducts.imageReference } })
-
+      await product_details.updateOne({ productIndex: productId }, { $set: { title: editProducts.title, price: editProducts.price, category: editProducts.category, subcategory: editProducts.subcategory, brand: editProducts.brand, stock: editProducts.stock, description: editProducts.description ,size:editProducts.size,colour:editProducts.colour} })
       console.log("edit success");
       res.redirect('/adminproducts')
-    } else {
-
-      await product_details.updateOne({ productIndex: productId }, { $set: { title: editProducts.title, price: editProducts.price, category: editProducts.category, subcategory: editProducts.subcategory, brand: editProducts.brand, stock: editProducts.stock, description: editProducts.description } })
-      console.log("edit success");
-      res.redirect('/adminproducts')
-    }
+    
 
   } catch (error) {
     console.log(error.message);
@@ -1040,10 +1007,73 @@ let adminPostUploadProduct = async function (req, res, next) {
  
 }
 
+let adminPostEditImage = (req,res,next)=>{
+  async function file() {
+    let images = [];
+    // images = req.files.image;
+    // let count = images.length
+    // console.log(count);
+    // if (count) {
+     
+      // for (var i = 0; i < count; i++) {
+       
+        // let path = "" + images[i].tempFilePath
+        // console.log(path);
+        // await sharp(path)
+        //   .rotate()
+        //   .resize(1000, 1500)
+        //   .jpeg({ mozjpeg: true })
+        //   .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
+
+      //   images[i] = req.file
+      //   console.log(images[i]);
+      // }
+      console.log(req.body);
+      const proEdit = await product_details.findOne({productIndex:req.body.productId}).lean()
+      console.log(proEdit);
+      let limit = 5-parseInt(proEdit.imageReference.length)
+      if(limit<1){
+        editMessage=`you can only add 4 images`
+        res.redirect('/adminedit/?msg='+editMessage)
+      }else{
+        req.files.forEach(file => {
+       
+          if (--limit === 0) {
+            return false; // exit the loop when the limit is reached
+        }else{
+          images.push(file.filename)
+        }
+        })
+        
+        images.forEach(async image => {
+          await product_details.updateOne({ productIndex: req.body.productId },  { $push: { imageReference: image } })
+           
+          
+        });
+     
+       
+      
+        res.redirect('/adminproducts')
+      }
+     
+    
+
+  }
+  file()
+};
+
+const adminDeleteImage = async(req,res,next)=>{
+     console.log(req.query.image)
+     console.log("fduhfhdfhdufhdfh");
+     await product_details.updateOne({productIndex:req.query.productId},{$pull:{"imageReference":req.query.image}})
+     res.redirect('/adminproducts')
+}
 
 let adminPostAddCategory = async function (req, res, next) {
-  try {
-    let checkCategory = await category_details.findOne({ name: req.body.category }).lean()
+  // try {
+    console.log(req.body);
+    let regex = new RegExp(`^${req.body.category}$`, 'i');
+    let checkCategory = await category_details.findOne({ name: regex}).lean()
     console.log(req.body.category);
     console.log(checkCategory);
     if (checkCategory == null) {
@@ -1058,14 +1088,15 @@ let adminPostAddCategory = async function (req, res, next) {
 
     } else {
       console.log("category already present");
-      res.redirect('/admin-addcategory')
+      const msg="category already present"
+      res.redirect('/admin-addcategory/?msg='+msg)
     }
 
 
-  } catch (error) {
-    console.log(error.message);
-    next()
-  }
+  // } catch (error) {
+  //   console.log(error.message);
+  //   next()
+  // }
 }
 
 let adminPostAddCoupon = async function (req, res, next) {
@@ -1074,16 +1105,17 @@ try {
     let coupon = req.body
   coupon.status = true
   console.log(coupon);
-  let checkCoupon = await coupon_details.findOne({ code: coupon.code }).lean()
+  let regex = new RegExp(`^${coupon.code}$`, 'i');
+  let checkCoupon = await coupon_details.findOne({ code: regex }).lean()
   console.log(checkCoupon);
   if (checkCoupon == null) {
     await coupon_details.insertMany([coupon])
   } else {
-    couponMsg = "coupon already present"
+    const msg = "coupon already present"
   }
 
 
-  res.redirect('/admin-coupon')
+  res.redirect('/admin-coupon/?msg='+msg)
 
 
 
@@ -1124,8 +1156,8 @@ try {
 
 let adminPostAddBrand = async function (req, res, next) {
   try {
-
-    let checkBrand = await brand_details.findOne({ name: req.body.brand }).lean()
+    let regex = new RegExp(`^${req.body.brand}$`, 'i');
+    let checkBrand = await brand_details.findOne({ name: regex }).lean()
     console.log(req.body.brand);
     console.log(checkBrand);
     if (checkBrand == null) {
@@ -1133,30 +1165,30 @@ let adminPostAddBrand = async function (req, res, next) {
         name: req.body.brand,
 
       }
-      //
-      await sharp(req.file.buffer).resize({ width: 229, height: 306 }).toFile(`./public/product-images/${brand.name}-${req.file.originalname}`)
-      //
+      
       brand.date = new Date().toDateString().slice(4);
       brand.status = true;
-      if (req.files == null) {
-        await brand_details.insertMany([brand])
-        res.redirect('/admin-addbrand')
-      } else {
-        let image = req.files.image;
-        image.mv('./public/product-images/brand/' + brand.name + '.jpg', (err, done) => {
-          console.log(err);
-        })
-        brand.imageReference = brand.name + '.jpg'
+      
+        
+        let images = [];
+        // images = req.files.image;
+        // let count = images.length
+        // console.log(count);
+        // if (count) {
+          req.files.forEach(file => {
+            images.push(file.filename)
+          })
+        brand.imageReference = images
         console.log("brand");
 
         await brand_details.insertMany([brand])
         res.redirect('/admin-addbrand')
-      }
+      
 
     } else {
       console.log("brand already present");
-      brandMsg = "brand already present"
-      res.redirect('/admin-addbrand')
+      const msg = "brand already present"
+      res.redirect('/admin-addbrand/?msg='+msg)
     }
 
   } catch (error) {
@@ -1168,7 +1200,8 @@ let adminPostAddBrand = async function (req, res, next) {
 }
 let adminPostAddSubCategory = async function (req, res, next) {
   try {
-    let checkSubCategory = await subcategory_details.findOne({ name: req.body.subcategory }).lean()
+    let regex = new RegExp(`^${req.body.subcategory}$`, 'i');
+    let checkSubCategory = await subcategory_details.findOne({ name: regex }).lean()
     if (checkSubCategory == null) {
 
       let subcategory = {
@@ -1182,8 +1215,8 @@ let adminPostAddSubCategory = async function (req, res, next) {
       await subcategory_details.insertMany([subcategory])
     } else {
       console.log("subcategory already present");
-      subcategoryMsg = "subcategory already present"
-      res.redirect('/admin-addsubcategory')
+      const msg = "subcategory already present"
+      res.redirect('/admin-addsubcategory/?'+msg)
     }
 
   } catch (error) {
@@ -1248,6 +1281,8 @@ module.exports = {
   adminGetSalesReportParams,
   adminGetDisableBanner,
   adminDownloadSales,
+  adminPostEditImage,
+  adminDeleteImage
 
 }
 

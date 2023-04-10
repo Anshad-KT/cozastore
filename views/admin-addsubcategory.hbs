@@ -55,8 +55,8 @@
 
                                         {{!-- <div class="container">
                                             <div class="row"> --}}
-                                                <div id="error" class="d-flex">
-                                                    <p id="error"></p>
+                                                <div id="error" class="d-flex mb-4 text-danger">
+                                                    <p id="error">{{msg}}</p>
                                                 </div>
                                             {{!-- </div>
                                         </div> --}}
@@ -146,5 +146,21 @@
 
                 
 </body>
+<script>
+    function subcategoryValidate() {
+    const subcategoryInput = document.forms["subcategoryform"]["subcategory"];
+    const errorElement = document.getElementById("error");
+    
+    if (subcategoryInput.value.trim() === "") {
+        errorElement.innerText = "Please enter a new subcategory.";
+        subcategoryInput.focus();
+        return false;
+    } else {
+        errorElement.innerText = "";
+        return true;
+    }
+}
+
+</script>
 
 </html>

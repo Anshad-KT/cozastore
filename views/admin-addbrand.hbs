@@ -47,7 +47,7 @@
                                         <div class="row">
                                             <div class="col-12 col-md-6 col-lg-6 mt-3">
                                                 <label for="exampleFormControlSelect1">new brand</label>
-                                                <input id="price" type="text" class="form-control mb-4" name="brand"
+                                                <input id="brand" type="text" class="form-control mb-4" name="brand"
                                                     >
                                                     </div>
                                                 <div class="col-12 col-md-6 col-lg-6">
@@ -61,8 +61,8 @@
 
                                         {{!-- <div class="container">
                                             <div class="row"> --}}
-                                                <div id="error" class="d-flex justify-content-center">
-                                                    <a href="" id="error"></a>
+                                                <div id="error" class="d-flex justify-content-center mb-2 mt-2 text-danger">
+                                                    <p id="error">{{msg}}</p>
                                                 </div>
                                             {{!-- </div>
                                         </div> --}}
@@ -109,7 +109,7 @@
                                                         <td>1</td>
                                                         
                                                         <td>{{name}}</td>
-                                                        <td><img style="height: 50px;width: 50px;" src="product-images/brand/{{imageReference}}" alt=""></td>
+                                                        <td><img style="height: 50px;width: 50px;" src="/product-images/brand/{{imageReference}}" alt=""></td>
                                                         <td>{{date}}</td>
                                                         <td>{{status}}</td>
 
@@ -156,5 +156,38 @@
                    
       
 </body>
+<script>
+    function brandValidate() {
+  const brandInput = document.forms["brandform"]["brand"].value.trim();
+  const imageInput = document.forms["brandform"]["image"].value;
+  const errorMsg = document.getElementById("error");
+
+  // Regular expression for brand name validation
+  const brandRegex = /^[a-zA-Z0-9 ]{3,20}$/;
+
+  // Regular expression for image file type validation
+  const imageRegex = /\.(jpg|jpeg|png|gif)$/i;
+
+  // Validate brand name input
+  if (!brandRegex.test(brandInput)) {
+    errorMsg.innerHTML = "Please enter a valid brand name.";
+    return false;
+  }
+
+  // Validate image input
+  if (imageInput !== "") {
+    if (!imageRegex.test(imageInput)) {
+      errorMsg.innerHTML = "Please upload an image with a valid file format (jpg, jpeg, png, or gif).";
+      return false;
+    }
+  } else {
+    errorMsg.innerHTML = "Please upload an image.";
+    return false;
+  }
+
+  return true;
+}
+
+</script>
 
 </html>

@@ -10,7 +10,7 @@ const brandSchema=new mongoose.Schema({
     required:true},
 
     imageReference:{
-        type:String,
+        type:Array,
     },
     
     date:{
