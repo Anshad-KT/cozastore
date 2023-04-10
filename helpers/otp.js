@@ -33,7 +33,7 @@ const otp = (verifiedEmail, otpValue)=>{
           service: "gmail",
           auth: {
             user: "cozastore.tech@gmail.com",
-            pass: "qgugogtpjodsdmov"
+            pass: process.env.NODEPASS
           }
         })
         let docs = {
