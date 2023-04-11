@@ -39,7 +39,7 @@
                             <!-- ============================================================== -->
 
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-12 col-12">
-                                <form action="/editProduct" method="post" role="form" enctype="multipart/form-data" onsubmit="return productValidate()" name="products">
+                                <form action="/editProduct" method="post" role="form" onsubmit="return productValidate()" name="products">
                                    
                                     <div class="mb-4 mt-5">
                                         <label for="exampleFormControlSelect1">Title</label>
@@ -126,7 +126,7 @@
                                             </div>
                                         </div>
                                 </form>
-                                <form action="/editImage" method="post" role="form" enctype="multipart/form-data">
+                                <form action="/editImage" name="jhk" method="post" role="form" enctype="multipart/form-data">
                                         <div class="row">
                            {{#each imageReference}}
                            <input type="text" value="{{../editId}}" name="productId" class="text" hidden>

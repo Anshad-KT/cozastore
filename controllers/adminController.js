@@ -657,19 +657,17 @@ let adminPostEditBanner = async function (req, res, next) {
     ////////////////////////
 
     let images = [];
-    let img = req.files.image;
-    let editHelper = await banner_details.findOne({ _id: req.body.hid })
+    
+   // let editHelper = await banner_details.findOne({ _id: req.body.hid })
     // console.log(editHelper);
-    img.mv('./public/product-images/banner/' + editHelper.imageReference[0], (err, done) => {
-      console.log(err);
-    })
-    images[0] = editHelper.imageReference[0];
-    editBanner.imageReference = images;
+   
+    
+    console.log(req.body);
 
     editBanner.category = req.body.category
     editBanner.product = req.body.product
 
-    await banner_details.updateOne({ _id: req.body.hid }, { $set: { product: req.body.product, category: req.body.category } })
+    await banner_details.updateOne({ _id: new ObjectId(req.body.hid)  }, { $set: { product: req.body.product, category: req.body.category } })
     res.redirect('/admin-banner')
     /////////////////////////
 
@@ -1111,7 +1109,7 @@ try {
   if (checkCoupon == null) {
     await coupon_details.insertMany([coupon])
   } else {
-    const msg = "coupon already present"
+    var msg = "coupon already present"
   }
 
 
@@ -1210,6 +1208,7 @@ let adminPostAddSubCategory = async function (req, res, next) {
 
       subcategory.date = new Date().toDateString().slice(4);
       subcategory.status = true
+      console.log(subcategory);
       console.log("subcategory");
       res.redirect('/admin-addsubcategory')
       await subcategory_details.insertMany([subcategory])

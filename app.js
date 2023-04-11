@@ -12,7 +12,11 @@ const hb =hbs.create({})
 
 var app = express();
 app.engine('hbs',hbs.engine({extname:'hbs',defaultLayout:'layout',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}))
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
 
+// Add middleware for parsing JSON request bodies
+app.use(bodyParser.json());
 // var fileUpload = require('express-fileupload')
 var session = require('express-session')
 

@@ -430,7 +430,7 @@
                                         <p><a href="/deletecart/?productId={{productId}}&quantity={{quantity}}&colour={{colour}}&size={{size}}"><i class="fa-solid fa-trash-can"></i></a> Remove from cart</p>
                                     </div>
                                     <div class="col-4 d-flex justify-content-end price_money">
-                                    <h3>₹  <span>{{product.price}}</span></h3>
+                                    <h3>₹  <span id="{{_id}}{{size}}">{{product.price}}</span></h3>
                                     </div>
                                 </div>
                             </div>
@@ -456,9 +456,9 @@
 						</form>
 						{{#if appliedCoupon.validity}}
 
-						<h5 class="ms-5 text-success mb-4">Coupon {{appliedCoupon.code}} is Active</h5>
+						<h5 id="opM" class="ms-5 mb-4">Coupon {{appliedCoupon.code}} is Active</h5>
 						{{else}}
-						<h5 class="ms-5 text-danger mb-4">{{couponErrorMsg}}</h5>
+						<h5 id="apM" class="ms-5 text-danger mb-4">{{couponErrorMsg}}</h5>
 						{{/if}}
 					</div>
 
@@ -487,7 +487,7 @@
                                     </div>
                                     <div class="col-6">
                                        {{#if out}}
-                                       <p class="text-danger">Unfortunately, the following items from your cart are out of stock.</p>
+                                       <p class="text-danger">Unfortunately, some items from your cart are out of stock.</p>
                                        {{else}}
                                             <ul class="pagination justify-content-end set_quantity">
                                                <p  value="" hidden>error</p>
@@ -554,11 +554,38 @@
 					</div>
 
 					<div class="size-209">
+						<span id="tubT" class="mtext-110 cl2">
+							
+						</span>
+					</div>
+				</div>
+				<div class="flex-w flex-t bor12 p-b-13">
+					<div class="size-208">
+						<span class="stext-110 cl2">
+							discount:
+						</span>
+					</div>
+
+					<div class="size-209">
+						<span id="dubT" class="mtext-110 cl2">
+							{{discountAmount}}
+						</span>
+					</div>
+				</div>
+               				<div class="flex-w flex-t bor12 p-b-13">
+					<div class="size-208">
+						<span class="stext-110 cl2">
+							Total:
+						</span>
+					</div>
+
+					<div class="size-209">
 						<span id="subT" class="mtext-110 cl2">
 							{{ghh}}
 						</span>
 					</div>
 				</div>
+
 
 				
 
@@ -574,6 +601,8 @@
 					<p id="msg" class="text-danger text-center">Please update the cart</p>
 					
 					{{/if}}
+					<p id="msg" class="text-danger text-center"></p>
+				
 					
 				</div>
 
@@ -735,15 +764,18 @@
         var value = parseInt(element.textContent);
         value = isNaN(value) ? 0 : value;
         value++;
-        
+        document.getElementById('msg').innerHTML =""
         
          console.log(value)
 			console.log(parseInt(element1.innerHTML))
 		if(parseInt(element1.innerHTML)<value){
 			console.log("dey")
+			document.getElementById('msg').innerHTML = "Stock Exceeded, 'We sincerely apologize for this inconvenience. We've experienced an unusually high number of orders and have run out of inventory.'";
             val.remove()
+				
 			//document.getElementById(index).style.visibility="hidden"
 		}else{
+			document.getElementById('msg').innerHTML =""
 			element.textContent = value;
 			//document.getElementById(index).style.visibility="visible"
 		}
@@ -801,12 +833,25 @@ let quantity = parseInt(document.getElementById(productId+size).innerHTML);
                         location.reload();
                     } else {
 						}
+						
                         document.getElementById(index).disabled = false;
                         document.getElementById(index + productId).disabled = false;
                         document.getElementById(response.productId + response.size).innerHTML = response.quantity;
                         
-						
-						document.getElementById('subT').innerHTML = response.subtotal;
+						//const disc =parseInt(document.getElementById('dubT').innerHTML)
+						document.getElementById('subT').innerHTML = response.total;
+						document.getElementById('tubT').innerHTML = response.subtotal;
+						document.getElementById('dubT').innerHTML = response.discount;
+						if(response.minpur==true){
+                           document.getElementById('opM').innerHTML=`sorry you need to purchase for minimum ${response.minpursup} for this product`
+						}else if(response.maxpur==true){
+							document.getElementById('opM').innerHTML=`sorry amount greater than ${response.maxpursup
+							}`
+						}else{
+							
+							document.getElementById('opM').innerHTML=""
+						}
+					//	const discount=parseInt(document.getElementById(cartId+size).innerHTML)-parseInt(document.getElementById('subT').innerHTML)
 						 
 						
                     

@@ -3,7 +3,7 @@
 const multer = require('multer')
 const path =require('path')
 // app.use(express.static(path.join(__dirname,'public')))
-// const bodyParser =require('body-parser')
+const bodyParser =require('body-parser')
 
 const storage = multer.diskStorage({
     destination:function(req,file,cb){

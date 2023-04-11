@@ -65,7 +65,7 @@
                                                 {{#each resp}}
                                                 <tr>
                                                     <td>{{@index}}</td>
-                                                    <td><img src="product-images/products/{{products.imageReference.[0]}}" alt=""></td>
+                                                    <td><img style="width: 100px;height: 130px;" src="product-images/products/{{products.imageReference.[0]}}"></td>
                                                     <td>{{products.title}}</td>
                                                     <td>{{products.productIndex}}</td>
                                                      <td>{{products.price}} per 1 unit</td>
@@ -82,7 +82,7 @@
 
                                                     {{/if}}
                                                     {{#if (eq products.status "Cancelled")}}
-                                                    <td><span class="badge-dot badge-success mr-1"></span>Cancelled
+                                                    <td><span class="badge-dot badge-danger mr-1"></span>Cancelled
                                                     </td>
 
                                                     {{/if}}
@@ -92,6 +92,10 @@
                                                     {{/if}}
                                                     {{#if (eq products.status "Delivered")}}
                                                     <td><span class="badge-dot badge-success mr-1"></span>Delivered </td>
+
+                                                    {{/if}}
+                                                    {{#if (eq products.status "Return Accepted")}}
+                                                    <td><span class="badge-dot badge-secondary mr-1"></span>Returned </td>
 
                                                     {{/if}}
                                                     {{#if (eq products.status "Order Confirmed")}}
@@ -128,6 +132,9 @@
                                                         </div>
                                                     </td>
                                                     {{/if}}
+                                                     {{#if (eq products.status "Cancelled")}}
+                                                     <td>Order Cancelled</td>
+                                                     {{/if}}
                                                      {{#if (eq products.status "Pending")}}
                                                     <td>
                                                         <div class="dropdown">
@@ -150,8 +157,8 @@
                                                     <td>Delivered </td>
 
                                                     {{/if}}
-                                                    {{#if (eq products.status "Return Pending")}}
-                                                    <td>Awaitign confirmation </td>
+                                                    {{#if (eq products.status "Return Accepted")}}
+                                                    <td>Product Returned</td>
 
                                                     {{/if}}
                                                      {{#if (eq products.status "Order Confirmed")}}

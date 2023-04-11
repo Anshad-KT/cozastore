@@ -149,9 +149,9 @@
 <script>
     var ctx = document.getElementById("myChart1").getContext("2d");
 var chartData = {
-  labels: ["Red", "Green", "Yellow"],
+  labels: ["orders cancelled", "total orders", "orders pending"],
   datasets: [{
-    data: [{{totalOrders}}, {{totalCancelled}}, {{totalPending}}],
+    data: [{{totalCancelled}},{{totalOrders}} , {{totalPending}}],
     backgroundColor: [
       '#e74c3c',
       '#2ecc71',
@@ -180,7 +180,7 @@ var myChart = new Chart(ctx, {
             datasets: [{
                 label: 'Sales',
 
-                data: [0, 0, {{ profit }}, 5, 2, 3],
+                data: [0, 0, 5, {{ profit }}, 2, 3],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
