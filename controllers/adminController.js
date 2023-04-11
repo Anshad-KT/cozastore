@@ -449,7 +449,7 @@ try {
 
   res.render('admin-addcoupon', { dbCoupon, couponMsg ,msg});
 
-
+ couponMsg=null
 } catch (error) {
   console.log(error.message);
   next()
