@@ -143,7 +143,8 @@ let userGetEditProfilePassword = function (req, res, next) {
 };
 
 let userPostAddDefaultAddress = async (req, res, next) => {
-  defaultAddress = req.params.id;
+  try {
+      defaultAddress = req.params.id;
   console.log(defaultAddress);
 
   await address_details.updateOne(
@@ -152,7 +153,12 @@ let userPostAddDefaultAddress = async (req, res, next) => {
   );
 
   res.redirect("/editprofile");
-};
+
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+}
 
 let userGetCheckout = async function (req, res, next) {
   try {
@@ -2416,57 +2422,62 @@ const userPostforgotCheck = async function (req, res, next) {
 };
 
 const userPostReview = async (req, res, next) => {
-  const review = {
-    productIndex: '',
-    review: {}
+  try {
+    const review = {
+      productIndex: '',
+      review: {}
+    }
+  
+    console.log(req.body.rating);
+  
+    review.productIndex = req.body.productIndex
+    // review.review.us
+    review.review.username = req.session.user
+    review.review.review = req.body.review
+    review.review.rating = parseInt(req.body.rating)
+    console.log(review);
+  
+    const reviewCheck = await review_details.findOne({ productIndex: review.productIndex })
+    if (reviewCheck == null) {
+      await review_details.insertMany([review])
+      console.log("review insert success");
+  
+    } else {
+      //  const pushRev = {review.review}
+  
+      await review_details.updateOne({ productIndex: review.productIndex }, { $push: { review: { username: req.session.user, review: review.review.review, rating: review.review.rating } } })
+      console.log("review push success");
+  
+    }
+    const overallRating = await review_details.aggregate([
+      {
+        $match: {
+          // match the document with this _id
+          productIndex: review.productIndex // and this product index
+        }
+      },
+      {
+        $project: {
+          totalRating: { $sum: "$review.rating" } // calculate the sum of the ratings
+        }
+      },
+  
+    ])
+  
+    console.log(overallRating[0].totalRating);
+    const ghk = await review_details.findOne({ productIndex: review.productIndex })
+    console.log(ghk.review.length);
+    const ov = parseFloat(overallRating[0].totalRating) / parseFloat(ghk.review.length)
+    console.log(ov);
+  
+    console.log();
+  
+    await product_details.updateOne({ productIndex: review.productIndex }, { $set: { rating: Math.round(ov) } })
+    res.redirect(`/product-details/${review.productIndex}`)
+  } catch (error) {
+    console.log(error.message);
   }
-
-  console.log(req.body.rating);
-
-  review.productIndex = req.body.productIndex
-  // review.review.us
-  review.review.username = req.session.user
-  review.review.review = req.body.review
-  review.review.rating = parseInt(req.body.rating)
-  console.log(review);
-
-  const reviewCheck = await review_details.findOne({ productIndex: review.productIndex })
-  if (reviewCheck == null) {
-    await review_details.insertMany([review])
-    console.log("review insert success");
-
-  } else {
-    //  const pushRev = {review.review}
-
-    await review_details.updateOne({ productIndex: review.productIndex }, { $push: { review: { username: req.session.user, review: review.review.review, rating: review.review.rating } } })
-    console.log("review push success");
-
-  }
-  const overallRating = await review_details.aggregate([
-    {
-      $match: {
-        // match the document with this _id
-        productIndex: review.productIndex // and this product index
-      }
-    },
-    {
-      $project: {
-        totalRating: { $sum: "$review.rating" } // calculate the sum of the ratings
-      }
-    },
-
-  ])
-
-  console.log(overallRating[0].totalRating);
-  const ghk = await review_details.findOne({ productIndex: review.productIndex })
-  console.log(ghk.review.length);
-  const ov = parseFloat(overallRating[0].totalRating) / parseFloat(ghk.review.length)
-  console.log(ov);
-
-  console.log();
-
-  await product_details.updateOne({ productIndex: review.productIndex }, { $set: { rating: Math.round(ov) } })
-  res.redirect(`/product-details/${review.productIndex}`)
+ 
 }
 
 let userGetLogout = function (req, res, next) {

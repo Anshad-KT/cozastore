@@ -153,10 +153,10 @@
 
 										<img src="/product-images/products/{{this}}" alt="IMG-PRODUCT">
 
-										<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
+										{{!-- <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
 											href="/images/product-detail-01.jpg">
 											<i class="fa fa-expand"></i>
-										</a>
+										</a> --}}
 									</div>
 								</div>
 								{{/each}}
@@ -329,16 +329,11 @@
 					<!-- - -->
 					<div class="tab-pane fade show active" id="description" role="tabpanel">
 						<div class="how-pos2 p-lr-15-md">
+							{{#each value}}
 							<p class="stext-102 cl6">
-								Aenean sit amet gravida nisi. Nam fermentum est felis, quis feugiat nunc fringilla sit
-								amet. Ut in blandit ipsum. Quisque luctus dui at ante aliquet, in hendrerit lectus
-								interdum. Morbi elementum sapien rhoncus pretium maximus. Nulla lectus enim, cursus et
-								elementum sed, sodales vitae eros. Ut ex quam, porta consequat interdum in, faucibus eu
-								velit. Quisque rhoncus ex ac libero varius molestie. Aenean tempor sit amet orci nec
-								iaculis. Cras sit amet nulla libero. Curabitur dignissim, nunc nec laoreet consequat,
-								purus nunc porta lacus, vel efficitur tellus augue in ipsum. Cras in arcu sed metus
-								rutrum iaculis. Nulla non tempor erat. Duis in egestas nunc.
+								{{description}}
 							</p>
+							{{/each}}
 						</div>
 					</div>
 
@@ -347,44 +342,19 @@
 						<div class="row">
 							<div class="col-sm-10 col-md-8 col-lg-6 m-lr-auto">
 								<ul class="p-lr-28 p-lr-15-sm">
-									<li class="flex-w flex-t p-b-7">
-										<span class="stext-102 cl3 size-205">
-											Weight
-										</span>
-
-										<span class="stext-102 cl6 size-206">
-											0.79 kg
-										</span>
-									</li>
-
-									<li class="flex-w flex-t p-b-7">
-										<span class="stext-102 cl3 size-205">
-											Dimensions
-										</span>
-
-										<span class="stext-102 cl6 size-206">
-											110 x 33 x 100 cm
-										</span>
-									</li>
-
-									<li class="flex-w flex-t p-b-7">
-										<span class="stext-102 cl3 size-205">
-											Materials
-										</span>
-
-										<span class="stext-102 cl6 size-206">
-											60% cotton
-										</span>
-									</li>
+									
 
 									<li class="flex-w flex-t p-b-7">
 										<span class="stext-102 cl3 size-205">
 											Color
 										</span>
-
+                                         
 										<span class="stext-102 cl6 size-206">
-											Black, Blue, Grey, Green, Red, White
+											{{#each value}}
+											{{colour}}
+											{{/each}}
 										</span>
+										
 									</li>
 
 									<li class="flex-w flex-t p-b-7">
@@ -393,7 +363,9 @@
 										</span>
 
 										<span class="stext-102 cl6 size-206">
-											XL, L, M, S
+											{{#each value}}
+											{{size}}
+											{{/each}}
 										</span>
 									</li>
 								</ul>
@@ -450,7 +422,7 @@
 									<!-- Add review -->
 									{{!-- if product is brought then --}}
 									{{#if userReviewed}}
-									<form action="/review" method="post" class="w-full">
+									<form action="/review" method="post" class="w-full" onsubmit="return validateForm()">
 										<h5 class="mtext-108 cl2 p-b-7">
 											Add a review
 										</h5>
@@ -482,6 +454,9 @@
 												<label class="stext-102 cl3" for="review">Your review</label>
 												<textarea class="size-110 bor8 stext-102 cl2 p-lr-20 p-tb-10"
 													id="review" name="review"></textarea>
+											</div>
+											<div class="mt-5 text-danger">
+                                                  <p id="err"></p>
 											</div>
 
 											{{!-- <div class="col-sm-6 p-b-5">
@@ -877,6 +852,33 @@
 		}
 	</script>
 	<!--===============================================================================================-->
+   <script>
+  function validateForm() {
+    let rating = document.getElementsByName("rating")[0].value;
+    let review = document.getElementsByName("review")[0].value;
+
+    let ratingPattern = /^([1-5])$/;
+   let reviewPattern = /^(?=.*[a-zA-Z]){5,}\S/
+
+
+
+    let ratingError = "";
+    let reviewError = "";
+
+    if (!ratingPattern.test(rating)) {
+      ratingError = "Please enter a rating between 1 and 5.";
+    }
+
+    if (!reviewPattern.test(review)) {
+      reviewError = "Please enter a review with at least 5 characters.";
+    }
+
+    if (ratingError || reviewError) {
+      document.getElementById("err").innerHTML = ratingError + "<br>" + reviewError;
+      return false;
+    }
+  }
+</script>
 
 	<script>
 		$(".js-select2").each(function () {

@@ -5,25 +5,10 @@ let newImg
 
 require('dotenv').config()
 
-// const multer  = require('multer')
-
-// const storage = multer.diskStorage({
-//   destination:(req,file,cb)=>{
-
-//     cb(null,'./public/product-images/')
-//   },
-//   filename:(req,file,cb)=>{
-//     const newId = uuidv4()
-//     cb(null,`${newId}-${file.originalname}`)
-
-// }
-// })
-
-// const upload = multer({storage})
 
 const { JSDOM } = require('jsdom');
 const XLSX = require('xlsx');
-
+let couponMsg
 // const fileUpload = require('express-fileupload')
 const product_details = require('../models/productModel')
 const brand_details = require('../models/brandModel')
@@ -32,7 +17,6 @@ const category_details = require('../models/categoryModel')
 const subcategory_details = require('../models/subcategoryModel')
 const order_details = require('../models/orderModel')
 const banner_details = require('../models/bannerModel')
-
 let salesParam
 const coupon_details = require('../models/couponModel')
 var mongoose = require('mongoose')
@@ -40,16 +24,15 @@ const { v4: uuidv4 } = require('uuid')
 const sharp = require('sharp')
 const printer = require('node-printer')
 const {ObjectId}=require('mongodb')
-
+let adminMsg
 const cheerio = require('cheerio');
 const axios = require('axios');
 
 
 
-let adminMsg
-// let editId
 
-let couponMsg
+
+
 
 
 
@@ -470,6 +453,7 @@ let adminGetAddBrand = async function (req, res, next) {
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 }
@@ -483,6 +467,7 @@ let adminGetAddSubCategory = async function (req, res, next) {
 
   } catch (error) {
     console.log(error.message);
+    next()
   }
 
 }
@@ -941,7 +926,7 @@ const adminPostLogin = async function (req, res, next) {
 
 
 let adminPostUploadProduct = async function (req, res, next) {
-  // try {
+  try {
      let size1 = []
   size1 = req.body.size
   let colour1 = []
@@ -966,26 +951,11 @@ let adminPostUploadProduct = async function (req, res, next) {
 
   async function file() {
     let images = [];
-    // images = req.files.image;
-    // let count = images.length
-    // console.log(count);
-    // if (count) {
+   
       req.files.forEach(file => {
         images.push(file.filename)
       })
-      // for (var i = 0; i < count; i++) {
-       
-        // let path = "" + images[i].tempFilePath
-        // console.log(path);
-        // await sharp(path)
-        //   .rotate()
-        //   .resize(1000, 1500)
-        //   .jpeg({ mozjpeg: true })
-        //   .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
-
-      //   images[i] = req.file
-      //   console.log(images[i]);
-      // }
+     
       products.imageReference = images;
       console.log(products);
       products.uploadedDate = new Date().toDateString().slice(4);
@@ -998,77 +968,72 @@ let adminPostUploadProduct = async function (req, res, next) {
   file()
  
 
-  // } catch (error) {
-  //   console.log(error.message);
-  //   next()
-  // }
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
  
 }
 
 let adminPostEditImage = (req,res,next)=>{
-  async function file() {
-    let images = [];
-    // images = req.files.image;
-    // let count = images.length
-    // console.log(count);
-    // if (count) {
-     
-      // for (var i = 0; i < count; i++) {
-       
-        // let path = "" + images[i].tempFilePath
-        // console.log(path);
-        // await sharp(path)
-        //   .rotate()
-        //   .resize(1000, 1500)
-        //   .jpeg({ mozjpeg: true })
-        //   .toFile('public/product-images/products/' + products.productIndex + i + '.jpg')
-
-      //   images[i] = req.file
-      //   console.log(images[i]);
-      // }
-      console.log(req.body);
-      const proEdit = await product_details.findOne({productIndex:req.body.productId}).lean()
-      console.log(proEdit);
-      let limit = 5-parseInt(proEdit.imageReference.length)
-      if(limit<1){
-        editMessage=`you can only add 4 images`
-        res.redirect('/adminedit/?msg='+editMessage)
-      }else{
-        req.files.forEach(file => {
-       
-          if (--limit === 0) {
-            return false; // exit the loop when the limit is reached
+  try {
+    async function file() {
+      let images = [];
+  
+        console.log(req.body);
+        const proEdit = await product_details.findOne({productIndex:req.body.productId}).lean()
+        console.log(proEdit);
+        let limit = 5-parseInt(proEdit.imageReference.length)
+        if(limit<1){
+          editMessage=`you can only add 4 images`
+          res.redirect('/adminedit/?msg='+editMessage)
         }else{
-          images.push(file.filename)
-        }
-        })
-        
-        images.forEach(async image => {
-          await product_details.updateOne({ productIndex: req.body.productId },  { $push: { imageReference: image } })
-           
+          req.files.forEach(file => {
+         
+            if (--limit === 0) {
+              return false; // exit the loop when the limit is reached
+          }else{
+            images.push(file.filename)
+          }
+          })
           
-        });
-     
+          images.forEach(async image => {
+            await product_details.updateOne({ productIndex: req.body.productId },  { $push: { imageReference: image } })
+             
+            
+          });
+       
+         
+        
+          res.redirect('/adminproducts')
+        }
        
       
-        res.redirect('/adminproducts')
-      }
-     
-    
-
+  
+    }
+    file()
+  } catch (error) {
+    console.log(error.message);
+    next()
   }
-  file()
+
 };
 
 const adminDeleteImage = async(req,res,next)=>{
+  try {
      console.log(req.query.image)
      console.log("fduhfhdfhdufhdfh");
      await product_details.updateOne({productIndex:req.query.productId},{$pull:{"imageReference":req.query.image}})
      res.redirect('/adminproducts')
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
+    
 }
 
 let adminPostAddCategory = async function (req, res, next) {
-  // try {
+  try {
     console.log(req.body);
     let regex = new RegExp(`^${req.body.category}$`, 'i');
     let checkCategory = await category_details.findOne({ name: regex}).lean()
@@ -1091,10 +1056,10 @@ let adminPostAddCategory = async function (req, res, next) {
     }
 
 
-  // } catch (error) {
-  //   console.log(error.message);
-  //   next()
-  // }
+  } catch (error) {
+    console.log(error.message);
+    next()
+  }
 }
 
 let adminPostAddCoupon = async function (req, res, next) {
