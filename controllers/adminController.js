@@ -242,7 +242,7 @@ let adminGetSetOrderStatus = async function (req, res, next) {
     //set a variable to get total count
     if (returnStatus[0].couponId) {
       console.log(returnStatus[0].products)
-      const amount = parseInt(returnStatus[0].products[0].price) * parseInt(returnStatus[0].products[0].quantity) - (parseInt(returnStatus[0].couponDiscount) / parseInt(returnStatus[0].products[0].quantity))
+      const amount = parseInt(returnStatus[0].products[0].price)  - (parseInt(returnStatus[0].couponDiscount) / parseInt(returnStatus[0].products[0].quantity))
       console.log(amount);
       await user_details.updateOne({ username: returnStatus[0].orderedUser }, { $inc: { wallet: amount } })
     } else {
@@ -251,7 +251,7 @@ let adminGetSetOrderStatus = async function (req, res, next) {
 
       // console.log(returnStatus[0].products[0].price);
 
-      const amount = parseInt(returnStatus[0].products.price) * parseInt(returnStatus[0].products.quantity)
+      const amount = parseInt(returnStatus[0].products.price) 
       await user_details.updateOne({ username: returnStatus[0].orderedUser }, { $inc: { wallet: amount } })
     }
 
