@@ -414,15 +414,27 @@
 					<div class="block2">
                         
 						<div class="block2-pic hov-img0">
+							
 							<img src="product-images/products/{{imageReference.[0]}}" alt="IMG-PRODUCT">
+                               <span class="fs-18 cl11 d-flex justify-content-start align-items-center mt-3">
+							{{#times rating}}
+							<i class="zmdi zmdi-star"></i>
 
-							<a href="/product-details/{{productIndex}}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 ">
+
+							{{/times}}
+							{{#times (subtract 5 rating)}}
+							<i class="item-rating pointer zmdi zmdi-star-outline"></i>
+
+							{{/times}}
+						</span>
+							<a href="/product-details/{{productIndex}}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 mb-3">
 								Quick View
 							</a>
 						</div>
 
-						<div class="block2-txt flex-w flex-t p-t-14">
+						<div class="block2-txt flex-w flex-t ">
 							<div class="block2-txt-child1 flex-col-l ">
+								
 								<a href="/product-details/{{productIndex}}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
 									{{title}}
 								</a>

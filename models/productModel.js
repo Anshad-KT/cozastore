@@ -14,6 +14,10 @@ const ProductSchema=new mongoose.Schema({
         type:Number,
     required:true}, 
     
+    rating:{
+        type:Number
+    },
+
     productIndex:{
         type:String,
     required:true},

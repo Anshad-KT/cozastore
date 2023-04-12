@@ -39,6 +39,17 @@ hb.handlebars.registerHelper('ifAnd', function(v1, v2, options) {
   return options.inverse(this);
 });
 
+hb.handlebars.registerHelper('times', function(n, block) {
+  let accum = '';
+  for(let i = 0; i < n; ++i)
+      accum += block.fn(i);
+  return accum;
+});
+
+hb.handlebars.registerHelper('subtract', function(a, b) {
+  return a - b;
+});
+
 
 
 // view engine setup

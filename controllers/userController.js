@@ -8,6 +8,7 @@ var mongoose = require("mongoose");
 let userOrderParam;
 const bcrypt = require("bcrypt");
 let user_details = require("../models/userModel");
+const review_details = require('../models/reviewModel')
 let product_details = require("../models/productModel");
 const category_details = require("../models/categoryModel");
 let otpData;
@@ -526,7 +527,7 @@ let userGetCart = async function (req, res, next) {
             req.session.deducted = parseInt(
               req.session.appliedCoupon.discountAmount
             );
-            
+
             amount =
               parseInt(amount) -
               parseInt(req.session.appliedCoupon.discountAmount);
@@ -628,8 +629,8 @@ let userPostCheckoutBilling = async function (req, res, next) {
       totalCash = parseInt(totalCash) + parseInt(userdone1[i].total);
       // console.log(userdone1[i].total);
     }
-    if(req.session.app){
-      req.session.appliedCoupon=null
+    if (req.session.app) {
+      req.session.appliedCoupon = null
     }
     if (req.session.appliedCoupon) {
       if (req.session.appliedCoupon.discountType == "percentage") {
@@ -640,12 +641,12 @@ let userPostCheckoutBilling = async function (req, res, next) {
         totalCash = parseInt(totalCash);
         req.session.orders.couponDiscount = parseInt(req.session.deducted);
         totalCash = parseInt(totalCash) - parseInt(req.session.deducted);
-        req.session.orders.couponDiscount=parseInt(req.session.deducted);
+        req.session.orders.couponDiscount = parseInt(req.session.deducted);
       } else {
         totalCash =
           parseInt(totalCash) -
           parseInt(req.session.appliedCoupon.discountAmount);
-          req.session.orders.couponDiscount=parseInt(req.session.appliedCoupon.discountAmount);
+        req.session.orders.couponDiscount = parseInt(req.session.appliedCoupon.discountAmount);
       }
     }
     console.log(totalCash);
@@ -1214,7 +1215,7 @@ let userPostChangeQuantity = async function (req, res, next) {
           } else {
             req.session.deducted =
               (subT * parseInt(req.session.appliedCoupon.discountAmount)) / 100;
-              console.log(subT);
+            console.log(subT);
             if (
               parseInt(req.session.deducted) >
               parseInt(req.session.appliedCoupon.maxDiscountAmount)
@@ -1257,19 +1258,19 @@ let userPostChangeQuantity = async function (req, res, next) {
               maxpur = true;
               req.session.appliedCoupon.validity = false;
 
-            
-          }else{
-            subT = subT - parseInt(req.session.deducted);
-            req.session.appliedCoupon.validity = true;
+
+            } else {
+              subT = subT - parseInt(req.session.deducted);
+              req.session.appliedCoupon.validity = true;
+            }
           }
-        }
         }
       } else {
         couponErrorMsg = `this coupon is already used`;
         usepur = true;
       }
     }
-    req.session.app=false
+    req.session.app = false
     console.log(req.session.deducted);
     console.log("lokk");
     if (req.session.deducted && minpur == false && maxpur == false) {
@@ -1277,8 +1278,8 @@ let userPostChangeQuantity = async function (req, res, next) {
 
       var totaltt = subT - discount;
     } else {
-     // req.session.appliedCoupon = null;
-     req.session.app=true
+      // req.session.appliedCoupon = null;
+      req.session.app = true
       var coupM = true;
       var totaltt = subT - 0;
       var discount = 0;
@@ -1504,8 +1505,8 @@ let userVerifyPayment = async function (req, res, next) {
     let hmac = crypto.createHmac("sha256", "EAY2f074OyETGQarM9TbZdtW");
     hmac.update(
       req.body["payment[razorpay_order_id]"] +
-        "|" +
-        req.body["payment[razorpay_payment_id]"]
+      "|" +
+      req.body["payment[razorpay_payment_id]"]
     );
     hmac = hmac.digest("hex");
     if (hmac == req.body["payment[razorpay_signature]"]) {
@@ -1624,43 +1625,115 @@ let userGetProductDetails = async function (req, res, next) {
 //////////////////////////////////GET A SPECIFIC PRODUCT PAGE///////////////////////
 
 let userGetDetails = async function (req, res, next) {
-  try {
-    req.session.details = req.params.id;
-    console.log(req.session.details + "this is the detailsssssssss");
-    let value = await product_details
-      .find({ productIndex: req.session.details })
-      .lean();
+  //try {
+  req.session.details = req.params.id;
+  console.log(req.session.details + "this is the detailsssssssss");
+  let value = await product_details
+    .find({ productIndex: req.session.details })
+    .lean();
 
-    let j = value[0].imageReference;
-    console.log(j);
-    let c = value[0].colour;
-    let s = value[0].size;
-    console.log(req.session.details);
+  let j = value[0].imageReference;
+  console.log(j);
+  let c = value[0].colour;
+  let s = value[0].size;
+  console.log(req.session.details);
 
-    let checkW = await user_details
-      .findOne({
-        username: req.session.user,
-        wishlist: { $in: req.session.details },
-      })
-      .lean();
-    let checkWish;
-    if (checkW == null) {
-      checkWish = true;
-    } else {
-      checkWish = false;
-    }
-    res.render("user-product-details", { value, j, s, c, checkWish });
-  } catch (error) {
-    console.log(error.message);
-    next();
+  let checkW = await user_details
+    .findOne({
+      username: req.session.user,
+      wishlist: { $in: req.session.details },
+    })
+    .lean();
+  let checkWish;
+  if (checkW == null) {
+    checkWish = true;
+  } else {
+    checkWish = false;
   }
+  let reviews = await review_details.findOne({ productIndex: value[0].productIndex })
+  if (reviews == null) {
+    console.log("pass 1");
+    // reviews={}
+    // reviews.review=[]
+    const reviews1 = false
+    let userReviewed = false
+    let products = await product_details.find().lean();
+    let productReviewed = true
+    let orderCh = await order_details.find({ orderedUser: req.session.user }).lean()
+    console.log(orderCh);
+    if (orderCh.length) {
+      console.log("pass 2");
+      orderCh.forEach((check) => {
+        console.log(check.productIndex);
+
+        if (check.products[0].productIndex == req.params.id && check.products[0].status == "Delivered") {
+          productReviewed = false
+          userReviewed = true
+        }
+
+      })
+      res.render("user-product-details", { value, j, s, c, checkWish, reviews1, userReviewed, products });
+    } else {
+      console.log("pass 3");
+      userReviewed = false
+      res.render("user-product-details", { value, j, s, c, checkWish, reviews1, userReviewed, products });
+
+    }
+
+  } else {
+    console.log("pass 4");
+    let userReviewed = false
+    let productReviewed = false
+    let orderCh = await order_details.find({ orderedUser: req.session.user }).lean()
+    if (orderCh.length) {
+      console.log("pass 5");
+
+
+      console.log(orderCh);
+
+      orderCh.forEach((check) => {
+        console.log(check.products[0].productIndex);
+        console.log(check.products[0].status)
+        if (check.products[0].productIndex == req.params.id && check.products[0].status == "Delivered") {
+          productReviewed = true
+        }
+      })
+      reviews.review.forEach((value) => {
+        console.log(value);
+        if (value.username != req.session.user && productReviewed == true) {
+
+          userReviewed = true
+        } else {
+          userReviewed = false
+        }
+      })
+      console.log(userReviewed);
+      console.log(productReviewed);
+      const reviews1 = true
+      let products = await product_details.find().lean();
+      res.render("user-product-details", { value, j, s, c, checkWish, reviews: reviews.review, reviews1, userReviewed, products });
+
+    } else {
+      console.log("pass 6");
+      const reviews1 = true
+      let products = await product_details.find().lean();
+      res.render("user-product-details", { value, j, s, c, checkWish, reviews: reviews.review, reviews1, userReviewed, products });
+
+    }
+  }
+  // console.log(reviews);
+
+  // } catch (error) {
+  //   console.log(error.message);
+  //   next();
+  // }
 };
 
 //////////////////////////////////GET PLEASE ENTER OTP PAGE////////////////////////////////////
 
 let userGetOtp = function (req, res, next) {
   try {
-     const number = req.params.id;
+    const number = req.params.id;
     console.log(number);
     res.render("user-otp", { otpMsg, number });
     otpMsg = null;
@@ -1669,7 +1742,7 @@ let userGetOtp = function (req, res, next) {
     next()
   }
   // if (didLogin == true || didSIgnUp == true) {
-   
+
   // } else {
   //   res.redirect("/signup");
   //   didLogin = false;
@@ -2342,6 +2415,60 @@ const userPostforgotCheck = async function (req, res, next) {
   }
 };
 
+const userPostReview = async (req, res, next) => {
+  const review = {
+    productIndex: '',
+    review: {}
+  }
+
+  console.log(req.body.rating);
+
+  review.productIndex = req.body.productIndex
+  // review.review.us
+  review.review.username = req.session.user
+  review.review.review = req.body.review
+  review.review.rating = parseInt(req.body.rating)
+  console.log(review);
+
+  const reviewCheck = await review_details.findOne({ productIndex: review.productIndex })
+  if (reviewCheck == null) {
+    await review_details.insertMany([review])
+    console.log("review insert success");
+
+  } else {
+    //  const pushRev = {review.review}
+
+    await review_details.updateOne({ productIndex: review.productIndex }, { $push: { review: { username: req.session.user, review: review.review.review, rating: review.review.rating } } })
+    console.log("review push success");
+
+  }
+  const overallRating = await review_details.aggregate([
+    {
+      $match: {
+        // match the document with this _id
+        productIndex: review.productIndex // and this product index
+      }
+    },
+    {
+      $project: {
+        totalRating: { $sum: "$review.rating" } // calculate the sum of the ratings
+      }
+    },
+
+  ])
+
+  console.log(overallRating[0].totalRating);
+  const ghk = await review_details.findOne({ productIndex: review.productIndex })
+  console.log(ghk.review.length);
+  const ov = parseFloat(overallRating[0].totalRating) / parseFloat(ghk.review.length)
+  console.log(ov);
+
+  console.log();
+
+  await product_details.updateOne({ productIndex: review.productIndex }, { $set: { rating: Math.round(ov) } })
+  res.redirect(`/product-details/${review.productIndex}`)
+}
+
 let userGetLogout = function (req, res, next) {
   req.session.user = null;
   req.session.appliedCoupon = null;
@@ -2436,4 +2563,5 @@ module.exports = {
   userGetResetPassword,
   userPostUpdatePassword,
   userPostforgotCheck,
+  userPostReview
 };

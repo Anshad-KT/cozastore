@@ -64,6 +64,7 @@ router.post('/addtowishlist',middleware.verifyUserLogin,userGet.userPostAddWishl
 router.post('/deletewishlist',middleware.verifyUserLogin,userGet.userPostDeleteWishlist);
 router.get('/defaultaddress/:id',middleware.verifyUserLogin,userGet.userPostAddDefaultAddress);
 router.post('/resetcheck',userGet.userPostUpdatePassword)
+router.post('/review',middleware.verifyUserLogin,userGet.userPostReview);
 
 
 
