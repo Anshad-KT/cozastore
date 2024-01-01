@@ -901,9 +901,9 @@ const adminPostLogin = async function (req, res, next) {
       console.log("invalid username or password");
     } else {
 
-      let result = await bcrypt.compare(data.password, adminValidator.password)
-      console.log(result);
-      if (result) {
+      // let result = await bcrypt.compare(data.password, adminValidator.password)
+      // console.log(result);
+      if (data.password === adminValidator.password) {
 
         req.session.admin = adminValidator;
 
